@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>DATEX AI.com</title>
-    <link rel="icon" type="image/jpeg" href="logo.jpg.jpg">
+    <link rel="icon" type="image/jpeg" href="logo.jpg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -562,7 +562,7 @@
 <body onclick="hideMsgMenu()">
 
     <div id="splash-screen">
-        <img src="logo.jpg.jpg" alt="DATEX AI">
+        <img src="logo.jpg" alt="DATEX AI">
     </div>
 
     <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
@@ -625,7 +625,7 @@
                 </div>
             </div>
             <div class="header-center"><div class="model-name">DATEX AI Model</div><div class="version-pill">Fast 1.0</div></div>
-            <div class="header-right"><div class="logo-container"><img src="logo.jpg.jpg" alt="Logo"></div></div>
+            <div class="header-right"><div class="logo-container"><img src="logo.jpg" alt="Logo"></div></div>
         </header>
 
         <main class="main-content" id="chat-container">
@@ -748,8 +748,8 @@
         resizeHandler();
     }
 
-    const GROQ_API_KEY = "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"; 
-    const TAVILY_API_KEY = "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"; 
+    const GROQ_API_KEY = "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"; 
+    const TAVILY_API_KEY = "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"; 
 
     let chatHistory = JSON.parse(localStorage.getItem('datex_full_history')) || [];
     let isNewSession = true;
@@ -1377,7 +1377,7 @@
         const row = document.createElement('div');
         row.className = 'message-row ai-row';
         row.setAttribute('data-index', msgIdx); 
-        row.innerHTML = `<img src="logo.jpg.jpg" class="avatar"><div class="bubble-container"><div class="bubble ai-bubble"></div></div>`;
+        row.innerHTML = `<img src="logo.jpg" class="avatar"><div class="bubble-container"><div class="bubble ai-bubble"></div></div>`;
         const bubble = row.querySelector('.ai-bubble');
         container.appendChild(row);
         
@@ -1518,20 +1518,15 @@
         hideMsgMenu();
     }
 
-    // --- FIX 3: INSTANT MULTI-TAP COPY + BLUE RIPPLE EFFECT ---
     function copyCode(btn) { 
         const code = btn.parentElement.querySelector('code').innerText; 
         navigator.clipboard.writeText(code).then(() => { 
-            // 1. Add active class for blue circle animation
             btn.classList.add('active-click');
-            
-            // 2. Remove it quickly (300ms) so user can tap again instantly
             setTimeout(() => { 
                 btn.classList.remove('active-click');
             }, 300); 
         }); 
     }
-    // -----------------------------------------------------------
 
     function escapeHTML(str) { return str.replace(/[&<>"']/g, function(m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; }); }
 
@@ -1677,7 +1672,7 @@
         const aiRow = document.createElement('div'); aiRow.className = 'message-row ai-row';
         
         const typingHTML = `<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
-        aiRow.innerHTML = `<img src="logo.jpg.jpg" class="avatar"><div class="bubble-container"><div class="bubble ai-bubble">${typingHTML}</div></div>`;
+        aiRow.innerHTML = `<img src="logo.jpg" class="avatar"><div class="bubble-container"><div class="bubble ai-bubble">${typingHTML}</div></div>`;
         container.appendChild(aiRow); const bubble = aiRow.querySelector('.ai-bubble'); currentAiRow = aiRow;
 
         if (attachmentToSave && attachmentToSave.type === 'audio' && !isRegenerate) {
