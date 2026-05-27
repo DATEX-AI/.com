@@ -7,8 +7,9 @@
     <link rel="icon" type="image/jpeg" href="logo.jpg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
+    <!-- Scripts with async/defer so they don't block page load -->
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
@@ -37,7 +38,7 @@
             user-select: none !important; 
         }
 
-        /* --- SPLASH SCREEN (INTRO) CSS --- */
+        /* --- BULLETPROOF SPLASH SCREEN CSS --- */
         #splash-screen {
             position: fixed;
             top: 0;
@@ -49,7 +50,9 @@
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
+            /* Auto hide after 2 seconds via pure CSS */
+            animation: forceHideSplash 2s forwards;
+            pointer-events: none; /* Allows clicks to pass through if it gets stuck */
         }
         #splash-screen img {
             width: 180px; 
@@ -59,8 +62,12 @@
             animation: splashPop 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
         @keyframes splashPop {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
+            0% { opacity: 0; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        @keyframes forceHideSplash {
+            0%, 70% { opacity: 1; visibility: visible; }
+            100% { opacity: 0; visibility: hidden; z-index: -1; display: none; }
         }
         /* ---------------------------------- */
 
@@ -572,7 +579,7 @@
 </head>
 <body onclick="hideMsgMenu()">
 
-    <div id="splash-screen">
+    <div id="splash-screen" onclick="this.style.display='none'">
         <img src="logo.jpg" alt="DATEX AI">
     </div>
 
@@ -719,14 +726,12 @@
     </div>
 
     <script>
-    // --- UPDATED SPLASH SCREEN LOGIC (Runs directly without waiting for other blocked scripts) ---
+    // JS cleanup for Splash is still here as a backup, but CSS will hide it anyway.
     const splash = document.getElementById('splash-screen');
     if (splash) {
         setTimeout(() => {
-            splash.style.opacity = '0';
-            splash.style.visibility = 'hidden';
-            setTimeout(() => splash.remove(), 300);
-        }, 1200);
+            splash.style.display = 'none';
+        }, 1800);
     }
 
     if(window.speechSynthesis) {
@@ -734,7 +739,6 @@
             window.speechSynthesis.getVoices();
         };
     }
-    // --------------------------------------------------------------------------------------------
 
     let userScrolledUp = false; 
 
@@ -779,7 +783,20 @@
     const GROQ_API_KEY = "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"; 
     const TAVILY_API_KEY = "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"; 
 
-    let chatHistory = JSON.parse(localStorage.getItem('datex_full_history')) || [];
+    // --- SAFELY PARSE LOCAL STORAGE ---
+    let chatHistory = [];
+    try {
+        const storedHistory = localStorage.getItem('datex_full_history');
+        if (storedHistory) {
+            chatHistory = JSON.parse(storedHistory) || [];
+        }
+    } catch (error) {
+        console.warn("Storage was corrupted, resetting chat history.");
+        chatHistory = [];
+        localStorage.removeItem('datex_full_history');
+    }
+    // ----------------------------------
+
     let isNewSession = true;
     let selectedMsgRow = null;
     let activeChatIndex = -1;
