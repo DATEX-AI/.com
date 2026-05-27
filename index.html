@@ -7,7 +7,6 @@
     <link rel="icon" type="image/jpeg" href="logo.jpg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <!-- Scripts with async/defer so they don't block page load -->
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
     
@@ -38,7 +37,7 @@
             user-select: none !important; 
         }
 
-        /* --- BULLETPROOF SPLASH SCREEN CSS --- */
+        /* --- SPLASH SCREEN (INTRO) CSS (RESTORED TO ORIGINAL) --- */
         #splash-screen {
             position: fixed;
             top: 0;
@@ -50,9 +49,7 @@
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            /* Auto hide after 2 seconds via pure CSS */
-            animation: forceHideSplash 2s forwards;
-            pointer-events: none; /* Allows clicks to pass through if it gets stuck */
+            transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
         }
         #splash-screen img {
             width: 180px; 
@@ -62,12 +59,8 @@
             animation: splashPop 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
         @keyframes splashPop {
-            0% { opacity: 0; transform: scale(0.8); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-        @keyframes forceHideSplash {
-            0%, 70% { opacity: 1; visibility: visible; }
-            100% { opacity: 0; visibility: hidden; z-index: -1; display: none; }
+            0% { opacity: 0; }
+            100% { opacity: 1; }
         }
         /* ---------------------------------- */
 
@@ -579,7 +572,7 @@
 </head>
 <body onclick="hideMsgMenu()">
 
-    <div id="splash-screen" onclick="this.style.display='none'">
+    <div id="splash-screen">
         <img src="logo.jpg" alt="DATEX AI">
     </div>
 
@@ -726,13 +719,16 @@
     </div>
 
     <script>
-    // JS cleanup for Splash is still here as a backup, but CSS will hide it anyway.
+    // --- JS SCRIPT AT THE TOP TO ENSURE SPLASH SCREEN IS FULLY REMOVED ---
     const splash = document.getElementById('splash-screen');
     if (splash) {
         setTimeout(() => {
-            splash.style.display = 'none';
-        }, 1800);
+            splash.style.opacity = '0';
+            splash.style.visibility = 'hidden';
+            setTimeout(() => splash.remove(), 300); // Fully deletes element to restore touch 
+        }, 1200);
     }
+    // ----------------------------------------------------------------------
 
     if(window.speechSynthesis) {
         window.speechSynthesis.onvoiceschanged = () => {
@@ -1607,8 +1603,7 @@
     }
 
     function typeEffect(element, text, speed) {
-        let i = 0; let segments = text.split(/(```[\s\S]*?
-```)/g); let currentSeg = 0; let accumulatedHTML = ""; 
+        let i = 0; let segments = text.split(/(```[\s\S]*?```)/g); let currentSeg = 0; let accumulatedHTML = ""; 
         function typeNext() {
             if (stopGenerationFlag) {
                 const aiMsgIdx = parseInt(currentAiRow.getAttribute('data-index'));
