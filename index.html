@@ -37,7 +37,7 @@
             user-select: none !important; 
         }
 
-        /* --- SPLASH SCREEN (INTRO) CSS (RESTORED TO ORIGINAL) --- */
+        /* --- SPLASH SCREEN (INTRO) CSS --- */
         #splash-screen {
             position: fixed;
             top: 0;
@@ -79,23 +79,26 @@
         .settings-group { display: flex; align-items: center; gap: 10px; cursor: pointer; }
         .close-sidebar-btn { cursor: pointer; color: #555; font-size: 20px; }
         
-        .sidebar-recent-title { padding: 5px 20px 15px 20px; font-size: 15px; font-weight: 500; color: #333; }
-        .sidebar-divider { border: none; border-top: 1.5px solid #ccc; margin: 0; }
+        /* Updated RECENT CHATS style (Original look but black, with extra top spacing) */
+        .sidebar-recent-title { padding: 35px 20px 15px 20px; font-size: 12px; font-weight: 700; color: #000; text-transform: uppercase; letter-spacing: 1px; }
         
-        .sidebar-content { flex: 1; overflow-y: auto; padding: 15px 20px; }
+        .sidebar-content { flex: 1; overflow-y: auto; padding: 10px 20px 15px 20px; }
         
         .chat-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
         .chat-item-wrapper { display: flex; align-items: center; gap: 12px; }
         .chat-item { flex: 1; padding: 10px 15px; cursor: pointer; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background: transparent; border: 1.5px solid #888; border-radius: 20px; text-align: left; color: #333; transition: 0.2s; }
         .chat-item:hover { background: #eee; }
-        .delete-chat-btn { color: #555; cursor: pointer; font-size: 18px; transition: 0.2s; padding: 5px; flex-shrink: 0; }
-        .delete-chat-btn:hover { color: #ff1a1a; }
+        
+        /* Updated Trash button (Red) */
+        .delete-chat-btn { color: #ff4d4d; cursor: pointer; font-size: 18px; transition: 0.2s; padding: 5px; flex-shrink: 0; }
+        .delete-chat-btn:hover { color: #cc0000; }
 
-        .sidebar-footer { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: #f9f9f9; }
+        .sidebar-footer { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: transparent; }
         .profile-icon { font-size: 28px; color: #555; cursor: pointer; }
         
-        .new-chat-btn { padding: 8px 20px; background: transparent; color: #333; border: 1.5px solid #888; border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 15px; transition: 0.2s; width: auto; }
-        .new-chat-btn:hover { background: #eee; }
+        /* Updated New Chat button to match Image 1 (Black block, White text) */
+        .new-chat-btn { padding: 12px 20px; background: #000; color: #fff; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 15px; transition: 0.2s; flex: 1; margin-left: 15px; display: flex; justify-content: center; align-items: center; }
+        .new-chat-btn:hover { background: #333; }
         /* --------------------------- */
 
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.1); display: none; z-index: 1000; cursor: pointer; }
@@ -625,14 +628,15 @@
             </div>
             <i class="fas fa-times close-sidebar-btn" onclick="toggleSidebar()"></i>
         </div>
-        <div class="sidebar-recent-title">Recent Chats</div>
-        <hr class="sidebar-divider">
+        
+        <!-- Lines removed, padding added via CSS -->
+        <div class="sidebar-recent-title">RECENT CHATS</div>
         
         <div class="sidebar-content">
             <ul id="chat-list" class="chat-list"></ul>
         </div>
         
-        <hr class="sidebar-divider">
+        <!-- Line removed -->
         <div class="sidebar-footer">
             <div class="profile-icon">
                 <i class="far fa-user-circle"></i>
@@ -719,16 +723,14 @@
     </div>
 
     <script>
-    // --- JS SCRIPT AT THE TOP TO ENSURE SPLASH SCREEN IS FULLY REMOVED ---
     const splash = document.getElementById('splash-screen');
     if (splash) {
         setTimeout(() => {
             splash.style.opacity = '0';
             splash.style.visibility = 'hidden';
-            setTimeout(() => splash.remove(), 300); // Fully deletes element to restore touch 
+            setTimeout(() => splash.remove(), 300); 
         }, 1200);
     }
-    // ----------------------------------------------------------------------
 
     if(window.speechSynthesis) {
         window.speechSynthesis.onvoiceschanged = () => {
@@ -779,7 +781,6 @@
     const GROQ_API_KEY = "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"; 
     const TAVILY_API_KEY = "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"; 
 
-    // --- SAFELY PARSE LOCAL STORAGE ---
     let chatHistory = [];
     try {
         const storedHistory = localStorage.getItem('datex_full_history');
@@ -791,7 +792,6 @@
         chatHistory = [];
         localStorage.removeItem('datex_full_history');
     }
-    // ----------------------------------
 
     let isNewSession = true;
     let selectedMsgRow = null;
@@ -1311,6 +1311,7 @@
         if(chatHistory.length === 0) createNewChat();
     };
 
+    /* --- JS UPDATE: Trash icon class changed to solid fas fa-trash --- */
     function renderChatList() {
         const listElement = document.getElementById('chat-list');
         listElement.innerHTML = "";
@@ -1318,10 +1319,11 @@
             const actualIndex = chatHistory.length - 1 - index;
             const wrap = document.createElement('div');
             wrap.className = "chat-item-wrapper";
-            wrap.innerHTML = `<div class="chat-item" onclick="loadSelectedChat(${actualIndex}, true)">${chatObj.title}</div><i class="far fa-trash-alt delete-chat-btn" onclick="deleteHistoryItem(event, ${actualIndex})"></i>`;
+            wrap.innerHTML = `<div class="chat-item" onclick="loadSelectedChat(${actualIndex}, true)">${chatObj.title}</div><i class="fas fa-trash delete-chat-btn" onclick="deleteHistoryItem(event, ${actualIndex})"></i>`;
             listElement.appendChild(wrap);
         });
     }
+    /* ----------------------------------------------------------------- */
 
     function deleteHistoryItem(event, index) {
         if(event) event.stopPropagation();
@@ -1603,7 +1605,8 @@
     }
 
     function typeEffect(element, text, speed) {
-        let i = 0; let segments = text.split(/(```[\s\S]*?```)/g); let currentSeg = 0; let accumulatedHTML = ""; 
+        let i = 0; let segments = text.split(/(```[\s\S]*?
+```)/g); let currentSeg = 0; let accumulatedHTML = ""; 
         function typeNext() {
             if (stopGenerationFlag) {
                 const aiMsgIdx = parseInt(currentAiRow.getAttribute('data-index'));
