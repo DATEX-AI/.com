@@ -721,20 +721,22 @@
         });
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
+    // --- FIX: SPLASH SCREEN LOGIC UPDATED TO PREVENT HANGING ON MOBILE ---
+    setTimeout(() => {
         const splash = document.getElementById('splash-screen');
-        setTimeout(() => {
+        if (splash) {
             splash.style.opacity = '0';
             splash.style.visibility = 'hidden';
-            setTimeout(() => splash.remove(), 300); 
-        }, 1200); 
-        
-        if(window.speechSynthesis) {
-            window.speechSynthesis.onvoiceschanged = () => {
-                window.speechSynthesis.getVoices();
-            };
+            setTimeout(() => splash.remove(), 300);
         }
-    });
+    }, 1200);
+
+    if(window.speechSynthesis) {
+        window.speechSynthesis.onvoiceschanged = () => {
+            window.speechSynthesis.getVoices();
+        };
+    }
+    // ----------------------------------------------------------------------
 
     document.addEventListener('gesturestart', function (e) {
         e.preventDefault();
@@ -1283,10 +1285,10 @@
         dragLockUi.classList.remove('active');
     }
 
-    window.onload = () => { 
+    window.addEventListener('load', () => { 
         renderChatList(); 
         if(chatHistory.length === 0) createNewChat();
-    };
+    });
 
     function renderChatList() {
         const listElement = document.getElementById('chat-list');
@@ -1520,17 +1522,14 @@
         hideMsgMenu(); 
     }
 
-    // --- UPDATE: TELEGRAM STYLE DELETE SCRIPT ---
     function deleteSelectedMsg() {
         stopTTS(); 
         if(selectedMsgRow && activeChatIndex !== -1) {
             const msgIdx = parseInt(selectedMsgRow.getAttribute('data-index'));
             const isUserRow = selectedMsgRow.classList.contains('user-row');
             
-            // Add deleting animation class
             selectedMsgRow.classList.add('deleting');
             
-            // If user deletes their message, also animate the AI's reply directly below it
             if (isUserRow && chatHistory[activeChatIndex].messages[msgIdx + 1] && chatHistory[activeChatIndex].messages[msgIdx + 1].role === "assistant") {
                 let nextRow = selectedMsgRow.nextElementSibling;
                 if(nextRow && nextRow.classList.contains('ai-row')) {
@@ -1538,9 +1537,8 @@
                 }
             }
 
-            hideMsgMenu(); // Hide the menu immediately
+            hideMsgMenu(); 
 
-            // Wait 300ms for animation to complete before removing from array and re-rendering
             setTimeout(() => {
                 chatHistory[activeChatIndex].messages.splice(msgIdx, 1);
                 if (isUserRow && chatHistory[activeChatIndex].messages[msgIdx] && chatHistory[activeChatIndex].messages[msgIdx].role === "assistant") {
@@ -1558,7 +1556,6 @@
         }
         hideMsgMenu();
     }
-    // --------------------------------------------
 
     function copyCode(btn) { 
         const code = btn.parentElement.querySelector('code').innerText; 
