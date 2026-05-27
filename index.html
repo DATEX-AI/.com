@@ -149,29 +149,18 @@
             margin-top: 5px; 
         } 
 
-        /* --- UPDATE: TELEGRAM DELETE ANIMATION --- */
-        .message-row { 
-            display: flex; 
-            width: 100%; 
-            margin: 15px 0; 
-            align-items: flex-start; 
-            gap: 12px; 
-            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-            max-height: 1000px;
-            transform-origin: center;
-        }
-        .message-row.deleting {
-            transform: scale(0.7) translateY(20px);
-            opacity: 0;
-            margin-top: 0;
-            margin-bottom: 0;
-            max-height: 0;
-            overflow: hidden;
-        }
-        /* ----------------------------------------- */
-
+        .message-row { display: flex; width: 100%; margin: 15px 0; align-items: flex-start; gap: 12px; }
         .user-row { flex-direction: row-reverse; }
         .ai-row { flex-direction: column; gap: 6px; } 
+
+        @keyframes deleteMsgAnim {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(0.8); opacity: 0; }
+        }
+        .msg-deleting {
+            animation: deleteMsgAnim 0.3s ease-out forwards;
+            pointer-events: none;
+        }
         
         .bubble-container { position: relative; max-width: 88%; display: flex; flex-direction: column; overflow: hidden; }
         .bubble { padding: 14px 20px; border-radius: 22px; font-size: 16px; line-height: 1.6; word-wrap: break-word; min-height: 48px; }
@@ -426,13 +415,14 @@
         }
         code { font-family: 'Consolas', monospace; }
 
+        /* --- UPDATE: NEW GEMINI STYLE COPY BUTTON CSS --- */
         .copy-code-btn { 
             position: absolute; 
             top: 8px; 
             right: 8px; 
             width: 32px; 
             height: 32px;
-            border-radius: 50%; 
+            border-radius: 50%; /* Makes it a perfect circle */
             background: rgba(255,255,255,0.08); 
             color: #d4d4d4; 
             border: none; 
@@ -448,11 +438,13 @@
             background: rgba(255,255,255,0.15); 
             color: #fff; 
         }
+        /* Active (Clicked) State for the Blue Circle Effect */
         .copy-code-btn.active-click {
-            background: rgba(138, 180, 248, 0.2) !important; 
-            color: #8ab4f8 !important; 
-            transform: scale(0.9); 
+            background: rgba(138, 180, 248, 0.2) !important; /* Soft Gemini Blue Background */
+            color: #8ab4f8 !important; /* Blue Icon */
+            transform: scale(0.9); /* Slight press shrink */
         }
+        /* ------------------------------------------------ */
         
         .msg-menu { position: fixed; background: #fff; border: 1px solid #ddd; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); display: none; z-index: 2000; flex-direction: column; width: 140px; overflow: hidden; }
         .msg-menu button { padding: 12px; border: none; background: none; text-align: left; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 10px; width: 100%; border-bottom: 0.5px solid #f0f0f0; }
@@ -721,22 +713,20 @@
         });
     }
 
-    // --- FIX: SPLASH SCREEN LOGIC UPDATED TO PREVENT HANGING ON MOBILE ---
-    setTimeout(() => {
+    document.addEventListener("DOMContentLoaded", () => {
         const splash = document.getElementById('splash-screen');
-        if (splash) {
+        setTimeout(() => {
             splash.style.opacity = '0';
             splash.style.visibility = 'hidden';
-            setTimeout(() => splash.remove(), 300);
+            setTimeout(() => splash.remove(), 300); 
+        }, 1200); 
+        
+        if(window.speechSynthesis) {
+            window.speechSynthesis.onvoiceschanged = () => {
+                window.speechSynthesis.getVoices();
+            };
         }
-    }, 1200);
-
-    if(window.speechSynthesis) {
-        window.speechSynthesis.onvoiceschanged = () => {
-            window.speechSynthesis.getVoices();
-        };
-    }
-    // ----------------------------------------------------------------------
+    });
 
     document.addEventListener('gesturestart', function (e) {
         e.preventDefault();
@@ -1285,10 +1275,10 @@
         dragLockUi.classList.remove('active');
     }
 
-    window.addEventListener('load', () => { 
+    window.onload = () => { 
         renderChatList(); 
         if(chatHistory.length === 0) createNewChat();
-    });
+    };
 
     function renderChatList() {
         const listElement = document.getElementById('chat-list');
@@ -1528,16 +1518,16 @@
             const msgIdx = parseInt(selectedMsgRow.getAttribute('data-index'));
             const isUserRow = selectedMsgRow.classList.contains('user-row');
             
-            selectedMsgRow.classList.add('deleting');
-            
-            if (isUserRow && chatHistory[activeChatIndex].messages[msgIdx + 1] && chatHistory[activeChatIndex].messages[msgIdx + 1].role === "assistant") {
+            let rowsToAnimate = [selectedMsgRow];
+            if (isUserRow) {
                 let nextRow = selectedMsgRow.nextElementSibling;
-                if(nextRow && nextRow.classList.contains('ai-row')) {
-                    nextRow.classList.add('deleting');
+                if (nextRow && nextRow.classList.contains('ai-row') && parseInt(nextRow.getAttribute('data-index')) === msgIdx + 1) {
+                    rowsToAnimate.push(nextRow);
                 }
             }
 
-            hideMsgMenu(); 
+            rowsToAnimate.forEach(row => row.classList.add('msg-deleting'));
+            hideMsgMenu();
 
             setTimeout(() => {
                 chatHistory[activeChatIndex].messages.splice(msgIdx, 1);
@@ -1546,15 +1536,16 @@
                 }
                 localStorage.setItem('datex_full_history', JSON.stringify(chatHistory));
                 editingMsgIdx = -1; 
+                
                 if (chatHistory[activeChatIndex].messages.length === 0) { 
                     deleteHistoryItem(null, activeChatIndex); 
                 } else { 
                     loadSelectedChat(activeChatIndex, false); 
                 }
             }, 300);
-            return;
+        } else {
+            hideMsgMenu();
         }
-        hideMsgMenu();
     }
 
     function copyCode(btn) { 
