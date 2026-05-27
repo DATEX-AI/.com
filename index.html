@@ -149,7 +149,27 @@
             margin-top: 5px; 
         } 
 
-        .message-row { display: flex; width: 100%; margin: 15px 0; align-items: flex-start; gap: 12px; }
+        /* --- UPDATE: TELEGRAM DELETE ANIMATION --- */
+        .message-row { 
+            display: flex; 
+            width: 100%; 
+            margin: 15px 0; 
+            align-items: flex-start; 
+            gap: 12px; 
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            max-height: 1000px;
+            transform-origin: center;
+        }
+        .message-row.deleting {
+            transform: scale(0.7) translateY(20px);
+            opacity: 0;
+            margin-top: 0;
+            margin-bottom: 0;
+            max-height: 0;
+            overflow: hidden;
+        }
+        /* ----------------------------------------- */
+
         .user-row { flex-direction: row-reverse; }
         .ai-row { flex-direction: column; gap: 6px; } 
         
@@ -406,14 +426,13 @@
         }
         code { font-family: 'Consolas', monospace; }
 
-        /* --- UPDATE: NEW GEMINI STYLE COPY BUTTON CSS --- */
         .copy-code-btn { 
             position: absolute; 
             top: 8px; 
             right: 8px; 
             width: 32px; 
             height: 32px;
-            border-radius: 50%; /* Makes it a perfect circle */
+            border-radius: 50%; 
             background: rgba(255,255,255,0.08); 
             color: #d4d4d4; 
             border: none; 
@@ -429,13 +448,11 @@
             background: rgba(255,255,255,0.15); 
             color: #fff; 
         }
-        /* Active (Clicked) State for the Blue Circle Effect */
         .copy-code-btn.active-click {
-            background: rgba(138, 180, 248, 0.2) !important; /* Soft Gemini Blue Background */
-            color: #8ab4f8 !important; /* Blue Icon */
-            transform: scale(0.9); /* Slight press shrink */
+            background: rgba(138, 180, 248, 0.2) !important; 
+            color: #8ab4f8 !important; 
+            transform: scale(0.9); 
         }
-        /* ------------------------------------------------ */
         
         .msg-menu { position: fixed; background: #fff; border: 1px solid #ddd; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); display: none; z-index: 2000; flex-direction: column; width: 140px; overflow: hidden; }
         .msg-menu button { padding: 12px; border: none; background: none; text-align: left; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 10px; width: 100%; border-bottom: 0.5px solid #f0f0f0; }
@@ -1503,22 +1520,45 @@
         hideMsgMenu(); 
     }
 
+    // --- UPDATE: TELEGRAM STYLE DELETE SCRIPT ---
     function deleteSelectedMsg() {
         stopTTS(); 
         if(selectedMsgRow && activeChatIndex !== -1) {
             const msgIdx = parseInt(selectedMsgRow.getAttribute('data-index'));
             const isUserRow = selectedMsgRow.classList.contains('user-row');
-            chatHistory[activeChatIndex].messages.splice(msgIdx, 1);
-            if (isUserRow && chatHistory[activeChatIndex].messages[msgIdx] && chatHistory[activeChatIndex].messages[msgIdx].role === "assistant") {
-                chatHistory[activeChatIndex].messages.splice(msgIdx, 1);
+            
+            // Add deleting animation class
+            selectedMsgRow.classList.add('deleting');
+            
+            // If user deletes their message, also animate the AI's reply directly below it
+            if (isUserRow && chatHistory[activeChatIndex].messages[msgIdx + 1] && chatHistory[activeChatIndex].messages[msgIdx + 1].role === "assistant") {
+                let nextRow = selectedMsgRow.nextElementSibling;
+                if(nextRow && nextRow.classList.contains('ai-row')) {
+                    nextRow.classList.add('deleting');
+                }
             }
-            localStorage.setItem('datex_full_history', JSON.stringify(chatHistory));
-            editingMsgIdx = -1; 
-            if (chatHistory[activeChatIndex].messages.length === 0) { deleteHistoryItem(null, activeChatIndex); } 
-            else { loadSelectedChat(activeChatIndex, false); }
+
+            hideMsgMenu(); // Hide the menu immediately
+
+            // Wait 300ms for animation to complete before removing from array and re-rendering
+            setTimeout(() => {
+                chatHistory[activeChatIndex].messages.splice(msgIdx, 1);
+                if (isUserRow && chatHistory[activeChatIndex].messages[msgIdx] && chatHistory[activeChatIndex].messages[msgIdx].role === "assistant") {
+                    chatHistory[activeChatIndex].messages.splice(msgIdx, 1);
+                }
+                localStorage.setItem('datex_full_history', JSON.stringify(chatHistory));
+                editingMsgIdx = -1; 
+                if (chatHistory[activeChatIndex].messages.length === 0) { 
+                    deleteHistoryItem(null, activeChatIndex); 
+                } else { 
+                    loadSelectedChat(activeChatIndex, false); 
+                }
+            }, 300);
+            return;
         }
         hideMsgMenu();
     }
+    // --------------------------------------------
 
     function copyCode(btn) { 
         const code = btn.parentElement.querySelector('code').innerText; 
@@ -1563,7 +1603,8 @@
     }
 
     function typeEffect(element, text, speed) {
-        let i = 0; let segments = text.split(/(```[\s\S]*?```)/g); let currentSeg = 0; let accumulatedHTML = ""; 
+        let i = 0; let segments = text.split(/(```[\s\S]*?
+```)/g); let currentSeg = 0; let accumulatedHTML = ""; 
         function typeNext() {
             if (stopGenerationFlag) {
                 const aiMsgIdx = parseInt(currentAiRow.getAttribute('data-index'));
