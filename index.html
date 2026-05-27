@@ -6,7 +6,7 @@
     <title>DATEX AI.com</title>
     <link rel="icon" type="image/jpeg" href="logo.jpg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
     
@@ -421,14 +421,13 @@
         }
         code { font-family: 'Consolas', monospace; }
 
-        /* --- UPDATE: NEW GEMINI STYLE COPY BUTTON CSS --- */
         .copy-code-btn { 
             position: absolute; 
             top: 8px; 
             right: 8px; 
             width: 32px; 
             height: 32px;
-            border-radius: 50%; /* Makes it a perfect circle */
+            border-radius: 50%; 
             background: rgba(255,255,255,0.08); 
             color: #d4d4d4; 
             border: none; 
@@ -444,13 +443,11 @@
             background: rgba(255,255,255,0.15); 
             color: #fff; 
         }
-        /* Active (Clicked) State for the Blue Circle Effect */
         .copy-code-btn.active-click {
-            background: rgba(138, 180, 248, 0.2) !important; /* Soft Gemini Blue Background */
-            color: #8ab4f8 !important; /* Blue Icon */
-            transform: scale(0.9); /* Slight press shrink */
+            background: rgba(138, 180, 248, 0.2) !important; 
+            color: #8ab4f8 !important; 
+            transform: scale(0.9); 
         }
-        /* ------------------------------------------------ */
         
         .msg-menu { position: fixed; background: #fff; border: 1px solid #ddd; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); display: none; z-index: 2000; flex-direction: column; width: 140px; overflow: hidden; }
         .msg-menu button { padding: 12px; border: none; background: none; text-align: left; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 10px; width: 100%; border-bottom: 0.5px solid #f0f0f0; }
@@ -621,7 +618,6 @@
     <input type="file" id="gallery-input" class="hidden-input" accept="image/*" onchange="handleFileSelect(event)">
     <input type="file" id="file-input" class="hidden-input" accept=".pdf,.doc,.docx,.txt" onchange="handleFileSelect(event)">
 
-    <!-- SIDEBAR UPDATED HTML -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-top">
             <div class="settings-group">
@@ -644,7 +640,6 @@
             <button class="new-chat-btn" onclick="createNewChat()">Chat +</button>
         </div>
     </div>
-    <!-- ---------------------- -->
 
     <div class="wrapper">
         <header>
@@ -724,6 +719,23 @@
     </div>
 
     <script>
+    // --- UPDATED SPLASH SCREEN LOGIC (Runs directly without waiting for other blocked scripts) ---
+    const splash = document.getElementById('splash-screen');
+    if (splash) {
+        setTimeout(() => {
+            splash.style.opacity = '0';
+            splash.style.visibility = 'hidden';
+            setTimeout(() => splash.remove(), 300);
+        }, 1200);
+    }
+
+    if(window.speechSynthesis) {
+        window.speechSynthesis.onvoiceschanged = () => {
+            window.speechSynthesis.getVoices();
+        };
+    }
+    // --------------------------------------------------------------------------------------------
+
     let userScrolledUp = false; 
 
     function scrollToBottomFunc() {
@@ -734,21 +746,6 @@
             behavior: 'smooth'
         });
     }
-
-    document.addEventListener("DOMContentLoaded", () => {
-        const splash = document.getElementById('splash-screen');
-        setTimeout(() => {
-            splash.style.opacity = '0';
-            splash.style.visibility = 'hidden';
-            setTimeout(() => splash.remove(), 300); 
-        }, 1200); 
-        
-        if(window.speechSynthesis) {
-            window.speechSynthesis.onvoiceschanged = () => {
-                window.speechSynthesis.getVoices();
-            };
-        }
-    });
 
     document.addEventListener('gesturestart', function (e) {
         e.preventDefault();
@@ -1213,7 +1210,6 @@
         dragLockUi.classList.remove('active');
     });
 
-
     async function startVoiceNoteRecord() {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -1302,7 +1298,6 @@
         if(chatHistory.length === 0) createNewChat();
     };
 
-    /* --- JAVASCRIPT RENDER MODIFIED TO MATCH SKETCH STRUCTURE --- */
     function renderChatList() {
         const listElement = document.getElementById('chat-list');
         listElement.innerHTML = "";
@@ -1314,7 +1309,6 @@
             listElement.appendChild(wrap);
         });
     }
-    /* ------------------------------------------------------------ */
 
     function deleteHistoryItem(event, index) {
         if(event) event.stopPropagation();
