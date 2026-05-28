@@ -7,6 +7,7 @@
     <link rel="icon" type="image/jpeg" href="logo.jpg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
+    <!-- Fasad ki jad (polyfill link) permanently removed -->
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
     
@@ -80,8 +81,8 @@
         .settings-group { display: flex; align-items: center; gap: 10px; cursor: pointer; }
         .close-sidebar-btn { cursor: pointer; color: #555; font-size: 20px; }
 
-        /* Invisible Wall for RECENT CHATS (Fixed outside scroll area) */
-        .sidebar-header { padding: 35px 20px 15px 20px; flex-shrink: 0; background-color: #f9f9f9; z-index: 2; }
+        /* Invisible Wall for RECENT CHATS (Fixed outside scroll area, padding reduced to shift up) */
+        .sidebar-header { padding: 15px 20px 15px 20px; flex-shrink: 0; background-color: #f9f9f9; z-index: 2; }
         .sidebar h2 { margin: 0; font-size: 12px; color: #000; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
 
         /* Scrollable Chat List Area */
@@ -98,10 +99,14 @@
 
         /* Bottom Profile & New Chat Area */
         .sidebar-footer { padding: 15px 20px 20px 20px; display: flex; justify-content: space-between; align-items: center; background: transparent; flex-shrink: 0; }
-        .profile-icon { font-size: 28px; color: #555; cursor: pointer; }
         
-        /* Black Chat+ Button */
-        .new-chat-btn { padding: 12px 20px; background: #000; color: #fff; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 15px; transition: 0.2s; flex: 1; margin-left: 15px; display: flex; justify-content: center; align-items: center; }
+        /* Profile Section (Icon + Name) */
+        .profile-section { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .profile-icon { font-size: 32px; color: #555; display: flex; align-items: center; justify-content: center; }
+        .profile-name { font-size: 16px; font-weight: 600; color: #333; }
+        
+        /* Black Chat+ Button (Compact width as requested) */
+        .new-chat-btn { padding: 12px 30px; background: #000; color: #fff; border: none; border-radius: 16px; cursor: pointer; font-weight: 600; font-size: 15px; transition: 0.2s; display: flex; justify-content: center; align-items: center; }
         .new-chat-btn:hover { background: #333; }
         /* ------------------------------------ */
 
@@ -582,6 +587,7 @@
         <img src="logo.jpg" alt="DATEX AI">
     </div>
     
+    <!-- FIX: Splash screen removed immediately without blocking clicks -->
     <script>
         setTimeout(() => {
             const spl = document.getElementById('splash-screen');
@@ -635,6 +641,7 @@
     <input type="file" id="gallery-input" class="hidden-input" accept="image/*" onchange="handleFileSelect(event)">
     <input type="file" id="file-input" class="hidden-input" accept=".pdf,.doc,.docx,.txt" onchange="handleFileSelect(event)">
 
+    <!-- NEW SIDEBAR HTML -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-top">
             <div class="settings-group">
@@ -643,17 +650,21 @@
             <i class="fas fa-times close-sidebar-btn" onclick="toggleSidebar()"></i>
         </div>
         
+        <!-- TITLE MOVED OUTSIDE SCROLL AREA TO CREATE INVISIBLE WALL -->
         <div class="sidebar-header">
             <h2>RECENT CHATS</h2>
         </div>
         
+        <!-- SCROLLABLE LIST AREA -->
         <div class="sidebar-content">
             <ul id="chat-list" class="chat-list"></ul>
         </div>
         
+        <!-- UPDATED PROFILE SECTION WITH TEXT AND COMPACT BUTTON -->
         <div class="sidebar-footer">
-            <div class="profile-icon">
-                <i class="far fa-user-circle"></i>
+            <div class="profile-section">
+                <i class="far fa-user-circle profile-icon"></i>
+                <span class="profile-name">User</span>
             </div>
             <button class="new-chat-btn" onclick="createNewChat()">Chat +</button>
         </div>
@@ -736,6 +747,7 @@
         </div>
     </div>
 
+    <!-- ORIGINAL JAVASCRIPT RESTORED -->
     <script>
     let userScrolledUp = false; 
 
@@ -1600,7 +1612,8 @@
     }
 
     function typeEffect(element, text, speed) {
-        let i = 0; let segments = text.split(/(```[\s\S]*?```)/g); let currentSeg = 0; let accumulatedHTML = ""; 
+        let i = 0; let segments = text.split(/(```[\s\S]*?
+```)/g); let currentSeg = 0; let accumulatedHTML = ""; 
         function typeNext() {
             if (stopGenerationFlag) {
                 const aiMsgIdx = parseInt(currentAiRow.getAttribute('data-index'));
