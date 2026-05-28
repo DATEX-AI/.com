@@ -5,11 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>DATEX AI.com</title>
     <link rel="icon" type="image/jpeg" href="logo.jpg">
+    <!-- FontAwesome load instantly -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <!-- Fasad ki jad (polyfill link) permanently removed -->
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
@@ -72,7 +69,7 @@
             user-select: auto !important;
         }
 
-        /* --- UI CHANGES: SIDEBAR CSS ONLY --- */
+        /* --- SIDEBAR UPDATED CSS --- */
         .sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: #f9f9f9; border-right: 1px solid #eee; transition: 0.3s; z-index: 1001; display: flex; flex-direction: column; }
         .sidebar.active { left: 0; }
 
@@ -81,7 +78,7 @@
         .settings-group { display: flex; align-items: center; gap: 10px; cursor: pointer; }
         .close-sidebar-btn { cursor: pointer; color: #555; font-size: 20px; }
 
-        /* Invisible Wall for RECENT CHATS (Fixed outside scroll area, padding reduced to shift up) */
+        /* Invisible Wall for RECENT CHATS (Padding reduced to move it UP as requested) */
         .sidebar-header { padding: 15px 20px 15px 20px; flex-shrink: 0; background-color: #f9f9f9; z-index: 2; }
         .sidebar h2 { margin: 0; font-size: 12px; color: #000; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
 
@@ -97,16 +94,16 @@
         .delete-chat-btn { color: #ff4d4d; cursor: pointer; font-size: 18px; transition: 0.2s; padding: 5px; flex-shrink: 0; }
         .delete-chat-btn:hover { color: #cc0000; }
 
-        /* Bottom Profile & New Chat Area */
+        /* Bottom Profile & New Chat Area (Properly spaced) */
         .sidebar-footer { padding: 15px 20px 20px 20px; display: flex; justify-content: space-between; align-items: center; background: transparent; flex-shrink: 0; }
         
-        /* Profile Section (Icon + Name) */
+        /* Profile Section (Icon + Name) properly aligned */
         .profile-section { display: flex; align-items: center; gap: 10px; cursor: pointer; }
         .profile-icon { font-size: 32px; color: #555; display: flex; align-items: center; justify-content: center; }
-        .profile-name { font-size: 16px; font-weight: 600; color: #333; }
+        .profile-name { font-size: 16px; font-weight: 600; color: #111; }
         
-        /* Black Chat+ Button (Compact width as requested) */
-        .new-chat-btn { padding: 12px 30px; background: #000; color: #fff; border: none; border-radius: 16px; cursor: pointer; font-weight: 600; font-size: 15px; transition: 0.2s; display: flex; justify-content: center; align-items: center; }
+        /* Black Chat+ Button (Compact width) */
+        .new-chat-btn { padding: 12px 24px; background: #000; color: #fff; border: none; border-radius: 16px; cursor: pointer; font-weight: 600; font-size: 15px; transition: 0.2s; display: flex; justify-content: center; align-items: center; }
         .new-chat-btn:hover { background: #333; }
         /* ------------------------------------ */
 
@@ -587,12 +584,12 @@
         <img src="logo.jpg" alt="DATEX AI">
     </div>
     
-    <!-- FIX: Splash screen removed immediately without blocking clicks -->
+    <!-- FIX: Splash screen removed safely & immediately -->
     <script>
         setTimeout(() => {
             const spl = document.getElementById('splash-screen');
             if(spl) {
-                spl.style.pointerEvents = 'none'; /* BUTTONS KO BLOCK NAHI KAREGA */
+                spl.style.pointerEvents = 'none';
                 spl.style.opacity = '0';
                 setTimeout(() => spl.remove(), 300);
             }
@@ -747,7 +744,11 @@
         </div>
     </div>
 
-    <!-- ORIGINAL JAVASCRIPT RESTORED -->
+    <!-- EXTERNAL SCRIPTS MOVED TO THE BOTTOM (No UI blocking possible now) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js" defer></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <!-- ORIGINAL JAVASCRIPT LOGIC -->
     <script>
     let userScrolledUp = false; 
 
@@ -759,15 +760,6 @@
             behavior: 'smooth'
         });
     }
-
-    /* Original DOMContentLoaded logic minus the splash part to avoid conflicts */
-    document.addEventListener("DOMContentLoaded", () => {
-        if(window.speechSynthesis) {
-            window.speechSynthesis.onvoiceschanged = () => {
-                window.speechSynthesis.getVoices();
-            };
-        }
-    });
 
     document.addEventListener('gesturestart', function (e) {
         e.preventDefault();
@@ -801,7 +793,19 @@
     const GROQ_API_KEY = "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"; 
     const TAVILY_API_KEY = "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"; 
 
-    let chatHistory = JSON.parse(localStorage.getItem('datex_full_history')) || [];
+    // --- SAFELY PARSE LOCAL STORAGE ---
+    let chatHistory = [];
+    try {
+        const storedHistory = localStorage.getItem('datex_full_history');
+        if (storedHistory) {
+            chatHistory = JSON.parse(storedHistory) || [];
+        }
+    } catch (error) {
+        console.warn("Storage was corrupted, resetting chat history.");
+        chatHistory = [];
+        localStorage.removeItem('datex_full_history');
+    }
+
     let isNewSession = true;
     let selectedMsgRow = null;
     let activeChatIndex = -1;
@@ -1315,10 +1319,10 @@
         dragLockUi.classList.remove('active');
     }
 
-    window.onload = () => { 
-        renderChatList(); 
-        if(chatHistory.length === 0) createNewChat();
-    };
+    // --- JS UPDATE: Load immediately so UI is never stuck ---
+    renderChatList(); 
+    if(chatHistory.length === 0) createNewChat();
+    // --------------------------------------------------------
 
     function renderChatList() {
         const listElement = document.getElementById('chat-list');
