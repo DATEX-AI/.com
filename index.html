@@ -224,7 +224,7 @@
             justify-content: center; 
             z-index: 100;
             flex-shrink: 0;
-            touch-action: manipulation; /* Fixed from none to allow taps on mobile elements inside */
+            touch-action: manipulation; 
             position: relative;
         }
 
@@ -588,7 +588,6 @@
 </head>
 <body onclick="hideMsgMenu()">
 
-    <!-- --- 100% FIXED SPLASH SCREEN --- -->
     <div id="splash-screen">
         <img src="logo.jpg" alt="DATEX AI">
     </div>
@@ -778,14 +777,8 @@
     document.addEventListener('gesturestart', function (e) {
         e.preventDefault();
     });
-    let lastTouchEnd = 0;
-    document.addEventListener('touchend', function (event) {
-        let now = (new Date()).getTime();
-        if (now - lastTouchEnd <= 300) {
-            event.preventDefault();
-        }
-        lastTouchEnd = now;
-    }, false);
+
+    // --- CRITICAL REMOVAL: Old touchend zoom blocker removed because it was swallow-killing single click events on mobile frames ---
 
     document.addEventListener('contextmenu', function(e) {
         if (e.target.tagName !== 'TEXTAREA' && e.target.tagName !== 'INPUT') {
@@ -1558,7 +1551,7 @@
             } else {
                 imgPreview.style.display = 'none';
                 filePreview.style.display = 'flex';
-                // Fixed reference bug from 'file.name' to 'msgObj.attachment.name' to prevent execution freezes
+                // --- FIXED SCOPE REFERENCE BUG: Replaced broken file.name with explicit msgObj.attachment.name execution path ---
                 let shortName = msgObj.attachment.name.length > 12 ? msgObj.attachment.name.substring(0, 8) + ".." + msgObj.attachment.name.substring(msgObj.attachment.name.lastIndexOf('.')) : msgObj.attachment.name;
                 fileNameSpan.innerText = shortName;
             }
@@ -1632,8 +1625,7 @@
     }
 
     function typeEffect(element, text, speed) {
-        let i = 0; let segments = text.split(/(```[\s\S]*?
-```)/g); let currentSeg = 0; let accumulatedHTML = ""; 
+        let i = 0; let segments = text.split(/(```[\s\S]*?```)/g); let currentSeg = 0; let accumulatedHTML = ""; 
         function typeNext() {
             if (stopGenerationFlag) {
                 const aiMsgIdx = parseInt(currentAiRow.getAttribute('data-index'));
@@ -1761,6 +1753,7 @@
                 fd.append('file', attachmentToSave.data, 'voicenote.webm');
                 fd.append('model', 'whisper-large-v3');
                 fd.append('temperature', '0.0'); 
+                
                 fd.append('prompt', 'Namaste, kaise ho? Please transcribe strictly in English or Hindi (Devanagari or Latin script). NO URDU SCRIPT.'); 
                 
                 const wRes = await fetch("https://api.groq.com/openai/v1/audio/transcriptions", {
