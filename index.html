@@ -6,7 +6,7 @@
     <title>DATEX AI.com</title>
     <link rel="icon" type="image/jpeg" href="logo.jpg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
     
@@ -434,7 +434,7 @@
             right: 8px; 
             width: 32px; 
             height: 32px;
-            border-radius: 50%; /* Makes it a perfect circle */
+            border-radius: 50%; 
             background: rgba(255,255,255,0.08); 
             color: #d4d4d4; 
             border: none; 
@@ -459,7 +459,7 @@
         .msg-menu { position: fixed; background: #fff; border: 1px solid #ddd; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); display: none; z-index: 2000; flex-direction: column; width: 140px; overflow: hidden; }
         .msg-menu button { padding: 12px; border: none; background: none; text-align: left; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 10px; width: 100%; border-bottom: 0.5px solid #f0f0f0; }
         .msg-menu button:last-child { border-bottom: none; }
-        
+
         .ai-link {
             color: #1a73e8 !important;
             text-decoration: underline !important;
@@ -581,6 +581,17 @@
     <div id="splash-screen">
         <img src="logo.jpg" alt="DATEX AI">
     </div>
+    
+    <script>
+        setTimeout(() => {
+            const spl = document.getElementById('splash-screen');
+            if(spl) {
+                spl.style.pointerEvents = 'none'; /* BUTTONS KO BLOCK NAHI KAREGA */
+                spl.style.opacity = '0';
+                setTimeout(() => spl.remove(), 300);
+            }
+        }, 1200);
+    </script>
 
     <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
     <div class="attachment-overlay" id="attachment-overlay" onclick="toggleAttachmentMenu()"></div>
@@ -624,7 +635,6 @@
     <input type="file" id="gallery-input" class="hidden-input" accept="image/*" onchange="handleFileSelect(event)">
     <input type="file" id="file-input" class="hidden-input" accept=".pdf,.doc,.docx,.txt" onchange="handleFileSelect(event)">
 
-    <!-- UI MODIFIED SIDEBAR -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-top">
             <div class="settings-group">
@@ -633,12 +643,10 @@
             <i class="fas fa-times close-sidebar-btn" onclick="toggleSidebar()"></i>
         </div>
         
-        <!-- INVISIBLE WALL HEADER -->
         <div class="sidebar-header">
             <h2>RECENT CHATS</h2>
         </div>
         
-        <!-- SCROLLABLE LIST -->
         <div class="sidebar-content">
             <ul id="chat-list" class="chat-list"></ul>
         </div>
@@ -650,7 +658,6 @@
             <button class="new-chat-btn" onclick="createNewChat()">Chat +</button>
         </div>
     </div>
-    <!-- --------------------- -->
 
     <div class="wrapper">
         <header>
@@ -729,7 +736,6 @@
         </div>
     </div>
 
-    <!-- ORIGINAL JAVASCRIPT WITH ZERO CHANGES (Except fa-trash class in render) -->
     <script>
     let userScrolledUp = false; 
 
@@ -742,14 +748,8 @@
         });
     }
 
+    /* Original DOMContentLoaded logic minus the splash part to avoid conflicts */
     document.addEventListener("DOMContentLoaded", () => {
-        const splash = document.getElementById('splash-screen');
-        setTimeout(() => {
-            splash.style.opacity = '0';
-            splash.style.visibility = 'hidden';
-            setTimeout(() => splash.remove(), 300); 
-        }, 1200); 
-        
         if(window.speechSynthesis) {
             window.speechSynthesis.onvoiceschanged = () => {
                 window.speechSynthesis.getVoices();
@@ -1600,8 +1600,7 @@
     }
 
     function typeEffect(element, text, speed) {
-        let i = 0; let segments = text.split(/(```[\s\S]*?
-```)/g); let currentSeg = 0; let accumulatedHTML = ""; 
+        let i = 0; let segments = text.split(/(```[\s\S]*?```)/g); let currentSeg = 0; let accumulatedHTML = ""; 
         function typeNext() {
             if (stopGenerationFlag) {
                 const aiMsgIdx = parseInt(currentAiRow.getAttribute('data-index'));
