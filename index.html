@@ -582,6 +582,7 @@
 </head>
 <body onclick="hideMsgMenu()">
 
+    <!-- --- 100% FIXED SPLASH SCREEN --- -->
     <div id="splash-screen">
         <img src="logo.jpg" alt="DATEX AI">
     </div>
@@ -600,8 +601,8 @@
                 }, 350);
             }
         }
-        setTimeout(removeSplashScreenSafely, 1200);
-        window.addEventListener('load', removeSplashScreenSafely);
+        // ChatGPT style: 2000ms (2 seconds) tak strict logo hold rahega, fir smooth UI khulegi
+        setTimeout(removeSplashScreenSafely, 2000);
     </script>
 
     <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
@@ -1411,7 +1412,7 @@
                         <i class="fas fa-play play-btn-icon" style="color: #fff; margin-left: 2px; font-size: 13px;"></i>
                     </div>
                     <div style="flex: 1; height: 2px; background: #bbb; position: relative;">
-                        <div style="position: absolute; left: 0; top: -3px; width: 8px; height: 8px; border-radius: 50%; background: #333; transition: left 0.1s linear;"></div>
+                        <div style="absolute; left: 0; top: -3px; width: 8px; height: 8px; border-radius: 50%; background: #333; transition: left 0.1s linear;"></div>
                     </div>
                     <span class="audio-timer" data-duration="${dur}" style="font-size: 12px; color: #333; font-weight: 500; min-width: 30px; text-align: right;">${dur}</span>
                 </div>`;
@@ -1624,7 +1625,8 @@
     }
 
     function typeEffect(element, text, speed) {
-        let i = 0; let segments = text.split(/(```[\s\S]*?```)/g); let currentSeg = 0; let accumulatedHTML = ""; 
+        let i = 0; let segments = text.split(/(```[\s\S]*?
+```)/g); let currentSeg = 0; let accumulatedHTML = ""; 
         function typeNext() {
             if (stopGenerationFlag) {
                 const aiMsgIdx = parseInt(currentAiRow.getAttribute('data-index'));
