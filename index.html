@@ -37,7 +37,7 @@
             user-select: none !important; 
         }
 
-        /* --- CHATGPT STYLE SPLASH SCREEN --- */
+        /* --- SPLASH SCREEN (INTRO) CSS --- */
         #splash-screen {
             position: fixed;
             top: 0;
@@ -49,7 +49,7 @@
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            transition: opacity 0.4s ease-out; 
+            transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
         }
         #splash-screen img {
             width: 180px; 
@@ -71,39 +71,39 @@
             user-select: auto !important;
         }
 
-        /* --- UI CHANGES: SIDEBAR CSS --- */
+        /* --- UI CHANGES: SIDEBAR CSS ONLY --- */
         .sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: #f9f9f9; border-right: 1px solid #eee; transition: 0.3s; z-index: 1001; display: flex; flex-direction: column; }
         .sidebar.active { left: 0; }
 
+        /* Settings area (Top) */
         .sidebar-top { display: flex; justify-content: space-between; align-items: center; padding: 20px 20px 10px 20px; font-size: 18px; font-weight: 500; color: #333; flex-shrink: 0; }
         .settings-group { display: flex; align-items: center; gap: 10px; cursor: pointer; }
         .close-sidebar-btn { cursor: pointer; color: #555; font-size: 20px; }
 
-        /* Invisible Wall for RECENT CHATS */
-        .sidebar-header { padding: 15px 20px 10px 20px; flex-shrink: 0; background-color: #f9f9f9; z-index: 2; }
-        .sidebar-header h2 { margin: 0; font-size: 13px; color: #000; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        /* Invisible Wall for RECENT CHATS (Fixed outside scroll area) */
+        .sidebar-header { padding: 35px 20px 15px 20px; flex-shrink: 0; background-color: #f9f9f9; z-index: 2; }
+        .sidebar h2 { margin: 0; font-size: 12px; color: #000; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
 
+        /* Scrollable Chat List Area */
         .sidebar-content { padding: 0 20px 20px 20px; flex: 1; overflow-y: auto; }
         
         .chat-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
-        .chat-item-wrapper { display: flex; align-items: center; gap: 10px; }
-        .chat-item { flex: 1; padding: 12px 15px; cursor: pointer; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background: transparent; border: 1.5px solid #888; border-radius: 20px; text-align: left; color: #333; transition: 0.2s; }
+        .chat-item-wrapper { display: flex; align-items: center; gap: 12px; }
+        .chat-item { flex: 1; padding: 10px 15px; cursor: pointer; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background: transparent; border: 1.5px solid #888; border-radius: 20px; text-align: left; color: #333; transition: 0.2s; }
         .chat-item:hover { background: #eee; }
         
-        /* Solid Red Trash Button */
+        /* Red Solid Trash Button */
         .delete-chat-btn { color: #ff4d4d; cursor: pointer; font-size: 18px; transition: 0.2s; padding: 5px; flex-shrink: 0; }
         .delete-chat-btn:hover { color: #cc0000; }
 
+        /* Bottom Profile & New Chat Area */
         .sidebar-footer { padding: 15px 20px 20px 20px; display: flex; justify-content: space-between; align-items: center; background: transparent; flex-shrink: 0; }
-        
-        .profile-section { display: flex; align-items: center; gap: 8px; cursor: pointer; }
-        .profile-icon { font-size: 30px; color: #555; display: flex; align-items: center; justify-content: center; }
-        .profile-name { font-size: 15px; font-weight: 600; color: #333; }
+        .profile-icon { font-size: 28px; color: #555; cursor: pointer; }
         
         /* Black Chat+ Button */
-        .new-chat-btn { padding: 12px 25px; background: #000; color: #fff; border: none; border-radius: 14px; cursor: pointer; font-weight: 600; font-size: 14px; transition: 0.2s; display: flex; justify-content: center; align-items: center; }
+        .new-chat-btn { padding: 12px 20px; background: #000; color: #fff; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 15px; transition: 0.2s; flex: 1; margin-left: 15px; display: flex; justify-content: center; align-items: center; }
         .new-chat-btn:hover { background: #333; }
-        /* ------------------------------- */
+        /* ------------------------------------ */
 
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.1); display: none; z-index: 1000; cursor: pointer; }
         .overlay.active { display: block; }
@@ -581,6 +581,17 @@
     <div id="splash-screen">
         <img src="logo.jpg" alt="DATEX AI">
     </div>
+    
+    <script>
+        setTimeout(() => {
+            const spl = document.getElementById('splash-screen');
+            if(spl) {
+                spl.style.pointerEvents = 'none'; /* BUTTONS KO BLOCK NAHI KAREGA */
+                spl.style.opacity = '0';
+                setTimeout(() => spl.remove(), 300);
+            }
+        }, 1200);
+    </script>
 
     <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
     <div class="attachment-overlay" id="attachment-overlay" onclick="toggleAttachmentMenu()"></div>
@@ -641,9 +652,8 @@
         </div>
         
         <div class="sidebar-footer">
-            <div class="profile-section">
-                <i class="far fa-user-circle profile-icon"></i>
-                <span class="profile-name">User</span>
+            <div class="profile-icon">
+                <i class="far fa-user-circle"></i>
             </div>
             <button class="new-chat-btn" onclick="createNewChat()">Chat +</button>
         </div>
@@ -726,7 +736,6 @@
         </div>
     </div>
 
-    <!-- 100% ORIGINAL JAVASCRIPT BLOCK -->
     <script>
     let userScrolledUp = false; 
 
@@ -739,16 +748,8 @@
         });
     }
 
+    /* Original DOMContentLoaded logic minus the splash part to avoid conflicts */
     document.addEventListener("DOMContentLoaded", () => {
-        const splash = document.getElementById('splash-screen');
-        setTimeout(() => {
-            if(splash) {
-                splash.style.pointerEvents = 'none'; /* BUTTONS KO BLOCK NAHI KAREGA */
-                splash.style.opacity = '0';
-                setTimeout(() => splash.remove(), 400); 
-            }
-        }, 1200); 
-        
         if(window.speechSynthesis) {
             window.speechSynthesis.onvoiceschanged = () => {
                 window.speechSynthesis.getVoices();
@@ -1599,8 +1600,7 @@
     }
 
     function typeEffect(element, text, speed) {
-        let i = 0; let segments = text.split(/(```[\s\S]*?
-```)/g); let currentSeg = 0; let accumulatedHTML = ""; 
+        let i = 0; let segments = text.split(/(```[\s\S]*?```)/g); let currentSeg = 0; let accumulatedHTML = ""; 
         function typeNext() {
             if (stopGenerationFlag) {
                 const aiMsgIdx = parseInt(currentAiRow.getAttribute('data-index'));
