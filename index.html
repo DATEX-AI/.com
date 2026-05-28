@@ -7,10 +7,9 @@
     <link rel="icon" type="image/jpeg" href="logo.jpg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <!-- Fix: Safe Polyfill used so screen doesn't hang AND buttons keep working -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.12.1/polyfill.min.js"></script>
+    <!-- Heavy math scripts deferred so they don't block the screen -->
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
@@ -39,7 +38,7 @@
             user-select: none !important; 
         }
 
-        /* --- SPLASH SCREEN (INTRO) CSS --- */
+        /* --- EXACT CHATGPT STYLE SPLASH CSS --- */
         #splash-screen {
             position: fixed;
             top: 0;
@@ -51,7 +50,8 @@
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
+            /* Smooth 0.4s fade out transition */
+            transition: opacity 0.4s ease-out; 
         }
         #splash-screen img {
             width: 180px; 
@@ -64,7 +64,7 @@
             0% { opacity: 0; }
             100% { opacity: 1; }
         }
-        /* ---------------------------------- */
+        /* -------------------------------------- */
 
         textarea, input {
             -webkit-user-select: auto !important;
@@ -82,7 +82,7 @@
         .settings-group { display: flex; align-items: center; gap: 10px; cursor: pointer; }
         .close-sidebar-btn { cursor: pointer; color: #555; font-size: 20px; }
 
-        /* Invisible Wall for RECENT CHATS (Shifted slightly up) */
+        /* Invisible Wall for RECENT CHATS (Fixed outside scroll area) */
         .sidebar-header { padding: 15px 20px 10px 20px; flex-shrink: 0; background-color: #f9f9f9; z-index: 2; }
         .sidebar-header h2 { margin: 0; font-size: 13px; color: #000; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
 
@@ -587,6 +587,25 @@
     <div id="splash-screen">
         <img src="logo.jpg" alt="DATEX AI">
     </div>
+    
+    <!-- EXACT CHATGPT STYLE SPLASH REMOVER SCRIPT -->
+    <!-- Runs independently, unlocks buttons instantly, fades out smoothly -->
+    <script>
+        setTimeout(() => {
+            const spl = document.getElementById('splash-screen');
+            if(spl) {
+                // 1. Instantly allow clicks to pass through to the app underneath
+                spl.style.pointerEvents = 'none'; 
+                // 2. Trigger the smooth fade out animation
+                spl.style.opacity = '0';
+                // 3. Completely delete it from HTML after fade out finishes (400ms)
+                setTimeout(() => {
+                    spl.style.display = 'none';
+                    spl.remove();
+                }, 400);
+            }
+        }, 1200); // Wait 1.2 seconds before starting fade out (like ChatGPT)
+    </script>
 
     <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
     <div class="attachment-overlay" id="attachment-overlay" onclick="toggleAttachmentMenu()"></div>
@@ -736,7 +755,7 @@
         </div>
     </div>
 
-    <!-- 100% ORIGINAL JAVASCRIPT RESTORED (With only fa-trash icon fix inside renderChatList) -->
+    <!-- ORIGINAL JS FUNCTIONS -->
     <script>
     let userScrolledUp = false; 
 
@@ -750,13 +769,6 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-        const splash = document.getElementById('splash-screen');
-        setTimeout(() => {
-            splash.style.opacity = '0';
-            splash.style.visibility = 'hidden';
-            setTimeout(() => splash.remove(), 300); 
-        }, 1200); 
-        
         if(window.speechSynthesis) {
             window.speechSynthesis.onvoiceschanged = () => {
                 window.speechSynthesis.getVoices();
