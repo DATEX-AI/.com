@@ -93,6 +93,13 @@
         .chat-item { flex: 1; padding: 10px 15px; cursor: pointer; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background: transparent; border: 1.5px solid #888; border-radius: 20px; text-align: left; color: #333; transition: 0.2s; }
         .chat-item:hover { background: #eee; }
         
+        /* --- UPDATE: GREY ACTIVE CHAT HIGHLIGHTER CLASS LIKE GEMINI --- */
+        .chat-item.selected-active {
+            background: #e5e7eb !important;
+            border-color: #555 !important;
+            font-weight: 600 !important;
+        }
+        
         /* Red Solid Trash Button */
         .delete-chat-btn { color: #ff4d4d; cursor: pointer; font-size: 18px; transition: 0.2s; padding: 5px; flex-shrink: 0; }
         .delete-chat-btn:hover { color: #cc0000; }
@@ -112,6 +119,17 @@
         .menu-btn-container, .new-chat-btn, .send-btn, .close-sidebar-btn, .delete-chat-btn, .chat-item, .action-btn, #mike-btn, .settings-group {
             pointer-events: auto !important;
             cursor: pointer !important;
+        }
+
+        /* --- TELEGRAM-INSPIRED MESSAGE DELETE ANIMATION --- */
+        .delete-msg-animation {
+            animation: telegramBubbleDelete 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            overflow: hidden;
+        }
+        @keyframes telegramBubbleDelete {
+            0% { opacity: 1; transform: scale(1); max-height: 600px; margin-top: 15px; margin-bottom: 15px; }
+            40% { opacity: 0; transform: scale(0.95); max-height: 600px; }
+            100% { opacity: 0; transform: scale(0.9); max-height: 0; margin-top: 0; margin-bottom: 0; padding-top: 0; padding-bottom: 0; }
         }
         /* ------------------------------------ */
 
@@ -588,6 +606,7 @@
 </head>
 <body onclick="hideMsgMenu()">
 
+    <!-- --- 100% FIXED SPLASH SCREEN --- -->
     <div id="splash-screen">
         <img src="logo.jpg" alt="DATEX AI">
     </div>
@@ -778,8 +797,6 @@
         e.preventDefault();
     });
 
-    // --- CRITICAL REMOVAL: Old touchend zoom blocker removed because it was swallow-killing single click events on mobile frames ---
-
     document.addEventListener('contextmenu', function(e) {
         if (e.target.tagName !== 'TEXTAREA' && e.target.tagName !== 'INPUT') {
             e.preventDefault();
@@ -809,6 +826,7 @@
     
     let isNewSession = true;
     let selectedMsgRow = null;
+    let startGenerationFlag = false; 
     let activeChatIndex = -1;
     let editingMsgIdx = -1; 
     
@@ -1328,6 +1346,7 @@
         }
     };
 
+    /* --- UPDATE: DYNAMICALLY ASSIGN 'selected-active' CLASS TO THE HIGHLIGHTED RECENT CHAT ROW --- */
     function renderChatList() {
         const listElement = document.getElementById('chat-list');
         listElement.innerHTML = "";
@@ -1335,7 +1354,10 @@
             const actualIndex = chatHistory.length - 1 - index;
             const wrap = document.createElement('div');
             wrap.className = "chat-item-wrapper";
-            wrap.innerHTML = `<div class="chat-item" onclick="loadSelectedChat(${actualIndex}, true)">${chatObj.title}</div><i class="fas fa-trash delete-chat-btn" onclick="deleteHistoryItem(event, ${actualIndex})"></i>`;
+            
+            const activeHighlightClass = (actualIndex === activeChatIndex) ? "selected-active" : "";
+            
+            wrap.innerHTML = `<div class="chat-item ${activeHighlightClass}" onclick="loadSelectedChat(${actualIndex}, true)">${chatObj.title}</div><i class="fas fa-trash delete-chat-btn" onclick="deleteHistoryItem(event, ${actualIndex})"></i>`;
             listElement.appendChild(wrap);
         });
     }
@@ -1362,8 +1384,10 @@
             if(msg.role === "user") { addUserMessageToUI(msg.content, false, msgIdx, msg.attachment); }
             else { addAiMessageToUI(msg.content, false, msgIdx); }
         });
-        if(shouldToggleSidebar) toggleSidebar();
         
+        renderChatList(); // <-- Added to smoothly trigger highlight swap when user selects a row
+        
+        if(shouldToggleSidebar) toggleSidebar();
         document.getElementById('scroll-bottom-btn').classList.remove('active');
     }
 
@@ -1376,8 +1400,10 @@
         const input = document.getElementById('user-input');
         input.value = "";
         autoGrow(input);
-        if(!keepSidebarOpen && document.getElementById('sidebar').classList.contains('active')) toggleSidebar();
         
+        renderChatList(); // <-- Added to wipe previous sidebar active state gray highlights on new chat instantiation
+        
+        if(!keepSidebarOpen && document.getElementById('sidebar').classList.contains('active')) toggleSidebar();
         document.getElementById('scroll-bottom-btn').classList.remove('active');
     }
 
@@ -1551,7 +1577,6 @@
             } else {
                 imgPreview.style.display = 'none';
                 filePreview.style.display = 'flex';
-                // --- FIXED SCOPE REFERENCE BUG: Replaced broken file.name with explicit msgObj.attachment.name execution path ---
                 let shortName = msgObj.attachment.name.length > 12 ? msgObj.attachment.name.substring(0, 8) + ".." + msgObj.attachment.name.substring(msgObj.attachment.name.lastIndexOf('.')) : msgObj.attachment.name;
                 fileNameSpan.innerText = shortName;
             }
@@ -1568,16 +1593,34 @@
         if(selectedMsgRow && activeChatIndex !== -1) {
             const msgIdx = parseInt(selectedMsgRow.getAttribute('data-index'));
             const isUserRow = selectedMsgRow.classList.contains('user-row');
-            chatHistory[activeChatIndex].messages.splice(msgIdx, 1);
-            if (isUserRow && chatHistory[activeChatIndex].messages[msgIdx] && chatHistory[activeChatIndex].messages[msgIdx].role === "assistant") {
-                chatHistory[activeChatIndex].messages.splice(msgIdx, 1);
+            
+            let targets = [selectedMsgRow];
+            if (isUserRow) {
+                let nextRow = selectedMsgRow.nextElementSibling;
+                if (nextRow && nextRow.classList.contains('ai-row') && parseInt(nextRow.getAttribute('data-index')) === msgIdx + 1) {
+                    targets.push(nextRow);
+                }
             }
-            try {
-                localStorage.setItem('datex_full_history', JSON.stringify(chatHistory));
-            } catch(e) {}
-            editingMsgIdx = -1; 
-            if (chatHistory[activeChatIndex].messages.length === 0) { deleteHistoryItem(null, activeChatIndex); } 
-            else { loadSelectedChat(activeChatIndex, false); }
+
+            targets.forEach(row => {
+                row.classList.add('delete-msg-animation');
+            });
+
+            setTimeout(() => {
+                chatHistory[activeChatIndex].messages.splice(msgIdx, 1);
+                if (isUserRow && chatHistory[activeChatIndex].messages[msgIdx] && chatHistory[activeChatIndex].messages[msgIdx].role === "assistant") {
+                    chatHistory[activeChatIndex].messages.splice(msgIdx, 1);
+                }
+                try {
+                    localStorage.setItem('datex_full_history', JSON.stringify(chatHistory));
+                } catch(e) {}
+                editingMsgIdx = -1; 
+                if (chatHistory[activeChatIndex].messages.length === 0) { 
+                    deleteHistoryItem(null, activeChatIndex); 
+                } else { 
+                    loadSelectedChat(activeChatIndex, false); 
+                }
+            }, 400);
         }
         hideMsgMenu();
     }
@@ -1609,7 +1652,8 @@
     }
 
     function renderStoredContent(element, text) {
-        let segments = text.split(/(```[\s\S]*?```)/g);
+        let segments = text.split(/(```[\s\S]*?
+```)/g);
         let finalHTML = "";
         segments.forEach(seg => {
             if (seg.startsWith("```") && seg.endsWith("```")) {
@@ -1640,7 +1684,8 @@
 
             if (currentSeg < segments.length) {
                 let seg = segments[currentSeg];
-                if (seg.startsWith("```") && seg.endsWith("```")) {
+                if (seg.startsWith("```") && seg.endsWith("
+```")) {
                     let codeContent = seg.substring(3, seg.length - 3).trim();
                     accumulatedHTML += `<pre><button class="copy-code-btn" onclick="copyCode(this)"><i class="far fa-copy"></i></button><code>${escapeHTML(codeContent)}</code></pre>`;
                     element.innerHTML = accumulatedHTML; currentSeg++; setTimeout(typeNext, speed);
@@ -1753,7 +1798,6 @@
                 fd.append('file', attachmentToSave.data, 'voicenote.webm');
                 fd.append('model', 'whisper-large-v3');
                 fd.append('temperature', '0.0'); 
-                
                 fd.append('prompt', 'Namaste, kaise ho? Please transcribe strictly in English or Hindi (Devanagari or Latin script). NO URDU SCRIPT.'); 
                 
                 const wRes = await fetch("https://api.groq.com/openai/v1/audio/transcriptions", {
