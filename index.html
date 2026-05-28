@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
@@ -37,7 +37,7 @@
             user-select: none !important; 
         }
 
-        /* --- SPLASH SCREEN (INTRO) CSS --- */
+        /* --- ORIGINAL SPLASH SCREEN CSS --- */
         #splash-screen {
             position: fixed;
             top: 0;
@@ -79,24 +79,26 @@
         .settings-group { display: flex; align-items: center; gap: 10px; cursor: pointer; }
         .close-sidebar-btn { cursor: pointer; color: #555; font-size: 20px; }
         
-        /* Updated RECENT CHATS style (Original look but black, with extra top spacing) */
-        .sidebar-recent-title { padding: 35px 20px 15px 20px; font-size: 12px; font-weight: 700; color: #000; text-transform: uppercase; letter-spacing: 1px; }
+        /* Gap given using padding-top */
+        .sidebar-content { padding: 30px 20px 20px 20px; flex: 1; overflow-y: auto; }
+        .sidebar-header { margin-bottom: 20px; }
         
-        .sidebar-content { flex: 1; overflow-y: auto; padding: 10px 20px 15px 20px; }
+        /* Original style restored but made Black and Bold */
+        .sidebar h2 { font-size: 12px; color: #000; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
         
         .chat-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
         .chat-item-wrapper { display: flex; align-items: center; gap: 12px; }
         .chat-item { flex: 1; padding: 10px 15px; cursor: pointer; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background: transparent; border: 1.5px solid #888; border-radius: 20px; text-align: left; color: #333; transition: 0.2s; }
         .chat-item:hover { background: #eee; }
         
-        /* Updated Trash button (Red, Solid) */
+        /* Trash button Solid Red */
         .delete-chat-btn { color: #ff4d4d; cursor: pointer; font-size: 18px; transition: 0.2s; padding: 5px; flex-shrink: 0; }
         .delete-chat-btn:hover { color: #cc0000; }
 
-        .sidebar-footer { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: transparent; }
+        .sidebar-footer { padding: 15px 20px 20px 20px; display: flex; justify-content: space-between; align-items: center; background: transparent; }
         .profile-icon { font-size: 28px; color: #555; cursor: pointer; }
         
-        /* Updated New Chat button to match Image 1 (Black block, White text) */
+        /* Chat+ Black Button */
         .new-chat-btn { padding: 12px 20px; background: #000; color: #fff; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 15px; transition: 0.2s; flex: 1; margin-left: 15px; display: flex; justify-content: center; align-items: center; }
         .new-chat-btn:hover { background: #333; }
         /* --------------------------- */
@@ -455,7 +457,6 @@
         .msg-menu { position: fixed; background: #fff; border: 1px solid #ddd; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); display: none; z-index: 2000; flex-direction: column; width: 140px; overflow: hidden; }
         .msg-menu button { padding: 12px; border: none; background: none; text-align: left; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 10px; width: 100%; border-bottom: 0.5px solid #f0f0f0; }
         .msg-menu button:last-child { border-bottom: none; }
-        
 
         .ai-link {
             color: #1a73e8 !important;
@@ -578,18 +579,6 @@
     <div id="splash-screen">
         <img src="logo.jpg" alt="DATEX AI">
     </div>
-    
-    <!-- INLINE BULLETPROOF SCRIPT TO REMOVE SPLASH SCREEN IMMEDIATELY -->
-    <script>
-        setTimeout(() => {
-            const spl = document.getElementById('splash-screen');
-            if(spl) {
-                spl.style.opacity = '0';
-                spl.style.visibility = 'hidden';
-                setTimeout(() => spl.remove(), 300);
-            }
-        }, 1200);
-    </script>
 
     <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
     <div class="attachment-overlay" id="attachment-overlay" onclick="toggleAttachmentMenu()"></div>
@@ -641,19 +630,18 @@
             <i class="fas fa-times close-sidebar-btn" onclick="toggleSidebar()"></i>
         </div>
         
-        <!-- Lines removed, padding added via CSS -->
-        <div class="sidebar-recent-title">RECENT CHATS</div>
-        
         <div class="sidebar-content">
+            <div class="sidebar-header">
+                <h2>Recent Chats</h2>
+            </div>
             <ul id="chat-list" class="chat-list"></ul>
         </div>
         
-        <!-- Line removed -->
         <div class="sidebar-footer">
             <div class="profile-icon">
                 <i class="far fa-user-circle"></i>
             </div>
-            <button class="new-chat-btn" onclick="createNewChat()">+ New Chat</button>
+            <button class="new-chat-btn" onclick="createNewChat()">Chat +</button>
         </div>
     </div>
 
@@ -735,12 +723,6 @@
     </div>
 
     <script>
-    if(window.speechSynthesis) {
-        window.speechSynthesis.onvoiceschanged = () => {
-            window.speechSynthesis.getVoices();
-        };
-    }
-
     let userScrolledUp = false; 
 
     function scrollToBottomFunc() {
@@ -751,6 +733,21 @@
             behavior: 'smooth'
         });
     }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const splash = document.getElementById('splash-screen');
+        setTimeout(() => {
+            splash.style.opacity = '0';
+            splash.style.visibility = 'hidden';
+            setTimeout(() => splash.remove(), 300); 
+        }, 1200); 
+        
+        if(window.speechSynthesis) {
+            window.speechSynthesis.onvoiceschanged = () => {
+                window.speechSynthesis.getVoices();
+            };
+        }
+    });
 
     document.addEventListener('gesturestart', function (e) {
         e.preventDefault();
@@ -784,19 +781,7 @@
     const GROQ_API_KEY = "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"; 
     const TAVILY_API_KEY = "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"; 
 
-    // --- SAFELY PARSE LOCAL STORAGE ---
-    let chatHistory = [];
-    try {
-        const storedHistory = localStorage.getItem('datex_full_history');
-        if (storedHistory) {
-            chatHistory = JSON.parse(storedHistory) || [];
-        }
-    } catch (error) {
-        console.warn("Storage was corrupted, resetting chat history.");
-        chatHistory = [];
-        localStorage.removeItem('datex_full_history');
-    }
-
+    let chatHistory = JSON.parse(localStorage.getItem('datex_full_history')) || [];
     let isNewSession = true;
     let selectedMsgRow = null;
     let activeChatIndex = -1;
@@ -1310,10 +1295,10 @@
         dragLockUi.classList.remove('active');
     }
 
-    // --- JS UPDATE: Initialized IMMEDIATELY instead of waiting for window.onload ---
-    renderChatList(); 
-    if(chatHistory.length === 0) createNewChat();
-    // -------------------------------------------------------------------------------
+    window.onload = () => { 
+        renderChatList(); 
+        if(chatHistory.length === 0) createNewChat();
+    };
 
     function renderChatList() {
         const listElement = document.getElementById('chat-list');
@@ -1607,8 +1592,7 @@
     }
 
     function typeEffect(element, text, speed) {
-        let i = 0; let segments = text.split(/(```[\s\S]*?
-```)/g); let currentSeg = 0; let accumulatedHTML = ""; 
+        let i = 0; let segments = text.split(/(```[\s\S]*?```)/g); let currentSeg = 0; let accumulatedHTML = ""; 
         function typeNext() {
             if (stopGenerationFlag) {
                 const aiMsgIdx = parseInt(currentAiRow.getAttribute('data-index'));
