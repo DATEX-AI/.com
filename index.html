@@ -89,7 +89,7 @@
         .chat-item { flex: 1; padding: 10px 15px; cursor: pointer; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background: transparent; border: 1.5px solid #888; border-radius: 20px; text-align: left; color: #333; transition: 0.2s; }
         .chat-item:hover { background: #eee; }
         
-        /* Updated Trash button (Red) */
+        /* Updated Trash button (Red, Solid) */
         .delete-chat-btn { color: #ff4d4d; cursor: pointer; font-size: 18px; transition: 0.2s; padding: 5px; flex-shrink: 0; }
         .delete-chat-btn:hover { color: #cc0000; }
 
@@ -578,6 +578,18 @@
     <div id="splash-screen">
         <img src="logo.jpg" alt="DATEX AI">
     </div>
+    
+    <!-- INLINE BULLETPROOF SCRIPT TO REMOVE SPLASH SCREEN IMMEDIATELY -->
+    <script>
+        setTimeout(() => {
+            const spl = document.getElementById('splash-screen');
+            if(spl) {
+                spl.style.opacity = '0';
+                spl.style.visibility = 'hidden';
+                setTimeout(() => spl.remove(), 300);
+            }
+        }, 1200);
+    </script>
 
     <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
     <div class="attachment-overlay" id="attachment-overlay" onclick="toggleAttachmentMenu()"></div>
@@ -641,7 +653,7 @@
             <div class="profile-icon">
                 <i class="far fa-user-circle"></i>
             </div>
-            <button class="new-chat-btn" onclick="createNewChat()">Chat +</button>
+            <button class="new-chat-btn" onclick="createNewChat()">+ New Chat</button>
         </div>
     </div>
 
@@ -723,15 +735,6 @@
     </div>
 
     <script>
-    const splash = document.getElementById('splash-screen');
-    if (splash) {
-        setTimeout(() => {
-            splash.style.opacity = '0';
-            splash.style.visibility = 'hidden';
-            setTimeout(() => splash.remove(), 300); 
-        }, 1200);
-    }
-
     if(window.speechSynthesis) {
         window.speechSynthesis.onvoiceschanged = () => {
             window.speechSynthesis.getVoices();
@@ -781,6 +784,7 @@
     const GROQ_API_KEY = "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"; 
     const TAVILY_API_KEY = "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"; 
 
+    // --- SAFELY PARSE LOCAL STORAGE ---
     let chatHistory = [];
     try {
         const storedHistory = localStorage.getItem('datex_full_history');
@@ -1306,12 +1310,11 @@
         dragLockUi.classList.remove('active');
     }
 
-    window.onload = () => { 
-        renderChatList(); 
-        if(chatHistory.length === 0) createNewChat();
-    };
+    // --- JS UPDATE: Initialized IMMEDIATELY instead of waiting for window.onload ---
+    renderChatList(); 
+    if(chatHistory.length === 0) createNewChat();
+    // -------------------------------------------------------------------------------
 
-    /* --- JS UPDATE: Trash icon class changed to solid fas fa-trash --- */
     function renderChatList() {
         const listElement = document.getElementById('chat-list');
         listElement.innerHTML = "";
@@ -1323,7 +1326,6 @@
             listElement.appendChild(wrap);
         });
     }
-    /* ----------------------------------------------------------------- */
 
     function deleteHistoryItem(event, index) {
         if(event) event.stopPropagation();
