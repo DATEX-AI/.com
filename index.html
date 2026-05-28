@@ -50,6 +50,7 @@
             align-items: center;
             z-index: 9999;
             transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
+            pointer-events: auto;
         }
         #splash-screen img {
             width: 180px; 
@@ -98,10 +99,13 @@
 
         /* Bottom Profile & New Chat Area */
         .sidebar-footer { padding: 15px 20px 20px 20px; display: flex; justify-content: space-between; align-items: center; background: transparent; flex-shrink: 0; }
-        .profile-icon { font-size: 28px; color: #555; cursor: pointer; }
         
-        /* Black Chat+ Button */
-        .new-chat-btn { padding: 12px 20px; background: #000; color: #fff; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 15px; transition: 0.2s; flex: 1; margin-left: 15px; display: flex; justify-content: center; align-items: center; }
+        /* Profile area modified for larger size and side text */
+        .profile-icon { font-size: 34px; color: #555; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .profile-icon span { font-size: 15px; font-weight: 600; color: #333; }
+        
+        /* Chat+ Button modified for smaller horizontal size */
+        .new-chat-btn { padding: 12px 18px; background: #000; color: #fff; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 15px; transition: 0.2s; margin-left: 15px; display: flex; justify-content: center; align-items: center; width: 110px; flex-shrink: 0; }
         .new-chat-btn:hover { background: #333; }
         /* ------------------------------------ */
 
@@ -583,14 +587,21 @@
     </div>
     
     <script>
-        setTimeout(() => {
+        function removeSplashScreenSafely() {
             const spl = document.getElementById('splash-screen');
             if(spl) {
-                spl.style.pointerEvents = 'none'; /* BUTTONS KO BLOCK NAHI KAREGA */
+                spl.style.pointerEvents = 'none'; 
                 spl.style.opacity = '0';
-                setTimeout(() => spl.remove(), 300);
+                spl.style.visibility = 'hidden';
+                setTimeout(() => {
+                    if (spl && spl.parentNode) {
+                        spl.parentNode.removeChild(spl);
+                    }
+                }, 350);
             }
-        }, 1200);
+        }
+        setTimeout(removeSplashScreenSafely, 1200);
+        window.addEventListener('load', removeSplashScreenSafely);
     </script>
 
     <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
@@ -654,6 +665,7 @@
         <div class="sidebar-footer">
             <div class="profile-icon">
                 <i class="far fa-user-circle"></i>
+                <span>User</span>
             </div>
             <button class="new-chat-btn" onclick="createNewChat()">Chat +</button>
         </div>
@@ -748,7 +760,6 @@
         });
     }
 
-    /* Original DOMContentLoaded logic minus the splash part to avoid conflicts */
     document.addEventListener("DOMContentLoaded", () => {
         if(window.speechSynthesis) {
             window.speechSynthesis.onvoiceschanged = () => {
@@ -779,7 +790,6 @@
         const resizeHandler = () => {
             document.documentElement.style.height = window.visualViewport.height + 'px';
             document.body.style.height = window.visualViewport.height + 'px';
-            window.scrollTo(0, 0);
         };
         window.visualViewport.addEventListener('resize', resizeHandler);
         window.visualViewport.addEventListener('scroll', resizeHandler);
@@ -789,7 +799,14 @@
     const GROQ_API_KEY = "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"; 
     const TAVILY_API_KEY = "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"; 
 
-    let chatHistory = JSON.parse(localStorage.getItem('datex_full_history')) || [];
+    let chatHistory = [];
+    try {
+        chatHistory = JSON.parse(localStorage.getItem('datex_full_history')) || [];
+    } catch(e) {
+        console.error("Local storage load crash prevented:", e);
+        chatHistory = [];
+    }
+    
     let isNewSession = true;
     let selectedMsgRow = null;
     let activeChatIndex = -1;
@@ -1042,7 +1059,6 @@
         }
 
         stopVoiceNoteBubble();
-
         window.speechSynthesis.resume();
 
         if (currentTtsBtn === btn) {
@@ -1304,8 +1320,12 @@
     }
 
     window.onload = () => { 
-        renderChatList(); 
-        if(chatHistory.length === 0) createNewChat();
+        try {
+            renderChatList(); 
+            if(chatHistory.length === 0) createNewChat();
+        } catch(err) {
+            console.error("Startup shell script catch:", err);
+        }
     };
 
     function renderChatList() {
@@ -1324,7 +1344,9 @@
         if(event) event.stopPropagation();
         stopTTS(); 
         chatHistory.splice(index, 1);
-        localStorage.setItem('datex_full_history', JSON.stringify(chatHistory));
+        try {
+            localStorage.setItem('datex_full_history', JSON.stringify(chatHistory));
+        } catch(e) {}
         renderChatList();
         if (activeChatIndex === index) { createNewChat(true); } else if (activeChatIndex > index) { activeChatIndex--; }
     }
@@ -1529,7 +1551,7 @@
             } else {
                 imgPreview.style.display = 'none';
                 filePreview.style.display = 'flex';
-                let shortName = msgObj.attachment.name.length > 12 ? msgObj.attachment.name.substring(0, 8) + ".." + msgObj.attachment.name.substring(msgObj.attachment.name.lastIndexOf('.')) : msgObj.attachment.name;
+                let shortName = msgObj.attachment.name.length > 12 ? msgObj.attachment.name.substring(0, 8) + ".." + msgObj.attachment.name.substring(file.name.lastIndexOf('.')) : msgObj.attachment.name;
                 fileNameSpan.innerText = shortName;
             }
             previewContainer.style.display = 'flex';
@@ -1549,7 +1571,9 @@
             if (isUserRow && chatHistory[activeChatIndex].messages[msgIdx] && chatHistory[activeChatIndex].messages[msgIdx].role === "assistant") {
                 chatHistory[activeChatIndex].messages.splice(msgIdx, 1);
             }
-            localStorage.setItem('datex_full_history', JSON.stringify(chatHistory));
+            try {
+                localStorage.setItem('datex_full_history', JSON.stringify(chatHistory));
+            } catch(e) {}
             editingMsgIdx = -1; 
             if (chatHistory[activeChatIndex].messages.length === 0) { deleteHistoryItem(null, activeChatIndex); } 
             else { loadSelectedChat(activeChatIndex, false); }
@@ -1604,7 +1628,10 @@
         function typeNext() {
             if (stopGenerationFlag) {
                 const aiMsgIdx = parseInt(currentAiRow.getAttribute('data-index'));
-                if(!isNaN(aiMsgIdx) && chatHistory[activeChatIndex].messages[aiMsgIdx]) { chatHistory[activeChatIndex].messages[aiMsgIdx].content = element.innerHTML; localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); }
+                if(!isNaN(aiMsgIdx) && chatHistory[activeChatIndex].messages[aiMsgIdx]) { 
+                    chatHistory[activeChatIndex].messages[aiMsgIdx].content = element.innerHTML; 
+                    try { localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); } catch(e) {}
+                }
                 resetSendButton(); addAiActions(currentAiRow, true); return;
             }
 
@@ -1631,7 +1658,6 @@
 
             } else {
                 renderStoredContent(element, text); resetSendButton(); addAiActions(currentAiRow, false);
-                
                 if (!userScrolledUp) {
                     container.scrollTop = container.scrollHeight;
                 }
@@ -1660,7 +1686,13 @@
     function regenerateMessage(btn) {
         stopTTS(); 
         const row = btn.closest('.ai-row'); const indexAttr = row.getAttribute('data-index');
-        if (indexAttr) { const msgIdx = parseInt(indexAttr); if (chatHistory[activeChatIndex].messages[msgIdx]) { chatHistory[activeChatIndex].messages.splice(msgIdx, 1); localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); } }
+        if (indexAttr) { 
+            const msgIdx = parseInt(indexAttr); 
+            if (chatHistory[activeChatIndex].messages[msgIdx]) { 
+                chatHistory[activeChatIndex].messages.splice(msgIdx, 1); 
+                try { localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); } catch(e) {}
+            } 
+        }
         row.remove(); callDatexAPI(true);
     }
 
@@ -1679,7 +1711,6 @@
             }
 
             if (!message && !attachmentToSave) return;
-            
             input.value = ""; input.style.height = "44px"; 
 
             if (isNewSession) {
@@ -1695,7 +1726,7 @@
             if (attachmentToSave) msgObj.attachment = attachmentToSave;
 
             chatHistory[activeChatIndex].messages.push(msgObj);
-            localStorage.setItem('datex_full_history', JSON.stringify(chatHistory));
+            try { localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); } catch(e) {}
             
             renderChatList();
             addUserMessageToUI(message, false, currentMsgIdx, attachmentToSave);
@@ -1721,7 +1752,6 @@
                 fd.append('file', attachmentToSave.data, 'voicenote.webm');
                 fd.append('model', 'whisper-large-v3');
                 fd.append('temperature', '0.0'); 
-                
                 fd.append('prompt', 'Namaste, kaise ho? Please transcribe strictly in English or Hindi (Devanagari or Latin script). NO URDU SCRIPT.'); 
                 
                 const wRes = await fetch("https://api.groq.com/openai/v1/audio/transcriptions", {
@@ -1734,7 +1764,7 @@
                 if (wData.text) {
                     message = wData.text; 
                     chatHistory[activeChatIndex].messages[chatHistory[activeChatIndex].messages.length - 1].content = message;
-                    localStorage.setItem('datex_full_history', JSON.stringify(chatHistory));
+                    try { localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); } catch(e) {}
                 } else {
                     throw new Error("Empty audio");
                 }
@@ -1845,14 +1875,14 @@ CRITICAL INSTRUCTIONS:
             }
             
             const data = await res.json();
-            
             if (data.error || !data.choices || data.choices.length === 0) { 
                 throw new Error("API Limit Reached or Internal Error"); 
             }
             
             const aiResponse = data.choices[0].message.content; const aiMsgIdx = chatHistory[activeChatIndex].messages.length;
             chatHistory[activeChatIndex].messages.push({ role: "assistant", content: aiResponse }); aiRow.setAttribute('data-index', aiMsgIdx);
-            localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); bubble.innerHTML = ""; typeEffect(bubble, aiResponse, 5);
+            try { localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); } catch(e) {}
+            bubble.innerHTML = ""; typeEffect(bubble, aiResponse, 5);
             
         } catch (e) { 
             if (e.name === 'AbortError') { 
