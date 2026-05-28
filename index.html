@@ -224,7 +224,7 @@
             justify-content: center; 
             z-index: 100;
             flex-shrink: 0;
-            touch-action: none;
+            touch-action: manipulation; /* Fixed from none to allow taps on mobile elements inside */
             position: relative;
         }
 
@@ -413,7 +413,7 @@
         }
         
         #mike-btn-container { display:flex; align-items:center; height: 44px; }
-        #mike-btn { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 20px; color: #555; background: transparent; transition: 0.2s; }
+        #mike-btn { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 20px; color: #555; background: transparent; transition: 0.2s; touch-action: none !important; }
         
         .send-btn-container { display:flex; align-items:center; height: 44px; }
         .send-btn { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; border: none; flex-shrink: 0; background: #000; color: #fff; margin-left: 12px; font-size: 18px; }
@@ -1558,6 +1558,7 @@
             } else {
                 imgPreview.style.display = 'none';
                 filePreview.style.display = 'flex';
+                // Fixed reference bug from 'file.name' to 'msgObj.attachment.name' to prevent execution freezes
                 let shortName = msgObj.attachment.name.length > 12 ? msgObj.attachment.name.substring(0, 8) + ".." + msgObj.attachment.name.substring(msgObj.attachment.name.lastIndexOf('.')) : msgObj.attachment.name;
                 fileNameSpan.innerText = shortName;
             }
