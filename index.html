@@ -75,16 +75,16 @@
         .sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: #f9f9f9; border-right: 1px solid #ddd; transition: 0.3s; z-index: 1001; display: flex; flex-direction: column; }
         .sidebar.active { left: 0; }
         
-        .sidebar-top { display: flex; justify-content: space-between; align-items: center; padding: 20px 20px 10px 20px; font-size: 18px; font-weight: 500; color: #333; }
+        .sidebar-top { display: flex; justify-content: space-between; align-items: center; padding: 20px 20px 10px 20px; font-size: 18px; font-weight: 500; color: #333; flex-shrink: 0; }
         .settings-group { display: flex; align-items: center; gap: 10px; cursor: pointer; }
         .close-sidebar-btn { cursor: pointer; color: #555; font-size: 20px; }
         
-        /* Gap given using padding-top */
-        .sidebar-content { padding: 30px 20px 20px 20px; flex: 1; overflow-y: auto; }
-        .sidebar-header { margin-bottom: 20px; }
+        /* Fixed header to create invisible wall effect */
+        .sidebar-header { padding: 25px 20px 15px 20px; flex-shrink: 0; background-color: #f9f9f9; z-index: 2; }
+        .sidebar h2 { margin: 0; font-size: 12px; color: #000; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
         
-        /* Original style restored but made Black and Bold */
-        .sidebar h2 { font-size: 12px; color: #000; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        /* Scrollable content area */
+        .sidebar-content { padding: 0 20px 20px 20px; flex: 1; overflow-y: auto; }
         
         .chat-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
         .chat-item-wrapper { display: flex; align-items: center; gap: 12px; }
@@ -95,7 +95,7 @@
         .delete-chat-btn { color: #ff4d4d; cursor: pointer; font-size: 18px; transition: 0.2s; padding: 5px; flex-shrink: 0; }
         .delete-chat-btn:hover { color: #cc0000; }
 
-        .sidebar-footer { padding: 15px 20px 20px 20px; display: flex; justify-content: space-between; align-items: center; background: transparent; }
+        .sidebar-footer { padding: 15px 20px 20px 20px; display: flex; justify-content: space-between; align-items: center; background: transparent; flex-shrink: 0; }
         .profile-icon { font-size: 28px; color: #555; cursor: pointer; }
         
         /* Chat+ Black Button */
@@ -579,6 +579,18 @@
     <div id="splash-screen">
         <img src="logo.jpg" alt="DATEX AI">
     </div>
+    
+    <!-- INLINE BULLETPROOF SCRIPT TO REMOVE SPLASH SCREEN IMMEDIATELY -->
+    <script>
+        setTimeout(() => {
+            const spl = document.getElementById('splash-screen');
+            if(spl) {
+                spl.style.opacity = '0';
+                spl.style.visibility = 'hidden';
+                setTimeout(() => spl.remove(), 300);
+            }
+        }, 1200);
+    </script>
 
     <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
     <div class="attachment-overlay" id="attachment-overlay" onclick="toggleAttachmentMenu()"></div>
@@ -622,6 +634,7 @@
     <input type="file" id="gallery-input" class="hidden-input" accept="image/*" onchange="handleFileSelect(event)">
     <input type="file" id="file-input" class="hidden-input" accept=".pdf,.doc,.docx,.txt" onchange="handleFileSelect(event)">
 
+    <!-- NEW SIDEBAR HTML -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-top">
             <div class="settings-group">
@@ -630,10 +643,13 @@
             <i class="fas fa-times close-sidebar-btn" onclick="toggleSidebar()"></i>
         </div>
         
+        <!-- TITLE MOVED OUTSIDE SCROLL AREA TO CREATE INVISIBLE WALL -->
+        <div class="sidebar-header">
+            <h2>RECENT CHATS</h2>
+        </div>
+        
+        <!-- SCROLLABLE LIST AREA -->
         <div class="sidebar-content">
-            <div class="sidebar-header">
-                <h2>Recent Chats</h2>
-            </div>
             <ul id="chat-list" class="chat-list"></ul>
         </div>
         
@@ -722,6 +738,7 @@
         </div>
     </div>
 
+    <!-- ORIGINAL JAVASCRIPT RESTORED (With only UI class change) -->
     <script>
     let userScrolledUp = false; 
 
@@ -737,9 +754,11 @@
     document.addEventListener("DOMContentLoaded", () => {
         const splash = document.getElementById('splash-screen');
         setTimeout(() => {
-            splash.style.opacity = '0';
-            splash.style.visibility = 'hidden';
-            setTimeout(() => splash.remove(), 300); 
+            if(splash) {
+                splash.style.opacity = '0';
+                splash.style.visibility = 'hidden';
+                setTimeout(() => splash.remove(), 300); 
+            }
         }, 1200); 
         
         if(window.speechSynthesis) {
@@ -781,7 +800,19 @@
     const GROQ_API_KEY = "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"; 
     const TAVILY_API_KEY = "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"; 
 
-    let chatHistory = JSON.parse(localStorage.getItem('datex_full_history')) || [];
+    // --- SAFELY PARSE LOCAL STORAGE ---
+    let chatHistory = [];
+    try {
+        const storedHistory = localStorage.getItem('datex_full_history');
+        if (storedHistory) {
+            chatHistory = JSON.parse(storedHistory) || [];
+        }
+    } catch (error) {
+        console.warn("Storage was corrupted, resetting chat history.");
+        chatHistory = [];
+        localStorage.removeItem('datex_full_history');
+    }
+
     let isNewSession = true;
     let selectedMsgRow = null;
     let activeChatIndex = -1;
@@ -1592,7 +1623,8 @@
     }
 
     function typeEffect(element, text, speed) {
-        let i = 0; let segments = text.split(/(```[\s\S]*?```)/g); let currentSeg = 0; let accumulatedHTML = ""; 
+        let i = 0; let segments = text.split(/(```[\s\S]*?
+```)/g); let currentSeg = 0; let accumulatedHTML = ""; 
         function typeNext() {
             if (stopGenerationFlag) {
                 const aiMsgIdx = parseInt(currentAiRow.getAttribute('data-index'));
