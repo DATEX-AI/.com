@@ -6,7 +6,7 @@
     <title>DATEX AI.com</title>
     <link rel="icon" type="image/jpeg" href="logo.jpg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
     
@@ -37,7 +37,7 @@
             user-select: none !important; 
         }
 
-        /* --- ORIGINAL SPLASH SCREEN CSS --- */
+        /* --- SPLASH SCREEN (INTRO) CSS --- */
         #splash-screen {
             position: fixed;
             top: 0;
@@ -71,19 +71,20 @@
             user-select: auto !important;
         }
 
-        /* --- SIDEBAR UPDATED CSS --- */
-        .sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: #f9f9f9; border-right: 1px solid #ddd; transition: 0.3s; z-index: 1001; display: flex; flex-direction: column; }
+        /* --- UI CHANGES: SIDEBAR CSS ONLY --- */
+        .sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: #f9f9f9; border-right: 1px solid #eee; transition: 0.3s; z-index: 1001; display: flex; flex-direction: column; }
         .sidebar.active { left: 0; }
-        
+
+        /* Settings area (Top) */
         .sidebar-top { display: flex; justify-content: space-between; align-items: center; padding: 20px 20px 10px 20px; font-size: 18px; font-weight: 500; color: #333; flex-shrink: 0; }
         .settings-group { display: flex; align-items: center; gap: 10px; cursor: pointer; }
         .close-sidebar-btn { cursor: pointer; color: #555; font-size: 20px; }
-        
-        /* Fixed header to create invisible wall effect */
-        .sidebar-header { padding: 25px 20px 15px 20px; flex-shrink: 0; background-color: #f9f9f9; z-index: 2; }
+
+        /* Invisible Wall for RECENT CHATS (Fixed outside scroll area) */
+        .sidebar-header { padding: 35px 20px 15px 20px; flex-shrink: 0; background-color: #f9f9f9; z-index: 2; }
         .sidebar h2 { margin: 0; font-size: 12px; color: #000; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
-        
-        /* Scrollable content area */
+
+        /* Scrollable Chat List Area */
         .sidebar-content { padding: 0 20px 20px 20px; flex: 1; overflow-y: auto; }
         
         .chat-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
@@ -91,17 +92,18 @@
         .chat-item { flex: 1; padding: 10px 15px; cursor: pointer; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background: transparent; border: 1.5px solid #888; border-radius: 20px; text-align: left; color: #333; transition: 0.2s; }
         .chat-item:hover { background: #eee; }
         
-        /* Trash button Solid Red */
+        /* Red Solid Trash Button */
         .delete-chat-btn { color: #ff4d4d; cursor: pointer; font-size: 18px; transition: 0.2s; padding: 5px; flex-shrink: 0; }
         .delete-chat-btn:hover { color: #cc0000; }
 
+        /* Bottom Profile & New Chat Area */
         .sidebar-footer { padding: 15px 20px 20px 20px; display: flex; justify-content: space-between; align-items: center; background: transparent; flex-shrink: 0; }
         .profile-icon { font-size: 28px; color: #555; cursor: pointer; }
         
-        /* Chat+ Black Button */
+        /* Black Chat+ Button */
         .new-chat-btn { padding: 12px 20px; background: #000; color: #fff; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 15px; transition: 0.2s; flex: 1; margin-left: 15px; display: flex; justify-content: center; align-items: center; }
         .new-chat-btn:hover { background: #333; }
-        /* --------------------------- */
+        /* ------------------------------------ */
 
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.1); display: none; z-index: 1000; cursor: pointer; }
         .overlay.active { display: block; }
@@ -432,7 +434,7 @@
             right: 8px; 
             width: 32px; 
             height: 32px;
-            border-radius: 50%; 
+            border-radius: 50%; /* Makes it a perfect circle */
             background: rgba(255,255,255,0.08); 
             color: #d4d4d4; 
             border: none; 
@@ -457,7 +459,7 @@
         .msg-menu { position: fixed; background: #fff; border: 1px solid #ddd; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); display: none; z-index: 2000; flex-direction: column; width: 140px; overflow: hidden; }
         .msg-menu button { padding: 12px; border: none; background: none; text-align: left; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 10px; width: 100%; border-bottom: 0.5px solid #f0f0f0; }
         .msg-menu button:last-child { border-bottom: none; }
-
+        
         .ai-link {
             color: #1a73e8 !important;
             text-decoration: underline !important;
@@ -579,18 +581,6 @@
     <div id="splash-screen">
         <img src="logo.jpg" alt="DATEX AI">
     </div>
-    
-    <!-- INLINE BULLETPROOF SCRIPT TO REMOVE SPLASH SCREEN IMMEDIATELY -->
-    <script>
-        setTimeout(() => {
-            const spl = document.getElementById('splash-screen');
-            if(spl) {
-                spl.style.opacity = '0';
-                spl.style.visibility = 'hidden';
-                setTimeout(() => spl.remove(), 300);
-            }
-        }, 1200);
-    </script>
 
     <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
     <div class="attachment-overlay" id="attachment-overlay" onclick="toggleAttachmentMenu()"></div>
@@ -634,7 +624,7 @@
     <input type="file" id="gallery-input" class="hidden-input" accept="image/*" onchange="handleFileSelect(event)">
     <input type="file" id="file-input" class="hidden-input" accept=".pdf,.doc,.docx,.txt" onchange="handleFileSelect(event)">
 
-    <!-- NEW SIDEBAR HTML -->
+    <!-- UI MODIFIED SIDEBAR -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-top">
             <div class="settings-group">
@@ -643,12 +633,12 @@
             <i class="fas fa-times close-sidebar-btn" onclick="toggleSidebar()"></i>
         </div>
         
-        <!-- TITLE MOVED OUTSIDE SCROLL AREA TO CREATE INVISIBLE WALL -->
+        <!-- INVISIBLE WALL HEADER -->
         <div class="sidebar-header">
             <h2>RECENT CHATS</h2>
         </div>
         
-        <!-- SCROLLABLE LIST AREA -->
+        <!-- SCROLLABLE LIST -->
         <div class="sidebar-content">
             <ul id="chat-list" class="chat-list"></ul>
         </div>
@@ -660,6 +650,7 @@
             <button class="new-chat-btn" onclick="createNewChat()">Chat +</button>
         </div>
     </div>
+    <!-- --------------------- -->
 
     <div class="wrapper">
         <header>
@@ -738,7 +729,7 @@
         </div>
     </div>
 
-    <!-- ORIGINAL JAVASCRIPT RESTORED (With only UI class change) -->
+    <!-- ORIGINAL JAVASCRIPT WITH ZERO CHANGES (Except fa-trash class in render) -->
     <script>
     let userScrolledUp = false; 
 
@@ -754,11 +745,9 @@
     document.addEventListener("DOMContentLoaded", () => {
         const splash = document.getElementById('splash-screen');
         setTimeout(() => {
-            if(splash) {
-                splash.style.opacity = '0';
-                splash.style.visibility = 'hidden';
-                setTimeout(() => splash.remove(), 300); 
-            }
+            splash.style.opacity = '0';
+            splash.style.visibility = 'hidden';
+            setTimeout(() => splash.remove(), 300); 
         }, 1200); 
         
         if(window.speechSynthesis) {
@@ -800,19 +789,7 @@
     const GROQ_API_KEY = "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"; 
     const TAVILY_API_KEY = "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"; 
 
-    // --- SAFELY PARSE LOCAL STORAGE ---
-    let chatHistory = [];
-    try {
-        const storedHistory = localStorage.getItem('datex_full_history');
-        if (storedHistory) {
-            chatHistory = JSON.parse(storedHistory) || [];
-        }
-    } catch (error) {
-        console.warn("Storage was corrupted, resetting chat history.");
-        chatHistory = [];
-        localStorage.removeItem('datex_full_history');
-    }
-
+    let chatHistory = JSON.parse(localStorage.getItem('datex_full_history')) || [];
     let isNewSession = true;
     let selectedMsgRow = null;
     let activeChatIndex = -1;
