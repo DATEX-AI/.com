@@ -75,27 +75,15 @@
         .sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: #f9f9f9; border-right: 1px solid #eee; transition: 0.3s; z-index: 1001; display: flex; flex-direction: column; }
         .sidebar.active { left: 0; }
 
-        /* Settings area (Top) */
+        /* Settings area (Top) - ICON ENLARGED */
         .sidebar-top { display: flex; justify-content: space-between; align-items: center; padding: 20px 20px 10px 20px; font-size: 18px; font-weight: 500; color: #333; flex-shrink: 0; }
         .settings-group { display: flex; align-items: center; gap: 12px; cursor: pointer; }
-        .settings-group i.fa-cog { 
-            background: transparent; 
-            color: #333; 
-            width: 38px; 
-            height: 38px; 
-            border: 1.5px solid #555; 
-            border-radius: 50%; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            font-size: 24px; 
-            transition: 0.2s; 
-        }
+        .settings-group i.fa-cog { background: transparent; color: #333; width: 38px; height: 38px; border: 1.5px solid #555; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; transition: 0.2s; }
         .close-sidebar-btn { cursor: pointer; color: #555; font-size: 20px; }
 
-        /* Invisible Wall for RECENT CHATS - FIX: Text wapas 35px neeche aur wall neeche se 0px cut ki! */
-        .sidebar-header { padding: 35px 20px 0px 20px; flex-shrink: 0; background-color: #f9f9f9; z-index: 2; transition: background-color 0.3s; }
-        .sidebar h2 { margin: 0; font-size: 12px; color: #000; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        /* Invisible Wall for RECENT CHATS */
+        .sidebar-header { padding: 25px 20px 15px 20px; flex-shrink: 0; background-color: #f9f9f9; z-index: 2; transition: background-color 0.3s; }
+        .sidebar h2 { margin: 0 0 10px 0; font-size: 12px; color: #000; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
 
         .sidebar-content { padding: 0 20px 20px 20px; flex: 1; overflow-y: auto; }
         .chat-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
@@ -245,44 +233,10 @@
         .settings-overlay.active { display: block; }
         .settings-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 90%; max-width: 350px; background: #fff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 2001; opacity: 0; visibility: hidden; transition: 0.2s; padding: 20px; display: flex; flex-direction: column; }
         .settings-modal.active { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
-        .settings-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 18px; font-weight: 600; color: #333; }
+        .settings-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 18px; font-weight: 600; color: #333; }
         .settings-header i { cursor: pointer; color: #555; padding: 5px; font-size: 20px; }
-        .settings-body { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80px; }
+        .settings-body { display: flex; flex-direction: column; padding: 10px 0; }
 
-        /* --- DARK MODE LOGIC --- */
-        body.dark-mode { background-color: #121212; color: #e0e0e0; }
-        body.dark-mode .sidebar { background: #1a1a1a; border-color: #333; }
-        body.dark-mode .sidebar-header, body.dark-mode .sidebar-top { background: #1a1a1a; color: #e0e0e0; }
-        body.dark-mode .sidebar h2 { color: #888; }
-        body.dark-mode .chat-item { border-color: #444; color: #ccc; }
-        body.dark-mode .chat-item:hover { background: #2c2c2c; }
-        body.dark-mode .chat-item.selected-active { background: #333 !important; border-color: #777 !important; color: #fff !important; }
-        body.dark-mode .profile-icon span { color: #e0e0e0; }
-        body.dark-mode .profile-icon i { color: #aaa; }
-        body.dark-mode .settings-group i.fa-cog { background: transparent; color: #e0e0e0; border-color: #aaa; }
-        body.dark-mode header { background: #1a1a1a; border-color: #333; }
-        body.dark-mode .model-name { color: #e0e0e0; }
-        body.dark-mode .menu-line { background: #ccc; }
-        body.dark-mode .version-pill { background: #333; border-color: #444; color: #ccc; }
-        body.dark-mode .welcome-screen { color: #ccc; }
-        body.dark-mode .welcome-screen span { color: #fff; }
-        body.dark-mode .bottom-container { background: #121212; }
-        body.dark-mode .chat-input-container { background: #1e1e1e; border-color: #333; }
-        body.dark-mode .input-bar textarea { color: #e0e0e0; }
-        body.dark-mode #mike-btn { color: #aaa; }
-        body.dark-mode .user-bubble { background-color: #2c2c2c; color: #e0e0e0; }
-        body.dark-mode .ai-bubble { background-color: #1a1a1a; border-color: #444; color: #e0e0e0; }
-        body.dark-mode .action-btn { color: #888; }
-        body.dark-mode .action-btn:hover { color: #fff; }
-        body.dark-mode .msg-menu { background: #2c2c2c; border-color: #444; }
-        body.dark-mode .msg-menu button { color: #e0e0e0; border-color: #444; }
-        body.dark-mode .attachment-menu { background: #1a1a1a; }
-        body.dark-mode .attachment-option .icon-box { background: #2c2c2c; border-color: #444; color: #ccc; }
-        body.dark-mode .attachment-option span { color: #ccc; }
-        body.dark-mode .settings-modal { background: #1a1a1a; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        body.dark-mode .settings-header { color: #e0e0e0; }
-        body.dark-mode .settings-header i { color: #aaa; }
-        body.dark-mode pre { background: #000; border-color: #444; }
     </style>
 </head>
 <body onclick="hideMsgMenu()">
@@ -312,8 +266,8 @@
             <span>Settings</span>
             <i class="fas fa-times" onclick="toggleSettings()"></i>
         </div>
-        <div class="settings-body">
-            <span style="color: #888; font-size: 14px; text-align: center;">More features coming soon...</span>
+        <div class="settings-body" style="text-align: center; color: #888; font-size: 14px; padding: 20px 0;">
+            More features coming soon...
         </div>
     </div>
 
@@ -478,10 +432,6 @@
             window.speechSynthesis.onvoiceschanged = () => {
                 window.speechSynthesis.getVoices();
             };
-        }
-        
-        if(localStorage.getItem('datex_theme') === 'dark') {
-            document.body.classList.add('dark-mode');
         }
     });
 
