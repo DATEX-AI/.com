@@ -91,6 +91,13 @@
         .chat-item-wrapper { display: flex; align-items: center; gap: 12px; }
         .chat-item { flex: 1; padding: 10px 15px; cursor: pointer; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background: transparent; border: 1.5px solid #888; border-radius: 20px; text-align: left; color: #333; transition: 0.2s; }
         .chat-item:hover { background: #eee; }
+
+        /* --- GREY ACTIVE CHAT HIGHLIGHTER CLASS --- */
+        .chat-item.selected-active {
+            background: #e5e7eb !important;
+            border-color: #555 !important;
+            font-weight: 600 !important;
+        }
         
         /* Red Solid Trash Button */
         .delete-chat-btn { color: #ff4d4d; cursor: pointer; font-size: 18px; transition: 0.2s; padding: 5px; flex-shrink: 0; }
@@ -98,11 +105,24 @@
 
         /* Bottom Profile & New Chat Area */
         .sidebar-footer { padding: 15px 20px 20px 20px; display: flex; justify-content: space-between; align-items: center; background: transparent; flex-shrink: 0; }
-        .profile-icon { font-size: 28px; color: #555; cursor: pointer; }
         
-        /* Black Chat+ Button */
-        .new-chat-btn { padding: 12px 20px; background: #000; color: #fff; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 15px; transition: 0.2s; flex: 1; margin-left: 15px; display: flex; justify-content: center; align-items: center; }
+        /* --- MODIFIED USER PROFILE & CHAT+ BUTTON --- */
+        .profile-icon { font-size: 34px; color: #555; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .profile-icon span { font-size: 15px; font-weight: 600; color: #333; }
+        .new-chat-btn { padding: 12px 18px; background: #000; color: #fff; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 15px; transition: 0.2s; margin-left: 15px; display: flex; justify-content: center; align-items: center; width: 110px; flex-shrink: 0; }
         .new-chat-btn:hover { background: #333; }
+        /* ------------------------------------ */
+
+        /* --- TELEGRAM-INSPIRED MESSAGE DELETE ANIMATION --- */
+        .delete-msg-animation {
+            animation: telegramBubbleDelete 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            overflow: hidden;
+        }
+        @keyframes telegramBubbleDelete {
+            0% { opacity: 1; transform: scale(1); max-height: 600px; margin-top: 15px; margin-bottom: 15px; }
+            40% { opacity: 0; transform: scale(0.95); max-height: 600px; }
+            100% { opacity: 0; transform: scale(0.9); max-height: 0; margin-top: 0; margin-bottom: 0; padding-top: 0; padding-bottom: 0; }
+        }
         /* ------------------------------------ */
 
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.1); display: none; z-index: 1000; cursor: pointer; }
@@ -214,7 +234,7 @@
             justify-content: center; 
             z-index: 100;
             flex-shrink: 0;
-            touch-action: none;
+            touch-action: manipulation; /* FIX: Changed from none to manipulation so buttons can be tapped! */
             position: relative;
         }
 
@@ -586,11 +606,15 @@
         setTimeout(() => {
             const spl = document.getElementById('splash-screen');
             if(spl) {
-                spl.style.pointerEvents = 'none'; /* BUTTONS KO BLOCK NAHI KAREGA */
+                spl.style.pointerEvents = 'none'; 
                 spl.style.opacity = '0';
-                setTimeout(() => spl.remove(), 300);
+                setTimeout(() => {
+                    if (spl && spl.parentNode) {
+                        spl.parentNode.removeChild(spl);
+                    }
+                }, 350);
             }
-        }, 1200);
+        }, 1500); // 1.5 seconds delay
     </script>
 
     <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
@@ -654,6 +678,7 @@
         <div class="sidebar-footer">
             <div class="profile-icon">
                 <i class="far fa-user-circle"></i>
+                <span>User</span>
             </div>
             <button class="new-chat-btn" onclick="createNewChat()">Chat +</button>
         </div>
@@ -748,7 +773,6 @@
         });
     }
 
-    /* Original DOMContentLoaded logic minus the splash part to avoid conflicts */
     document.addEventListener("DOMContentLoaded", () => {
         if(window.speechSynthesis) {
             window.speechSynthesis.onvoiceschanged = () => {
@@ -789,7 +813,14 @@
     const GROQ_API_KEY = "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"; 
     const TAVILY_API_KEY = "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"; 
 
-    let chatHistory = JSON.parse(localStorage.getItem('datex_full_history')) || [];
+    let chatHistory = [];
+    try {
+        chatHistory = JSON.parse(localStorage.getItem('datex_full_history')) || [];
+    } catch(e) {
+        console.error("Local storage load crash prevented:", e);
+        chatHistory = [];
+    }
+    
     let isNewSession = true;
     let selectedMsgRow = null;
     let activeChatIndex = -1;
@@ -1042,7 +1073,6 @@
         }
 
         stopVoiceNoteBubble();
-
         window.speechSynthesis.resume();
 
         if (currentTtsBtn === btn) {
@@ -1304,10 +1334,15 @@
     }
 
     window.onload = () => { 
-        renderChatList(); 
-        if(chatHistory.length === 0) createNewChat();
+        try {
+            renderChatList(); 
+            if(chatHistory.length === 0) createNewChat();
+        } catch(err) {
+            console.error("Startup shell script catch:", err);
+        }
     };
 
+    /* UPDATED: GEMINI HIGHLIGHT ADDED HERE */
     function renderChatList() {
         const listElement = document.getElementById('chat-list');
         listElement.innerHTML = "";
@@ -1315,7 +1350,10 @@
             const actualIndex = chatHistory.length - 1 - index;
             const wrap = document.createElement('div');
             wrap.className = "chat-item-wrapper";
-            wrap.innerHTML = `<div class="chat-item" onclick="loadSelectedChat(${actualIndex}, true)">${chatObj.title}</div><i class="fas fa-trash delete-chat-btn" onclick="deleteHistoryItem(event, ${actualIndex})"></i>`;
+            
+            const activeHighlightClass = (actualIndex === activeChatIndex) ? "selected-active" : "";
+            
+            wrap.innerHTML = `<div class="chat-item ${activeHighlightClass}" onclick="loadSelectedChat(${actualIndex}, true)">${chatObj.title}</div><i class="fas fa-trash delete-chat-btn" onclick="deleteHistoryItem(event, ${actualIndex})"></i>`;
             listElement.appendChild(wrap);
         });
     }
@@ -1324,7 +1362,9 @@
         if(event) event.stopPropagation();
         stopTTS(); 
         chatHistory.splice(index, 1);
-        localStorage.setItem('datex_full_history', JSON.stringify(chatHistory));
+        try {
+            localStorage.setItem('datex_full_history', JSON.stringify(chatHistory));
+        } catch(e) {}
         renderChatList();
         if (activeChatIndex === index) { createNewChat(true); } else if (activeChatIndex > index) { activeChatIndex--; }
     }
@@ -1340,8 +1380,10 @@
             if(msg.role === "user") { addUserMessageToUI(msg.content, false, msgIdx, msg.attachment); }
             else { addAiMessageToUI(msg.content, false, msgIdx); }
         });
-        if(shouldToggleSidebar) toggleSidebar();
         
+        renderChatList(); // Refresh highlight
+        
+        if(shouldToggleSidebar) toggleSidebar();
         document.getElementById('scroll-bottom-btn').classList.remove('active');
     }
 
@@ -1354,8 +1396,10 @@
         const input = document.getElementById('user-input');
         input.value = "";
         autoGrow(input);
-        if(!keepSidebarOpen && document.getElementById('sidebar').classList.contains('active')) toggleSidebar();
         
+        renderChatList(); // Refresh highlight
+        
+        if(!keepSidebarOpen && document.getElementById('sidebar').classList.contains('active')) toggleSidebar();
         document.getElementById('scroll-bottom-btn').classList.remove('active');
     }
 
@@ -1540,19 +1584,40 @@
         hideMsgMenu(); 
     }
 
+    /* UPDATED: TELEGRAM DELETE LOGIC ADDED HERE */
     function deleteSelectedMsg() {
         stopTTS(); 
         if(selectedMsgRow && activeChatIndex !== -1) {
             const msgIdx = parseInt(selectedMsgRow.getAttribute('data-index'));
             const isUserRow = selectedMsgRow.classList.contains('user-row');
-            chatHistory[activeChatIndex].messages.splice(msgIdx, 1);
-            if (isUserRow && chatHistory[activeChatIndex].messages[msgIdx] && chatHistory[activeChatIndex].messages[msgIdx].role === "assistant") {
-                chatHistory[activeChatIndex].messages.splice(msgIdx, 1);
+            
+            let targets = [selectedMsgRow];
+            if (isUserRow) {
+                let nextRow = selectedMsgRow.nextElementSibling;
+                if (nextRow && nextRow.classList.contains('ai-row') && parseInt(nextRow.getAttribute('data-index')) === msgIdx + 1) {
+                    targets.push(nextRow);
+                }
             }
-            localStorage.setItem('datex_full_history', JSON.stringify(chatHistory));
-            editingMsgIdx = -1; 
-            if (chatHistory[activeChatIndex].messages.length === 0) { deleteHistoryItem(null, activeChatIndex); } 
-            else { loadSelectedChat(activeChatIndex, false); }
+
+            targets.forEach(row => {
+                row.classList.add('delete-msg-animation');
+            });
+
+            setTimeout(() => {
+                chatHistory[activeChatIndex].messages.splice(msgIdx, 1);
+                if (isUserRow && chatHistory[activeChatIndex].messages[msgIdx] && chatHistory[activeChatIndex].messages[msgIdx].role === "assistant") {
+                    chatHistory[activeChatIndex].messages.splice(msgIdx, 1);
+                }
+                try {
+                    localStorage.setItem('datex_full_history', JSON.stringify(chatHistory));
+                } catch(e) {}
+                editingMsgIdx = -1; 
+                if (chatHistory[activeChatIndex].messages.length === 0) { 
+                    deleteHistoryItem(null, activeChatIndex); 
+                } else { 
+                    loadSelectedChat(activeChatIndex, false); 
+                }
+            }, 400);
         }
         hideMsgMenu();
     }
@@ -1604,7 +1669,10 @@
         function typeNext() {
             if (stopGenerationFlag) {
                 const aiMsgIdx = parseInt(currentAiRow.getAttribute('data-index'));
-                if(!isNaN(aiMsgIdx) && chatHistory[activeChatIndex].messages[aiMsgIdx]) { chatHistory[activeChatIndex].messages[aiMsgIdx].content = element.innerHTML; localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); }
+                if(!isNaN(aiMsgIdx) && chatHistory[activeChatIndex].messages[aiMsgIdx]) { 
+                    chatHistory[activeChatIndex].messages[aiMsgIdx].content = element.innerHTML; 
+                    try { localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); } catch(e) {}
+                }
                 resetSendButton(); addAiActions(currentAiRow, true); return;
             }
 
@@ -1631,7 +1699,6 @@
 
             } else {
                 renderStoredContent(element, text); resetSendButton(); addAiActions(currentAiRow, false);
-                
                 if (!userScrolledUp) {
                     container.scrollTop = container.scrollHeight;
                 }
@@ -1660,7 +1727,13 @@
     function regenerateMessage(btn) {
         stopTTS(); 
         const row = btn.closest('.ai-row'); const indexAttr = row.getAttribute('data-index');
-        if (indexAttr) { const msgIdx = parseInt(indexAttr); if (chatHistory[activeChatIndex].messages[msgIdx]) { chatHistory[activeChatIndex].messages.splice(msgIdx, 1); localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); } }
+        if (indexAttr) { 
+            const msgIdx = parseInt(indexAttr); 
+            if (chatHistory[activeChatIndex].messages[msgIdx]) { 
+                chatHistory[activeChatIndex].messages.splice(msgIdx, 1); 
+                try { localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); } catch(e) {}
+            } 
+        }
         row.remove(); callDatexAPI(true);
     }
 
@@ -1679,7 +1752,6 @@
             }
 
             if (!message && !attachmentToSave) return;
-            
             input.value = ""; input.style.height = "44px"; 
 
             if (isNewSession) {
@@ -1695,7 +1767,7 @@
             if (attachmentToSave) msgObj.attachment = attachmentToSave;
 
             chatHistory[activeChatIndex].messages.push(msgObj);
-            localStorage.setItem('datex_full_history', JSON.stringify(chatHistory));
+            try { localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); } catch(e) {}
             
             renderChatList();
             addUserMessageToUI(message, false, currentMsgIdx, attachmentToSave);
@@ -1721,7 +1793,6 @@
                 fd.append('file', attachmentToSave.data, 'voicenote.webm');
                 fd.append('model', 'whisper-large-v3');
                 fd.append('temperature', '0.0'); 
-                
                 fd.append('prompt', 'Namaste, kaise ho? Please transcribe strictly in English or Hindi (Devanagari or Latin script). NO URDU SCRIPT.'); 
                 
                 const wRes = await fetch("https://api.groq.com/openai/v1/audio/transcriptions", {
@@ -1734,7 +1805,7 @@
                 if (wData.text) {
                     message = wData.text; 
                     chatHistory[activeChatIndex].messages[chatHistory[activeChatIndex].messages.length - 1].content = message;
-                    localStorage.setItem('datex_full_history', JSON.stringify(chatHistory));
+                    try { localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); } catch(e) {}
                 } else {
                     throw new Error("Empty audio");
                 }
@@ -1845,14 +1916,14 @@ CRITICAL INSTRUCTIONS:
             }
             
             const data = await res.json();
-            
             if (data.error || !data.choices || data.choices.length === 0) { 
                 throw new Error("API Limit Reached or Internal Error"); 
             }
             
             const aiResponse = data.choices[0].message.content; const aiMsgIdx = chatHistory[activeChatIndex].messages.length;
             chatHistory[activeChatIndex].messages.push({ role: "assistant", content: aiResponse }); aiRow.setAttribute('data-index', aiMsgIdx);
-            localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); bubble.innerHTML = ""; typeEffect(bubble, aiResponse, 5);
+            try { localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); } catch(e) {}
+            bubble.innerHTML = ""; typeEffect(bubble, aiResponse, 5);
             
         } catch (e) { 
             if (e.name === 'AbortError') { 
