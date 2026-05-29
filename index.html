@@ -11,7 +11,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
     
     <style>
-        /* CSS RESET & MODERN VIEWPORT FIX */
+        /* --- TOUCH FIX: Removed wildcard touch-action that ruined hitboxes --- */
         * { 
             margin: 0; 
             padding: 0; 
@@ -20,9 +20,13 @@
             -webkit-tap-highlight-color: transparent; 
         }
         
+        /* --- CORE APP LOCK: Ensures hitboxes align perfectly with visuals --- */
         html, body {
-            height: 100dvh; /* Natively handles mobile keyboard & viewport sizing without JS loops! */
+            height: 100%; 
             width: 100%;
+            position: fixed; 
+            top: 0;
+            left: 0;
             margin: 0;
             padding: 0;
             overscroll-behavior: none;
@@ -33,8 +37,6 @@
             flex-direction: column;
             -webkit-touch-callout: none !important; 
             -webkit-user-select: none !important; 
-            -moz-user-select: none !important; 
-            -ms-user-select: none !important; 
             user-select: none !important; 
         }
 
@@ -49,7 +51,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 9999;
+            z-index: 99999; /* Max Z-index */
             transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
             pointer-events: auto;
         }
@@ -68,8 +70,6 @@
 
         textarea, input {
             -webkit-user-select: auto !important;
-            -moz-user-select: auto !important;
-            -ms-user-select: auto !important;
             user-select: auto !important;
         }
 
@@ -82,7 +82,7 @@
         .settings-group { display: flex; align-items: center; gap: 10px; cursor: pointer; }
         .close-sidebar-btn { cursor: pointer; color: #555; font-size: 20px; }
 
-        /* Invisible Wall for RECENT CHATS (Fixed outside scroll area) */
+        /* Invisible Wall for RECENT CHATS */
         .sidebar-header { padding: 35px 20px 15px 20px; flex-shrink: 0; background-color: #f9f9f9; z-index: 2; }
         .sidebar h2 { margin: 0; font-size: 12px; color: #000; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
 
@@ -108,15 +108,13 @@
         /* Bottom Profile & New Chat Area */
         .sidebar-footer { padding: 15px 20px 20px 20px; display: flex; justify-content: space-between; align-items: center; background: transparent; flex-shrink: 0; }
         
-        /* Profile area modified for larger size and side text */
         .profile-icon { font-size: 34px; color: #555; cursor: pointer; display: flex; align-items: center; gap: 8px; }
         .profile-icon span { font-size: 15px; font-weight: 600; color: #333; }
         
-        /* Chat+ Button modified for smaller horizontal size */
         .new-chat-btn { padding: 12px 18px; background: #000; color: #fff; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 15px; transition: 0.2s; margin-left: 15px; display: flex; justify-content: center; align-items: center; width: 110px; flex-shrink: 0; }
         .new-chat-btn:hover { background: #333; }
         
-        /* TOUCH SAFETY OVERRIDE: Forces elements to be clickable on all viewports */
+        /* TOUCH SAFETY OVERRIDE */
         .menu-btn-container, .new-chat-btn, .send-btn, .close-sidebar-btn, .delete-chat-btn, .chat-item, .action-btn, #mike-btn, .settings-group {
             pointer-events: auto !important;
             cursor: pointer !important;
@@ -395,7 +393,6 @@
             height: 44px; 
             scrollbar-width: none; 
             -ms-overflow-style: none; 
-            touch-action: pan-y;
             overscroll-behavior: none;
         }
         .input-bar textarea::-webkit-scrollbar {
@@ -606,7 +603,6 @@
 </head>
 <body onclick="hideMsgMenu()">
 
-    <!-- --- 100% FIXED SPLASH SCREEN --- -->
     <div id="splash-screen">
         <img src="logo.jpg" alt="DATEX AI">
     </div>
@@ -620,13 +616,16 @@
                 spl.style.visibility = 'hidden';
                 setTimeout(() => {
                     if (spl && spl.parentNode) {
+                        spl.style.display = 'none'; // ULTIMATE FAILSAFE: Removes invisible hitbox
                         spl.parentNode.removeChild(spl);
                     }
                 }, 350);
             }
         }
-        // ChatGPT style: Exact 1.5 second (1500ms) tak logo hold rahega, fir smooth UI khulegi
+        // ChatGPT style: Exact 1.5 second (1500ms) delay
         setTimeout(removeSplashScreenSafely, 1500);
+        // Backup trigger
+        window.addEventListener('load', removeSplashScreenSafely);
     </script>
 
     <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
@@ -798,8 +797,6 @@
             e.preventDefault();
         }
     });
-
-    // TOXIC LOOP REMOVED: VisualViewport resize logic completely deleted to free mobile processor
 
     const GROQ_API_KEY = "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"; 
     const TAVILY_API_KEY = "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"; 
@@ -1639,8 +1636,7 @@
     }
 
     function renderStoredContent(element, text) {
-        let segments = text.split(/(```[\s\S]*?
-```)/g);
+        let segments = text.split(/(```[\s\S]*?```)/g);
         let finalHTML = "";
         segments.forEach(seg => {
             if (seg.startsWith("```") && seg.endsWith("```")) {
@@ -1653,7 +1649,6 @@
         });
         element.innerHTML = finalHTML;
         
-        // SAFE MATHJAX CHECK: Prevents Webview errors if library doesn't load fully
         if(window.MathJax && window.MathJax.typesetPromise) { 
             MathJax.typesetPromise([element]).catch((err) => console.log(err)); 
         }
@@ -1675,8 +1670,7 @@
 
             if (currentSeg < segments.length) {
                 let seg = segments[currentSeg];
-                if (seg.startsWith("```") && seg.endsWith("
-```")) {
+                if (seg.startsWith("```") && seg.endsWith("```")) {
                     let codeContent = seg.substring(3, seg.length - 3).trim();
                     accumulatedHTML += `<pre><button class="copy-code-btn" onclick="copyCode(this)"><i class="far fa-copy"></i></button><code>${escapeHTML(codeContent)}</code></pre>`;
                     element.innerHTML = accumulatedHTML; currentSeg++; setTimeout(typeNext, speed);
