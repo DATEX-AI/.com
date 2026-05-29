@@ -48,7 +48,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 99999;
+            z-index: 9999;
             transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
         }
         #splash-screen img {
@@ -91,10 +91,14 @@
         .chat-item-wrapper { display: flex; align-items: center; gap: 12px; }
         .chat-item { flex: 1; padding: 10px 15px; cursor: pointer; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background: transparent; border: 1.5px solid #888; border-radius: 20px; text-align: left; color: #333; transition: 0.2s; }
         .chat-item:hover { background: #eee; }
-        
-        /* GEMINI STYLE ACTIVE CHAT HIGHLIGHT */
-        .chat-item.selected-active { background: #e5e7eb; border-color: #555; font-weight: 600; }
 
+        /* --- GREY ACTIVE CHAT HIGHLIGHTER CLASS --- */
+        .chat-item.selected-active {
+            background: #e5e7eb !important;
+            border-color: #555 !important;
+            font-weight: 600 !important;
+        }
+        
         /* Red Solid Trash Button */
         .delete-chat-btn { color: #ff4d4d; cursor: pointer; font-size: 18px; transition: 0.2s; padding: 5px; flex-shrink: 0; }
         .delete-chat-btn:hover { color: #cc0000; }
@@ -102,11 +106,21 @@
         /* Bottom Profile & New Chat Area */
         .sidebar-footer { padding: 15px 20px 20px 20px; display: flex; justify-content: space-between; align-items: center; background: transparent; flex-shrink: 0; }
         
-        /* Modifed Profile & Chat Button */
+        /* --- MODIFIED USER PROFILE & CHAT+ BUTTON --- */
         .profile-icon { font-size: 34px; color: #555; cursor: pointer; display: flex; align-items: center; gap: 8px; }
         .profile-icon span { font-size: 15px; font-weight: 600; color: #333; }
         .new-chat-btn { padding: 12px 18px; background: #000; color: #fff; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 15px; transition: 0.2s; margin-left: 15px; display: flex; justify-content: center; align-items: center; width: 110px; flex-shrink: 0; }
         .new-chat-btn:hover { background: #333; }
+        /* ------------------------------------ */
+
+        /* --- SMOOTH FADE OUT DELETE ANIMATION --- */
+        .delete-msg-animation {
+            animation: smoothFadeOut 0.3s ease-out forwards;
+        }
+        @keyframes smoothFadeOut {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
         /* ------------------------------------ */
 
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.1); display: none; z-index: 1000; cursor: pointer; }
@@ -186,16 +200,6 @@
         .ai-bubble { background-color: #fff; border: 1px solid #e5e7eb; border-bottom-left-radius: 4px; width: 100%; }
         
         .avatar { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: 1px solid #eee; flex-shrink: 0; }
-
-        /* --- SMOOTH FADE OUT DELETE ANIMATION --- */
-        .delete-msg-animation {
-            animation: smoothFadeOut 0.3s ease-out forwards;
-            transform-origin: center;
-        }
-        @keyframes smoothFadeOut {
-            0% { opacity: 1; transform: scale(1); }
-            100% { opacity: 0; transform: scale(0.95); }
-        }
 
         .typing-indicator {
             display: flex;
@@ -1328,8 +1332,12 @@
     }
 
     window.onload = () => { 
-        renderChatList(); 
-        if(chatHistory.length === 0) createNewChat();
+        try {
+            renderChatList(); 
+            if(chatHistory.length === 0) createNewChat();
+        } catch(err) {
+            console.error("Startup shell script catch:", err);
+        }
     };
 
     function renderChatList() {
@@ -1352,7 +1360,9 @@
         if (isGenerating && activeChatIndex === index) stopGeneration(); 
         stopTTS(); 
         chatHistory.splice(index, 1);
-        localStorage.setItem('datex_full_history', JSON.stringify(chatHistory));
+        try {
+            localStorage.setItem('datex_full_history', JSON.stringify(chatHistory));
+        } catch(e) {}
         renderChatList();
         if (activeChatIndex === index) { createNewChat(true); } else if (activeChatIndex > index) { activeChatIndex--; }
     }
@@ -1574,7 +1584,6 @@
         hideMsgMenu(); 
     }
 
-    /* --- UPDATED: SMOOTH FADE OUT DELETE LOGIC --- */
     function deleteSelectedMsg() {
         stopTTS(); 
         if(selectedMsgRow && activeChatIndex !== -1) {
@@ -1593,7 +1602,6 @@
                 row.classList.add('delete-msg-animation');
             });
 
-            // 300ms wait to match the new simpleFadeOut animation perfectly
             setTimeout(() => {
                 chatHistory[activeChatIndex].messages.splice(msgIdx, 1);
                 if (isUserRow && chatHistory[activeChatIndex].messages[msgIdx] && chatHistory[activeChatIndex].messages[msgIdx].role === "assistant") {
@@ -1640,8 +1648,7 @@
     }
 
     function renderStoredContent(element, text) {
-        let segments = text.split(/(```[\s\S]*?
-```)/g);
+        let segments = text.split(/(```[\s\S]*?```)/g);
         let finalHTML = "";
         segments.forEach(seg => {
             if (seg.startsWith("```") && seg.endsWith("```")) {
@@ -1657,6 +1664,7 @@
     }
 
     function typeEffect(element, text, speed, boundChatIndex) {
+        if (boundChatIndex === undefined) boundChatIndex = activeChatIndex;
         let i = 0; let segments = text.split(/(```[\s\S]*?```)/g); let currentSeg = 0; let accumulatedHTML = ""; 
         const rowElement = element.closest('.message-row');
 
@@ -1677,8 +1685,7 @@
 
             if (currentSeg < segments.length) {
                 let seg = segments[currentSeg];
-                if (seg.startsWith("```") && seg.endsWith("
-```")) {
+                if (seg.startsWith("```") && seg.endsWith("```")) {
                     let codeContent = seg.substring(3, seg.length - 3).trim();
                     accumulatedHTML += `<pre><button class="copy-code-btn" onclick="copyCode(this)"><i class="far fa-copy"></i></button><code>${escapeHTML(codeContent)}</code></pre>`;
                     element.innerHTML = accumulatedHTML; currentSeg++; setTimeout(typeNext, speed);
