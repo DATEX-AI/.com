@@ -75,15 +75,27 @@
         .sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: #f9f9f9; border-right: 1px solid #eee; transition: 0.3s; z-index: 1001; display: flex; flex-direction: column; }
         .sidebar.active { left: 0; }
 
-        /* Settings area (Top) */
+        /* Settings area (Top) - FIX: Outline Circle and Bigger Icon */
         .sidebar-top { display: flex; justify-content: space-between; align-items: center; padding: 20px 20px 10px 20px; font-size: 18px; font-weight: 500; color: #333; flex-shrink: 0; }
         .settings-group { display: flex; align-items: center; gap: 12px; cursor: pointer; }
-        .settings-group i.fa-cog { background: #000; color: #fff; width: 34px; height: 34px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 16px; transition: 0.2s; }
+        .settings-group i.fa-cog { 
+            background: transparent; 
+            color: #333; 
+            width: 38px; 
+            height: 38px; 
+            border: 1.5px solid #555; 
+            border-radius: 50%; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            font-size: 18px; 
+            transition: 0.2s; 
+        }
         .close-sidebar-btn { cursor: pointer; color: #555; font-size: 20px; }
 
-        /* Invisible Wall for RECENT CHATS */
-        .sidebar-header { padding: 35px 20px 15px 20px; flex-shrink: 0; background-color: #f9f9f9; z-index: 2; transition: background-color 0.3s; }
-        .sidebar h2 { margin: 0; font-size: 12px; color: #000; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        /* Invisible Wall for RECENT CHATS - FIX: Moved text up and added gap below */
+        .sidebar-header { padding: 25px 20px 15px 20px; flex-shrink: 0; background-color: #f9f9f9; z-index: 2; transition: background-color 0.3s; }
+        .sidebar h2 { margin: 0 0 10px 0; font-size: 12px; color: #000; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
 
         .sidebar-content { padding: 0 20px 20px 20px; flex: 1; overflow-y: auto; }
         .chat-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
@@ -260,7 +272,10 @@
         body.dark-mode .chat-item.selected-active { background: #333 !important; border-color: #777 !important; color: #fff !important; }
         body.dark-mode .profile-icon span { color: #e0e0e0; }
         body.dark-mode .profile-icon i { color: #aaa; }
-        body.dark-mode .settings-group i.fa-cog { background: #fff; color: #000; }
+        
+        /* Updated Dark mode setting icon border */
+        body.dark-mode .settings-group i.fa-cog { background: transparent; color: #e0e0e0; border-color: #aaa; }
+        
         body.dark-mode header { background: #1a1a1a; border-color: #333; }
         body.dark-mode .model-name { color: #e0e0e0; }
         body.dark-mode .menu-line { background: #ccc; }
@@ -1138,7 +1153,6 @@
             if(msg.role === "user") { 
                 addUserMessageToUI(msg.content, false, msgIdx, msg.attachment); 
             } else { 
-                /* --- CHECK IF THIS MESSAGE WAS STOPPED IN PAST --- */
                 let isMsgStopped = (msg.content === "You stopped this response");
                 addAiMessageToUI(msg.content, false, msgIdx, isMsgStopped); 
             }
@@ -1219,7 +1233,6 @@
         container.scrollTop = container.scrollHeight;
     }
 
-    /* UPDATED: Takes 'isStoppedStatus' to render correctly */
     function addAiMessageToUI(text, isNew, msgIdx, isStoppedStatus = false) {
         const container = document.getElementById('chat-container');
         const row = document.createElement('div');
@@ -1240,7 +1253,6 @@
         container.scrollTop = container.scrollHeight;
     }
 
-    /* --- UPDATED: IF STOPPED, ONLY SHOW RETRY AND TTS --- */
     function addAiActions(row, isStopped) {
         if (!row) return;
         const container = row.querySelector('.bubble-container');
@@ -1248,14 +1260,11 @@
             let html = '<div class="action-bar ai-action-bar">';
             
             if (isStopped) { 
-                // Only Retry and TTS (No 3-dots)
                 html += `<button class="action-btn" onclick="regenerateMessage(this)"><i class="fas fa-redo"></i></button>`;
             } else {
-                // Normal layout (3-dots)
                 html += `<button class="action-btn" onclick="openMenu(event, this)"><i class="fas fa-ellipsis-v"></i></button>`;
             }
             
-            // TTS is always there on the right
             html += `<button class="action-btn tts-btn" onclick="speakText(this)" style="background: #000; color: #fff; width: 30px; height: 30px; border-radius: 50%; padding: 0;"><i class="fas fa-volume-up" style="font-size: 13px;"></i></button></div>`;
             
             container.insertAdjacentHTML('beforeend', html);
@@ -1723,7 +1732,6 @@ CRITICAL INSTRUCTIONS:
             }
             
         } catch (e) { 
-            /* --- UPDATED: THE "YOU STOPPED THIS RESPONSE" LOGIC --- */
             let errText = (e.name === 'AbortError') ? "You stopped this response" : "Server Error: " + e.message; 
             
             chatHistory[requestChatIndex].messages.push({ role: "assistant", content: errText });
