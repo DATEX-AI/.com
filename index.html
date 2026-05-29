@@ -75,7 +75,7 @@
         .sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: #f9f9f9; border-right: 1px solid #eee; transition: 0.3s; z-index: 1001; display: flex; flex-direction: column; }
         .sidebar.active { left: 0; }
 
-        /* Settings area (Top) - FIX: Outline Circle and Bigger Icon */
+        /* Settings area (Top) */
         .sidebar-top { display: flex; justify-content: space-between; align-items: center; padding: 20px 20px 10px 20px; font-size: 18px; font-weight: 500; color: #333; flex-shrink: 0; }
         .settings-group { display: flex; align-items: center; gap: 12px; cursor: pointer; }
         .settings-group i.fa-cog { 
@@ -88,13 +88,13 @@
             display: flex; 
             justify-content: center; 
             align-items: center; 
-            font-size: 18px; 
+            font-size: 24px; 
             transition: 0.2s; 
         }
         .close-sidebar-btn { cursor: pointer; color: #555; font-size: 20px; }
 
-        /* Invisible Wall for RECENT CHATS - FIX: Moved text up and added gap below */
-        .sidebar-header { padding: 25px 20px 15px 20px; flex-shrink: 0; background-color: #f9f9f9; z-index: 2; transition: background-color 0.3s; }
+        /* Invisible Wall for RECENT CHATS */
+        .sidebar-header { padding: 10px 20px 15px 20px; flex-shrink: 0; background-color: #f9f9f9; z-index: 2; transition: background-color 0.3s; }
         .sidebar h2 { margin: 0 0 10px 0; font-size: 12px; color: #000; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
 
         .sidebar-content { padding: 0 20px 20px 20px; flex: 1; overflow-y: auto; }
@@ -240,27 +240,14 @@
         .attachment-overlay.active { display: block; }
         .hidden-input { display: none; }
 
-        /* --- SETTINGS MODAL UI --- */
+        /* --- SETTINGS MODAL UI (Empty state for future updates) --- */
         .settings-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 2000; display: none; cursor: pointer; }
         .settings-overlay.active { display: block; }
         .settings-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 90%; max-width: 350px; background: #fff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 2001; opacity: 0; visibility: hidden; transition: 0.2s; padding: 20px; display: flex; flex-direction: column; }
         .settings-modal.active { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
         .settings-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 18px; font-weight: 600; color: #333; }
         .settings-header i { cursor: pointer; color: #555; padding: 5px; font-size: 20px; }
-        .setting-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 15px; font-weight: 500; color: #333; }
-        
-        /* Dark Mode Toggle Switch */
-        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; }
-        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; }
-        input:checked + .slider { background-color: #000; }
-        input:checked + .slider:before { transform: translateX(20px); }
-        .slider.round { border-radius: 24px; }
-        .slider.round:before { border-radius: 50%; }
-
-        .setting-item select { width: 100%; padding: 10px; border-radius: 8px; background: #f0f0f0; border: none; font-size: 14px; outline: none; margin-top: 8px; color: #333; }
-        .setting-item input[type=range] { width: 100%; margin-top: 8px; accent-color: #000; }
+        .settings-body { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80px; }
 
         /* --- DARK MODE LOGIC --- */
         body.dark-mode { background-color: #121212; color: #e0e0e0; }
@@ -272,10 +259,7 @@
         body.dark-mode .chat-item.selected-active { background: #333 !important; border-color: #777 !important; color: #fff !important; }
         body.dark-mode .profile-icon span { color: #e0e0e0; }
         body.dark-mode .profile-icon i { color: #aaa; }
-        
-        /* Updated Dark mode setting icon border */
         body.dark-mode .settings-group i.fa-cog { background: transparent; color: #e0e0e0; border-color: #aaa; }
-        
         body.dark-mode header { background: #1a1a1a; border-color: #333; }
         body.dark-mode .model-name { color: #e0e0e0; }
         body.dark-mode .menu-line { background: #ccc; }
@@ -296,10 +280,8 @@
         body.dark-mode .attachment-option .icon-box { background: #2c2c2c; border-color: #444; color: #ccc; }
         body.dark-mode .attachment-option span { color: #ccc; }
         body.dark-mode .settings-modal { background: #1a1a1a; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        body.dark-mode .settings-header, body.dark-mode .setting-item { color: #e0e0e0; }
+        body.dark-mode .settings-header { color: #e0e0e0; }
         body.dark-mode .settings-header i { color: #aaa; }
-        body.dark-mode .setting-item select { background: #2c2c2c; color: #fff; border: 1px solid #444; }
-        body.dark-mode input:checked + .slider { background-color: #4CAF50; }
         body.dark-mode pre { background: #000; border-color: #444; }
     </style>
 </head>
@@ -331,24 +313,7 @@
             <i class="fas fa-times" onclick="toggleSettings()"></i>
         </div>
         <div class="settings-body">
-            <div class="setting-item">
-                <span>Dark Mode</span>
-                <label class="switch">
-                  <input type="checkbox" id="dark-mode-toggle" onchange="toggleDarkMode()">
-                  <span class="slider round"></span>
-                </label>
-            </div>
-            <div class="setting-item" style="flex-direction: column; align-items: flex-start;">
-                <span>Voice Profile</span>
-                <select id="voice-type-select" onchange="saveVoiceSettings()">
-                    <option value="male">Male Voice</option>
-                    <option value="female">Female Voice</option>
-                </select>
-            </div>
-            <div class="setting-item" style="flex-direction: column; align-items: flex-start; margin-bottom: 5px;">
-                <span>Voice Speed</span>
-                <input type="range" id="voice-speed-slider" min="0.5" max="2" step="0.1" value="1" onchange="saveVoiceSettings()">
-            </div>
+            <span style="color: #888; font-size: 14px; text-align: center;">More features coming soon...</span>
         </div>
     </div>
 
@@ -516,13 +481,8 @@
         }
         
         if(localStorage.getItem('datex_theme') === 'dark') {
-            document.getElementById('dark-mode-toggle').checked = true;
             document.body.classList.add('dark-mode');
         }
-        const savedVoiceType = localStorage.getItem('datex_voice_type') || 'male';
-        const savedVoiceSpeed = localStorage.getItem('datex_voice_speed') || '1';
-        document.getElementById('voice-type-select').value = savedVoiceType;
-        document.getElementById('voice-speed-slider').value = savedVoiceSpeed;
     });
 
     function toggleSettings() {
@@ -530,24 +490,6 @@
         const overlay = document.getElementById('settings-overlay');
         modal.classList.toggle('active');
         overlay.classList.toggle('active');
-    }
-
-    function toggleDarkMode() {
-        const isDark = document.getElementById('dark-mode-toggle').checked;
-        if(isDark) {
-            document.body.classList.add('dark-mode');
-            localStorage.setItem('datex_theme', 'dark');
-        } else {
-            document.body.classList.remove('dark-mode');
-            localStorage.setItem('datex_theme', 'light');
-        }
-    }
-
-    function saveVoiceSettings() {
-        const type = document.getElementById('voice-type-select').value;
-        const speed = document.getElementById('voice-speed-slider').value;
-        localStorage.setItem('datex_voice_type', type);
-        localStorage.setItem('datex_voice_speed', speed);
     }
 
     document.addEventListener('gesturestart', function (e) {
@@ -808,13 +750,10 @@
 
         ttsUtterance = new SpeechSynthesisUtterance(textSegment);
         
-        ttsUtterance.rate = parseFloat(localStorage.getItem('datex_voice_speed') || '1');
-        let prefType = localStorage.getItem('datex_voice_type') || 'male';
-
         let voices = window.speechSynthesis.getVoices();
         if(voices.length > 0) {
-            let selectedVoice = voices.find(v => v.name.toLowerCase().includes(prefType) && (v.lang.includes('en') || v.lang.includes('hi'))) 
-                                || voices.find(v => v.name.toLowerCase().includes(prefType))
+            let selectedVoice = voices.find(v => v.name.toLowerCase().includes('male') && (v.lang.includes('en') || v.lang.includes('hi'))) 
+                                || voices.find(v => v.name.toLowerCase().includes('male'))
                                 || voices.find(v => v.lang === 'hi-IN' || v.lang === 'en-IN') 
                                 || voices[0];
             if (selectedVoice) ttsUtterance.voice = selectedVoice;
