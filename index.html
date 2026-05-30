@@ -75,15 +75,25 @@
         .sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: #f9f9f9; border-right: 1px solid #eee; transition: 0.3s; z-index: 1001; display: flex; flex-direction: column; }
         .sidebar.active { left: 0; }
 
-        /* Settings area (Top) - ICON ENLARGED */
         .sidebar-top { display: flex; justify-content: space-between; align-items: center; padding: 20px 20px 10px 20px; font-size: 18px; font-weight: 500; color: #333; flex-shrink: 0; }
         .settings-group { display: flex; align-items: center; gap: 12px; cursor: pointer; }
-        .settings-group i.fa-cog { background: transparent; color: #333; width: 38px; height: 38px; border: 1.5px solid #555; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; transition: 0.2s; }
+        .settings-group i.fa-cog { 
+            background: transparent; 
+            color: #333; 
+            width: 38px; 
+            height: 38px; 
+            border: 1.5px solid #555; 
+            border-radius: 50%; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            font-size: 24px; 
+            transition: 0.2s; 
+        }
         .close-sidebar-btn { cursor: pointer; color: #555; font-size: 20px; }
 
-        /* Invisible Wall for RECENT CHATS */
-        .sidebar-header { padding: 25px 20px 15px 20px; flex-shrink: 0; background-color: #f9f9f9; z-index: 2; transition: background-color 0.3s; }
-        .sidebar h2 { margin: 0 0 10px 0; font-size: 12px; color: #000; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .sidebar-header { padding: 35px 20px 0px 20px; flex-shrink: 0; background-color: #f9f9f9; z-index: 2; transition: background-color 0.3s; }
+        .sidebar h2 { margin: 0; font-size: 12px; color: #000; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
 
         .sidebar-content { padding: 0 20px 20px 20px; flex: 1; overflow-y: auto; }
         .chat-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
@@ -228,15 +238,75 @@
         .attachment-overlay.active { display: block; }
         .hidden-input { display: none; }
 
-        /* --- SETTINGS MODAL UI --- */
+        /* --- NEW PRO SETTINGS MODAL UI --- */
         .settings-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 2000; display: none; cursor: pointer; }
         .settings-overlay.active { display: block; }
         .settings-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 90%; max-width: 350px; background: #fff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 2001; opacity: 0; visibility: hidden; transition: 0.2s; padding: 20px; display: flex; flex-direction: column; }
         .settings-modal.active { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
-        .settings-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 18px; font-weight: 600; color: #333; }
+        
+        .settings-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 18px; font-weight: 600; color: #333; }
         .settings-header i { cursor: pointer; color: #555; padding: 5px; font-size: 20px; }
-        .settings-body { display: flex; flex-direction: column; padding: 10px 0; }
+        .settings-body { display: flex; flex-direction: column; }
 
+        /* Custom Radio Buttons Styling */
+        .setting-section-title { font-size: 16px; font-weight: 700; color: #111; display: flex; align-items: center; gap: 8px; margin-top: 15px; }
+        .setting-section-title i { font-size: 18px; color: #555; }
+        
+        .radio-group { display: flex; flex-direction: column; gap: 14px; margin-top: 12px; margin-bottom: 20px; padding-left: 8px; }
+        .radio-label { display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 15px; font-weight: 500; color: #333; }
+        .radio-input { display: none; }
+        .radio-circle { width: 20px; height: 20px; border: 2px solid #888; border-radius: 50%; position: relative; transition: 0.2s; }
+        
+        .radio-input:checked + .radio-circle { border-color: #000; }
+        .radio-input:checked + .radio-circle::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 10px; height: 10px; background: #000; border-radius: 50%; }
+
+        /* Custom Select Styling */
+        .settings-select { width: 100%; padding: 12px; border-radius: 12px; background: #f0f0f0; border: 1.5px solid #ddd; font-size: 14px; outline: none; margin-top: 10px; color: #333; font-weight: 500; }
+
+        /* --- DARK MODE LOGIC --- */
+        body.dark-mode { background-color: #121212; color: #e0e0e0; }
+        body.dark-mode .sidebar { background: #1a1a1a; border-color: #333; }
+        body.dark-mode .sidebar-header, body.dark-mode .sidebar-top { background: #1a1a1a; color: #e0e0e0; }
+        body.dark-mode .sidebar h2 { color: #888; }
+        body.dark-mode .chat-item { border-color: #444; color: #ccc; }
+        body.dark-mode .chat-item:hover { background: #2c2c2c; }
+        body.dark-mode .chat-item.selected-active { background: #333 !important; border-color: #777 !important; color: #fff !important; }
+        body.dark-mode .profile-icon span { color: #e0e0e0; }
+        body.dark-mode .profile-icon i { color: #aaa; }
+        body.dark-mode .settings-group i.fa-cog { background: transparent; color: #e0e0e0; border-color: #aaa; }
+        body.dark-mode header { background: #1a1a1a; border-color: #333; }
+        body.dark-mode .model-name { color: #e0e0e0; }
+        body.dark-mode .menu-line { background: #ccc; }
+        body.dark-mode .version-pill { background: #333; border-color: #444; color: #ccc; }
+        body.dark-mode .welcome-screen { color: #ccc; }
+        body.dark-mode .welcome-screen span { color: #fff; }
+        body.dark-mode .bottom-container { background: #121212; }
+        body.dark-mode .chat-input-container { background: #1e1e1e; border-color: #333; }
+        body.dark-mode .input-bar textarea { color: #e0e0e0; }
+        body.dark-mode #mike-btn { color: #aaa; }
+        body.dark-mode .user-bubble { background-color: #2c2c2c; color: #e0e0e0; }
+        body.dark-mode .ai-bubble { background-color: #1a1a1a; border-color: #444; color: #e0e0e0; }
+        body.dark-mode .action-btn { color: #888; }
+        body.dark-mode .action-btn:hover { color: #fff; }
+        body.dark-mode .msg-menu { background: #2c2c2c; border-color: #444; }
+        body.dark-mode .msg-menu button { color: #e0e0e0; border-color: #444; }
+        body.dark-mode .attachment-menu { background: #1a1a1a; }
+        body.dark-mode .attachment-option .icon-box { background: #2c2c2c; border-color: #444; color: #ccc; }
+        body.dark-mode .attachment-option span { color: #ccc; }
+        
+        /* Dark mode for Settings Menu */
+        body.dark-mode .settings-modal { background: #1a1a1a; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        body.dark-mode .settings-header { color: #fff; }
+        body.dark-mode .settings-header i { color: #aaa; }
+        body.dark-mode .setting-section-title { color: #fff; }
+        body.dark-mode .setting-section-title i { color: #bbb; }
+        body.dark-mode .radio-label { color: #e0e0e0; }
+        body.dark-mode .radio-circle { border-color: #aaa; }
+        body.dark-mode .radio-input:checked + .radio-circle { border-color: #fff; }
+        body.dark-mode .radio-input:checked + .radio-circle::after { background: #fff; }
+        body.dark-mode .settings-select { background: #2c2c2c; color: #fff; border-color: #444; }
+        
+        body.dark-mode pre { background: #000; border-color: #444; }
     </style>
 </head>
 <body onclick="hideMsgMenu()">
@@ -266,8 +336,50 @@
             <span>Settings</span>
             <i class="fas fa-times" onclick="toggleSettings()"></i>
         </div>
-        <div class="settings-body" style="text-align: center; color: #888; font-size: 14px; padding: 20px 0;">
-            More features coming soon...
+        <div class="settings-body">
+            
+            <div class="setting-section-title" style="margin-top: 0;">
+                <i class="fas fa-sun"></i> Theme
+            </div>
+            <div class="radio-group">
+                <label class="radio-label">
+                    Light
+                    <input type="radio" name="app_theme" value="light" class="radio-input" onchange="applyThemeSetting()" checked>
+                    <div class="radio-circle"></div>
+                </label>
+                <label class="radio-label">
+                    Dark
+                    <input type="radio" name="app_theme" value="dark" class="radio-input" onchange="applyThemeSetting()">
+                    <div class="radio-circle"></div>
+                </label>
+            </div>
+
+            <div class="setting-section-title">
+                <i class="fas fa-wave-square"></i> AI Voice
+            </div>
+            <div class="radio-group">
+                <label class="radio-label">
+                    Male
+                    <input type="radio" name="ai_voice" value="male" class="radio-input" onchange="saveVoiceSettings()">
+                    <div class="radio-circle"></div>
+                </label>
+                <label class="radio-label">
+                    Female
+                    <input type="radio" name="ai_voice" value="female" class="radio-input" onchange="saveVoiceSettings()" checked>
+                    <div class="radio-circle"></div>
+                </label>
+            </div>
+
+            <div class="setting-section-title">
+                <i class="fas fa-file-signature"></i> Response Language
+            </div>
+            <select id="response-language-select" class="settings-select" onchange="saveLanguageSettings()">
+                <option value="auto">Auto (Detect)</option>
+                <option value="english">English Only</option>
+                <option value="hindi">Hindi Only (हिंदी)</option>
+                <option value="hinglish">Hinglish Only</option>
+            </select>
+
         </div>
     </div>
 
@@ -433,6 +545,23 @@
                 window.speechSynthesis.getVoices();
             };
         }
+        
+        // --- SETTINGS INITIALIZATION LOGIC ---
+        const savedTheme = localStorage.getItem('datex_theme') || 'light';
+        if(savedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+            document.querySelector('input[name="app_theme"][value="dark"]').checked = true;
+        } else {
+            document.querySelector('input[name="app_theme"][value="light"]').checked = true;
+        }
+
+        const savedVoice = localStorage.getItem('datex_voice_type') || 'female';
+        const voiceRadio = document.querySelector(`input[name="ai_voice"][value="${savedVoice}"]`);
+        if(voiceRadio) voiceRadio.checked = true;
+
+        const savedLang = localStorage.getItem('datex_response_lang') || 'auto';
+        const langSelect = document.getElementById('response-language-select');
+        if(langSelect) langSelect.value = savedLang;
     });
 
     function toggleSettings() {
@@ -440,6 +569,28 @@
         const overlay = document.getElementById('settings-overlay');
         modal.classList.toggle('active');
         overlay.classList.toggle('active');
+    }
+
+    // --- NEW RADIO BUTTON LOGIC ---
+    function applyThemeSetting() {
+        const theme = document.querySelector('input[name="app_theme"]:checked').value;
+        if(theme === 'dark') {
+            document.body.classList.add('dark-mode');
+            localStorage.setItem('datex_theme', 'dark');
+        } else {
+            document.body.classList.remove('dark-mode');
+            localStorage.setItem('datex_theme', 'light');
+        }
+    }
+
+    function saveVoiceSettings() {
+        const voice = document.querySelector('input[name="ai_voice"]:checked').value;
+        localStorage.setItem('datex_voice_type', voice);
+    }
+
+    function saveLanguageSettings() {
+        const lang = document.getElementById('response-language-select').value;
+        localStorage.setItem('datex_response_lang', lang);
     }
 
     document.addEventListener('gesturestart', function (e) {
@@ -700,10 +851,12 @@
 
         ttsUtterance = new SpeechSynthesisUtterance(textSegment);
         
+        let prefType = localStorage.getItem('datex_voice_type') || 'female';
+
         let voices = window.speechSynthesis.getVoices();
         if(voices.length > 0) {
-            let selectedVoice = voices.find(v => v.name.toLowerCase().includes('male') && (v.lang.includes('en') || v.lang.includes('hi'))) 
-                                || voices.find(v => v.name.toLowerCase().includes('male'))
+            let selectedVoice = voices.find(v => v.name.toLowerCase().includes(prefType) && (v.lang.includes('en') || v.lang.includes('hi'))) 
+                                || voices.find(v => v.name.toLowerCase().includes(prefType))
                                 || voices.find(v => v.lang === 'hi-IN' || v.lang === 'en-IN') 
                                 || voices[0];
             if (selectedVoice) ttsUtterance.voice = selectedVoice;
@@ -1508,12 +1661,23 @@
         const dateStr = now.toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
         const timeStr = now.toLocaleTimeString('en-IN');
 
+        /* --- UPDATED: SYSTEM PROMPT INJECTS SELECTED LANGUAGE --- */
+        let responseLangPref = localStorage.getItem('datex_response_lang') || 'auto';
+        let langInstruction = "Always respond naturally in the exact language and script the user is speaking.";
+        if (responseLangPref === 'english') {
+            langInstruction = "You MUST strictly respond in English only.";
+        } else if (responseLangPref === 'hindi') {
+            langInstruction = "You MUST strictly respond in Hindi (Devanagari script) only.";
+        } else if (responseLangPref === 'hinglish') {
+            langInstruction = "You MUST strictly respond in Hinglish (Hindi words written in English letters).";
+        }
+
         let dynamicSystemPrompt = `You are DATEX AI. Your name is strictly 'DATEX AI'. You must never identify as Llama, Meta, or OpenAI. 
 CURRENT REAL-TIME DATA: Today is ${dateStr} and the current time is ${timeStr}.
 CRITICAL INSTRUCTIONS:
 1. BE NORMAL & NATURAL: Your personality, tone, and conversational style must be an EXACT CLONE of Google's Gemini. Be conversational, empathetic, friendly, and highly intelligent.
 2. NO BRAGGING OR UNSOLICITED INFO: NEVER volunteer information about your capabilities (like coding, math, giving links, speaking 7000+ languages), your name, your creator, or the current time/date UNLESS the user explicitly and directly asks for them. Keep your answers directly focused on the user's prompt.
-3. MULTILINGUAL CAPABILITY: You understand and can converse fluently in all global languages (7000+ including Hinglish). Always respond naturally in the exact language and script the user is speaking. 
+3. MULTILINGUAL CAPABILITY: ${langInstruction}
 4. STRICT LANGUAGE SCRIPT LOCK: You are FORBIDDEN from using Urdu script (Arabic/Persian characters like اردو) under any circumstances. If the user speaks in Hindi or Hinglish, reply ONLY in Devanagari script (हिंदी) or Latin script (Hinglish/English).
 5. ADVANCED MATHEMATICS (STRICT): A backend calculator solves math for you. IF a secret System Note provides a math result, YOU ARE FORBIDDEN from calculating it yourself. You MUST copy the exact number from the secret note and present it as your final answer.
 6. LIVE INTERNET & FAKE LINKS: You HAVE real-time live internet access. DO NOT INVENT, GUESS, OR HALLUCINATE LINKS. If you do not have the exact URL provided in the [System Note (Real-Time Internet Data)], you MUST state that you don't have the link. Only format provided URLs like [Website Name](https://...).
