@@ -114,7 +114,10 @@
 
         .header-center { flex: 1; text-align: center; }
         .model-name { font-weight: 600; font-size: 18px; color: #1a1a1a; }
-        .version-pill { font-size: 10px; background: #f0f0f0; display: inline-block; padding: 2px 10px; border-radius: 12px; color: #777; border: 1px solid #ddd; margin-top: 4px; }
+        
+        /* FIX 1: Increased size, bold text, changed color to #000, and moved it down slightly */
+        .version-pill { font-size: 11.5px; font-weight: 600; background: #f0f0f0; display: inline-block; padding: 4px 14px; border-radius: 14px; color: #000; border: 1px solid #ddd; margin-top: 7px; }
+        
         .logo-container img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 1.5px solid #eee; }
 
         .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 10px 20px 20px 20px; width: 100%; max-width: 800px; margin: 0 auto; scrollbar-width: none; }
@@ -208,8 +211,12 @@
         .action-bar { display: flex; gap: 15px; margin-top: 5px; padding: 0 10px; align-items: center; }
         .user-action-bar { justify-content: flex-end; }
         .ai-action-bar { justify-content: flex-start; }
+        
         .action-btn { background: transparent; border: none; color: #aaa; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; transition: 0.2s; padding: 5px; }
         .action-btn:hover { color: #333; }
+        
+        /* FIX 3: Custom class to make 3-dots and retry button pure black */
+        .btn-black-icon { color: #000 !important; }
 
         .attachment-menu { position: fixed; bottom: -350px; left: 0; width: 100%; background: #fff; border-top-left-radius: 20px; border-top-right-radius: 20px; box-shadow: 0 -5px 25px rgba(0,0,0,0.15); padding: 0 0 40px 0; transition: bottom 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); z-index: 2000; }
         .attachment-menu.active { bottom: 0; }
@@ -251,13 +258,11 @@
         .custom-select-btn { width: calc(100% - 10px); padding: 12px 40px 12px 15px; border-radius: 10px; background: #f5f5f5; border: 1.5px solid #ddd; font-size: 14px; margin-left: 5px; color: #333; font-weight: 500; display: flex; align-items: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .select-arrow { position: absolute; right: 25px; top: 50%; transform: translateY(-70%) rotate(45deg); width: 8px; height: 8px; border-right: 2.5px solid #000; border-bottom: 2.5px solid #000; pointer-events: none; }
 
-        /* --- NEW PERFECT LANGUAGE MODAL UI --- */
+        /* --- LANGUAGE MODAL UI --- */
         .lang-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2100; display: none; }
         .lang-modal-overlay.active { display: block; }
-        
         .lang-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 90%; max-width: 350px; max-height: 75vh; background: #fff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 2101; opacity: 0; visibility: hidden; transition: 0.2s; display: flex; flex-direction: column; overflow: hidden; }
         .lang-modal.active { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
-        
         .lang-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 25px; border-bottom: 1px solid #eee; font-size: 18px; font-weight: 700; color: #333; background: #fff; z-index: 10; }
         .lang-modal-header i { cursor: pointer; color: #555; padding: 5px; font-size: 20px; }
         .lang-list { flex: 1; overflow-y: auto; padding: 10px 15px 20px 15px; scrollbar-width: none; }
@@ -276,7 +281,10 @@
         body.dark-mode header { background: #1a1a1a; border-color: #333; }
         body.dark-mode .model-name { color: #e0e0e0; }
         body.dark-mode .menu-line { background: #ccc; }
-        body.dark-mode .version-pill { background: #333; border-color: #444; color: #ccc; }
+        
+        /* Dark mode pill update */
+        body.dark-mode .version-pill { background: #333; border-color: #444; color: #fff; }
+        
         body.dark-mode .welcome-screen { color: #ccc; }
         body.dark-mode .welcome-screen span { color: #fff; }
         body.dark-mode .bottom-container { background: #121212; }
@@ -287,6 +295,10 @@
         body.dark-mode .ai-bubble { background-color: #1a1a1a; border-color: #444; color: #e0e0e0; }
         body.dark-mode .action-btn { color: #888; }
         body.dark-mode .action-btn:hover { color: #fff; }
+        
+        /* Dark mode 3-dots color update */
+        body.dark-mode .btn-black-icon { color: #fff !important; }
+
         body.dark-mode .msg-menu { background: #2c2c2c; border-color: #444; }
         body.dark-mode .msg-menu button { color: #e0e0e0; border-color: #444; }
         body.dark-mode .attachment-menu { background: #1a1a1a; }
@@ -1391,7 +1403,7 @@
                                 <span class="user-msg-text" style="${(attachment && attachment.type === 'audio') ? 'display:none !important;' : ''}">${text ? text : ''}</span>
                             </div>
                             <div class="action-bar user-action-bar">
-                                <button class="action-btn" onclick="openMenu(event, this)"><i class="fas fa-ellipsis-v"></i></button>
+                                <button class="action-btn btn-black-icon" onclick="openMenu(event, this)"><i class="fas fa-ellipsis-v"></i></button>
                             </div>
                          </div>`;
         container.appendChild(row);
@@ -1426,10 +1438,11 @@
         if (container && !container.querySelector('.action-bar')) {
             let html = '<div class="action-bar ai-action-bar">';
             
+            /* FIX 2 & 3: 3 Dots First (Black), then Retry (Black) if stopped, then Speaker */
+            html += `<button class="action-btn btn-black-icon" onclick="openMenu(event, this)"><i class="fas fa-ellipsis-v"></i></button>`;
+            
             if (isStopped) { 
-                html += `<button class="action-btn" onclick="regenerateMessage(this)"><i class="fas fa-redo"></i></button>`;
-            } else {
-                html += `<button class="action-btn" onclick="openMenu(event, this)"><i class="fas fa-ellipsis-v"></i></button>`;
+                html += `<button class="action-btn btn-black-icon" onclick="regenerateMessage(this)"><i class="fas fa-redo"></i></button>`;
             }
             
             html += `<button class="action-btn tts-btn" onclick="speakText(this)" style="background: #000; color: #fff; width: 30px; height: 30px; border-radius: 50%; padding: 0;"><i class="fas fa-volume-up" style="font-size: 13px;"></i></button></div>`;
@@ -1619,10 +1632,11 @@
             if (stopGenerationFlag) {
                 const aiMsgIdx = parseInt(rowElement.getAttribute('data-index'));
                 if(!isNaN(aiMsgIdx) && chatHistory[boundChatIndex] && chatHistory[boundChatIndex].messages[aiMsgIdx]) { 
-                    chatHistory[boundChatIndex].messages[aiMsgIdx].content = element.innerHTML; 
+                    chatHistory[boundChatIndex].messages[aiMsgIdx].content = "You stopped this response"; 
                     try { localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); } catch(e) {}
                 }
                 if (activeChatIndex === boundChatIndex) {
+                    element.innerHTML = "You stopped this response";
                     resetSendButton(); addAiActions(rowElement, true); 
                 }
                 return;
