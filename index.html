@@ -80,8 +80,7 @@
         .settings-group i.fa-cog { background: transparent; color: #333; width: 38px; height: 38px; border: 1.5px solid #555; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; transition: 0.2s; }
         .close-sidebar-btn { cursor: pointer; color: #555; font-size: 20px; }
 
-        /* FIX: Gap added between RECENT CHATS and chat list so it doesn't stick */
-        .sidebar-header { padding: 35px 20px 5px 20px; flex-shrink: 0; background-color: #f9f9f9; z-index: 2; transition: background-color 0.3s; }
+        .sidebar-header { padding: 35px 20px 15px 20px; flex-shrink: 0; background-color: #f9f9f9; z-index: 2; transition: background-color 0.3s; }
         .sidebar h2 { margin: 0 0 10px 0; font-size: 12px; color: #000; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
 
         .sidebar-content { padding: 0 20px 20px 20px; flex: 1; overflow-y: auto; }
@@ -227,30 +226,28 @@
         .attachment-overlay.active { display: block; }
         .hidden-input { display: none; }
 
-        /* --- NEW PRO SETTINGS MODAL UI --- */
+        /* --- SETTINGS MODAL UI --- */
         .settings-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 2000; display: none; cursor: pointer; }
         .settings-overlay.active { display: block; }
         .settings-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 90%; max-width: 350px; background: #fff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 2001; opacity: 0; visibility: hidden; transition: 0.2s; padding: 25px; display: flex; flex-direction: column; }
         .settings-modal.active { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
         
-        .settings-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 18px; font-weight: 600; color: #333; }
+        .settings-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 18px; font-weight: 700; color: #333; }
         .settings-header i { cursor: pointer; color: #555; padding: 5px; font-size: 20px; }
-        .settings-body { display: flex; flex-direction: column; }
+        .settings-body { display: flex; flex-direction: column; overflow-y: auto; max-height: 70vh; scrollbar-width: none; }
 
-        /* Custom Radio Buttons Styling */
-        .setting-section-title { font-size: 16px; font-weight: 700; color: #111; display: flex; align-items: center; gap: 8px; margin-top: 15px; }
-        .setting-section-title svg { color: #555; display: inline-block; flex-shrink: 0; }
+        .setting-section { margin-bottom: 25px; }
+        .setting-section:last-child { margin-bottom: 10px; }
+        .setting-section-title { font-size: 16px; font-weight: 700; color: #111; display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .setting-section-title svg { color: #555; display: inline-block; flex-shrink: 0; } 
         
-        .radio-group { display: flex; flex-direction: column; gap: 14px; margin-top: 12px; margin-bottom: 20px; padding-left: 8px; }
-        .radio-label { display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 15px; font-weight: 500; color: #333; }
-        .radio-input { display: none; }
-        .radio-circle { width: 20px; height: 20px; border: 2px solid #888; border-radius: 50%; position: relative; transition: 0.2s; }
-        
-        .radio-input:checked + .radio-circle { border-color: #000; }
-        .radio-input:checked + .radio-circle::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 10px; height: 10px; background: #000; border-radius: 50%; }
+        .radio-option { display: flex; justify-content: space-between; align-items: center; cursor: pointer; color: #333; font-weight: 500; font-size: 15px; padding: 8px 5px 8px 10px; }
+        .radio-option input { display: none; }
+        .custom-radio { width: 20px; height: 20px; border: 2px solid #aaa; border-radius: 50%; position: relative; transition: 0.2s; }
+        .radio-option input:checked + .custom-radio { border-color: #000; }
+        .radio-option input:checked + .custom-radio::after { content: ''; position: absolute; width: 10px; height: 10px; background: #000; border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); }
 
-        /* Custom Select Styling */
-        .settings-select { width: 100%; padding: 12px; border-radius: 12px; background: #f0f0f0; border: 1.5px solid #ddd; font-size: 14px; outline: none; margin-top: 10px; color: #333; font-weight: 500; }
+        .custom-select { width: 100%; padding: 12px 15px; border-radius: 10px; background: #f5f5f5; border: 1.5px solid #ddd; font-size: 14px; outline: none; margin-top: 5px; margin-left: 5px; width: calc(100% - 10px); color: #333; font-weight: 500; appearance: none; }
 
         /* --- DARK MODE LOGIC --- */
         body.dark-mode { background-color: #121212; color: #e0e0e0; }
@@ -283,17 +280,16 @@
         body.dark-mode .attachment-option .icon-box { background: #2c2c2c; border-color: #444; color: #ccc; }
         body.dark-mode .attachment-option span { color: #ccc; }
         
-        /* Dark mode for Settings Menu */
         body.dark-mode .settings-modal { background: #1a1a1a; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         body.dark-mode .settings-header { color: #fff; }
         body.dark-mode .settings-header i { color: #aaa; }
         body.dark-mode .setting-section-title { color: #fff; }
         body.dark-mode .setting-section-title svg { color: #bbb; } 
-        body.dark-mode .radio-label { color: #e0e0e0; }
-        body.dark-mode .radio-circle { border-color: #aaa; }
-        body.dark-mode .radio-input:checked + .radio-circle { border-color: #fff; }
-        body.dark-mode .radio-input:checked + .radio-circle::after { background: #fff; }
-        body.dark-mode .settings-select { background: #2c2c2c; color: #fff; border-color: #444; }
+        body.dark-mode .radio-option { color: #e0e0e0; }
+        body.dark-mode .custom-radio { border-color: #666; }
+        body.dark-mode .radio-option input:checked + .custom-radio { border-color: #fff; }
+        body.dark-mode .radio-option input:checked + .custom-radio::after { background: #fff; }
+        body.dark-mode .custom-select { background: #2c2c2c; color: #fff; border-color: #444; }
         
         body.dark-mode pre { background: #000; border-color: #444; }
     </style>
@@ -327,70 +323,295 @@
         </div>
         <div class="settings-body">
             
-            <div class="setting-section-title" style="margin-top: 0;">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="5"></circle>
-                    <line x1="12" y1="2" x2="12" y2="4"></line>
-                    <line x1="12" y1="20" x2="12" y2="22"></line>
-                    <line x1="4.93" y1="4.93" x2="6.34" y2="6.34"></line>
-                    <line x1="17.66" y1="17.66" x2="19.07" y2="19.07"></line>
-                    <line x1="2" y1="12" x2="4" y2="12"></line>
-                    <line x1="20" y1="12" x2="22" y2="12"></line>
-                    <line x1="4.93" y1="19.07" x2="6.34" y2="17.66"></line>
-                    <line x1="17.66" y1="6.34" x2="19.07" y2="4.93"></line>
-                </svg>
-                Theme
-            </div>
-            <div class="radio-group">
-                <label class="radio-label">
-                    Light
-                    <input type="radio" name="app_theme" value="light" class="radio-input" onchange="applyThemeSetting()" checked>
-                    <div class="radio-circle"></div>
+            <div class="setting-section">
+                <div class="setting-section-title">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="2" x2="12" y2="4"></line>
+                        <line x1="12" y1="20" x2="12" y2="22"></line>
+                        <line x1="4.93" y1="4.93" x2="6.34" y2="6.34"></line>
+                        <line x1="17.66" y1="17.66" x2="19.07" y2="19.07"></line>
+                        <line x1="2" y1="12" x2="4" y2="12"></line>
+                        <line x1="20" y1="12" x2="22" y2="12"></line>
+                        <line x1="4.93" y1="19.07" x2="6.34" y2="17.66"></line>
+                        <line x1="17.66" y1="6.34" x2="19.07" y2="4.93"></line>
+                    </svg>
+                    Theme
+                </div>
+                <label class="radio-option">
+                    <span>Light</span>
+                    <input type="radio" name="app_theme" value="light" checked onchange="applyThemeSetting()">
+                    <div class="custom-radio"></div>
                 </label>
-                <label class="radio-label">
-                    Dark
-                    <input type="radio" name="app_theme" value="dark" class="radio-input" onchange="applyThemeSetting()">
-                    <div class="radio-circle"></div>
-                </label>
-            </div>
-
-            <div class="setting-section-title">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="5" y1="10" x2="5" y2="14"></line>
-                    <line x1="9" y1="6" x2="9" y2="18"></line>
-                    <line x1="13" y1="3" x2="13" y2="21"></line>
-                    <line x1="17" y1="6" x2="17" y2="18"></line>
-                    <line x1="21" y1="10" x2="21" y2="14"></line>
-                </svg>
-                AI Voice
-            </div>
-            <div class="radio-group">
-                <label class="radio-label">
-                    Male
-                    <input type="radio" name="ai_voice" value="male" class="radio-input" onchange="saveVoiceSettings()">
-                    <div class="radio-circle"></div>
-                </label>
-                <label class="radio-label">
-                    Female
-                    <input type="radio" name="ai_voice" value="female" class="radio-input" onchange="saveVoiceSettings()" checked>
-                    <div class="radio-circle"></div>
+                <label class="radio-option">
+                    <span>Dark</span>
+                    <input type="radio" name="app_theme" value="dark" onchange="applyThemeSetting()">
+                    <div class="custom-radio"></div>
                 </label>
             </div>
 
-            <div class="setting-section-title">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                    <polyline points="14 2 14 8 20 8"></polyline>
-                    <path d="M10.5 17.5L16 12l-1.5-1.5L9 16v1.5h1.5z"></path>
-                </svg>
-                Response Language
+            <div class="setting-section">
+                <div class="setting-section-title">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="10" x2="5" y2="14"></line>
+                        <line x1="9" y1="6" x2="9" y2="18"></line>
+                        <line x1="13" y1="3" x2="13" y2="21"></line>
+                        <line x1="17" y1="6" x2="17" y2="18"></line>
+                        <line x1="21" y1="10" x2="21" y2="14"></line>
+                    </svg>
+                    AI Voice
+                </div>
+                <label class="radio-option">
+                    <span>Male</span>
+                    <input type="radio" name="ai_voice" value="male" onchange="saveVoiceSettings()">
+                    <div class="custom-radio"></div>
+                </label>
+                <label class="radio-option">
+                    <span>Female</span>
+                    <input type="radio" name="ai_voice" value="female" checked onchange="saveVoiceSettings()">
+                    <div class="custom-radio"></div>
+                </label>
             </div>
-            <select id="response-language-select" class="settings-select" onchange="saveLanguageSettings()">
-                <option value="auto">Auto (Detect)</option>
-                <option value="english">English Only</option>
-                <option value="hindi">Hindi Only (हिंदी)</option>
-                <option value="hinglish">Hinglish</option>
-            </select>
+
+            <div class="setting-section">
+                <div class="setting-section-title">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                    </svg>
+                    App Language
+                </div>
+                <select id="app-language-select" class="custom-select" onchange="saveAppLanguageSettings()">
+                    <option value="english" selected>English</option>
+                    <option value="afrikaans">Afrikaans</option>
+                    <option value="albanian">Albanian</option>
+                    <option value="amharic">Amharic</option>
+                    <option value="arabic">Arabic</option>
+                    <option value="armenian">Armenian</option>
+                    <option value="azerbaijani">Azerbaijani</option>
+                    <option value="basque">Basque</option>
+                    <option value="belarusian">Belarusian</option>
+                    <option value="bengali">Bengali</option>
+                    <option value="bosnian">Bosnian</option>
+                    <option value="bulgarian">Bulgarian</option>
+                    <option value="burmese">Burmese</option>
+                    <option value="catalan">Catalan</option>
+                    <option value="cebuano">Cebuano</option>
+                    <option value="chinese_simp">Chinese (Simplified)</option>
+                    <option value="chinese_trad">Chinese (Traditional)</option>
+                    <option value="croatian">Croatian</option>
+                    <option value="czech">Czech</option>
+                    <option value="danish">Danish</option>
+                    <option value="dutch">Dutch</option>
+                    <option value="esperanto">Esperanto</option>
+                    <option value="estonian">Estonian</option>
+                    <option value="filipino">Filipino</option>
+                    <option value="finnish">Finnish</option>
+                    <option value="french">French</option>
+                    <option value="galician">Galician</option>
+                    <option value="georgian">Georgian</option>
+                    <option value="german">German</option>
+                    <option value="greek">Greek</option>
+                    <option value="gujarati">Gujarati</option>
+                    <option value="haitian">Haitian Creole</option>
+                    <option value="hausa">Hausa</option>
+                    <option value="hawaiian">Hawaiian</option>
+                    <option value="hebrew">Hebrew</option>
+                    <option value="hindi">Hindi</option>
+                    <option value="hmong">Hmong</option>
+                    <option value="hungarian">Hungarian</option>
+                    <option value="icelandic">Icelandic</option>
+                    <option value="igbo">Igbo</option>
+                    <option value="indonesian">Indonesian</option>
+                    <option value="irish">Irish</option>
+                    <option value="italian">Italian</option>
+                    <option value="japanese">Japanese</option>
+                    <option value="javanese">Javanese</option>
+                    <option value="kannada">Kannada</option>
+                    <option value="kazakh">Kazakh</option>
+                    <option value="khmer">Khmer</option>
+                    <option value="kinyarwanda">Kinyarwanda</option>
+                    <option value="korean">Korean</option>
+                    <option value="kurdish">Kurdish</option>
+                    <option value="kyrgyz">Kyrgyz</option>
+                    <option value="lao">Lao</option>
+                    <option value="latin">Latin</option>
+                    <option value="latvian">Latvian</option>
+                    <option value="lithuanian">Lithuanian</option>
+                    <option value="luxembourgish">Luxembourgish</option>
+                    <option value="macedonian">Macedonian</option>
+                    <option value="malagasy">Malagasy</option>
+                    <option value="malay">Malay</option>
+                    <option value="malayalam">Malayalam</option>
+                    <option value="maltese">Maltese</option>
+                    <option value="maori">Maori</option>
+                    <option value="marathi">Marathi</option>
+                    <option value="mongolian">Mongolian</option>
+                    <option value="nepali">Nepali</option>
+                    <option value="norwegian">Norwegian</option>
+                    <option value="odia">Odia</option>
+                    <option value="pashto">Pashto</option>
+                    <option value="persian">Persian</option>
+                    <option value="polish">Polish</option>
+                    <option value="portuguese">Portuguese</option>
+                    <option value="punjabi">Punjabi</option>
+                    <option value="romanian">Romanian</option>
+                    <option value="russian">Russian</option>
+                    <option value="samoan">Samoan</option>
+                    <option value="scots">Scots Gaelic</option>
+                    <option value="serbian">Serbian</option>
+                    <option value="sesotho">Sesotho</option>
+                    <option value="shona">Shona</option>
+                    <option value="sindhi">Sindhi</option>
+                    <option value="sinhala">Sinhala</option>
+                    <option value="slovak">Slovak</option>
+                    <option value="slovenian">Slovenian</option>
+                    <option value="somali">Somali</option>
+                    <option value="spanish">Spanish</option>
+                    <option value="sundanese">Sundanese</option>
+                    <option value="swahili">Swahili</option>
+                    <option value="swedish">Swedish</option>
+                    <option value="tajik">Tajik</option>
+                    <option value="tamil">Tamil</option>
+                    <option value="tatar">Tatar</option>
+                    <option value="telugu">Telugu</option>
+                    <option value="thai">Thai</option>
+                    <option value="turkish">Turkish</option>
+                    <option value="turkmen">Turkmen</option>
+                    <option value="ukrainian">Ukrainian</option>
+                    <option value="urdu">Urdu</option>
+                    <option value="uyghur">Uyghur</option>
+                    <option value="uzbek">Uzbek</option>
+                    <option value="vietnamese">Vietnamese</option>
+                    <option value="welsh">Welsh</option>
+                    <option value="xhosa">Xhosa</option>
+                    <option value="yiddish">Yiddish</option>
+                    <option value="yoruba">Yoruba</option>
+                    <option value="zulu">Zulu</option>
+                </select>
+            </div>
+
+            <div class="setting-section">
+                <div class="setting-section-title">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <path d="M10.5 17.5L16 12l-1.5-1.5L9 16v1.5h1.5z"></path>
+                    </svg>
+                    Response Language
+                </div>
+                <select id="response-language-select" class="custom-select" onchange="saveLanguageSettings()">
+                    <option value="auto">Auto (Detect)</option>
+                    <option value="afrikaans">Afrikaans</option>
+                    <option value="albanian">Albanian</option>
+                    <option value="amharic">Amharic</option>
+                    <option value="arabic">Arabic</option>
+                    <option value="armenian">Armenian</option>
+                    <option value="azerbaijani">Azerbaijani</option>
+                    <option value="basque">Basque</option>
+                    <option value="belarusian">Belarusian</option>
+                    <option value="bengali">Bengali</option>
+                    <option value="bosnian">Bosnian</option>
+                    <option value="bulgarian">Bulgarian</option>
+                    <option value="burmese">Burmese</option>
+                    <option value="catalan">Catalan</option>
+                    <option value="cebuano">Cebuano</option>
+                    <option value="chinese_simp">Chinese (Simplified)</option>
+                    <option value="chinese_trad">Chinese (Traditional)</option>
+                    <option value="croatian">Croatian</option>
+                    <option value="czech">Czech</option>
+                    <option value="danish">Danish</option>
+                    <option value="dutch">Dutch</option>
+                    <option value="english">English</option>
+                    <option value="esperanto">Esperanto</option>
+                    <option value="estonian">Estonian</option>
+                    <option value="filipino">Filipino</option>
+                    <option value="finnish">Finnish</option>
+                    <option value="french">French</option>
+                    <option value="galician">Galician</option>
+                    <option value="georgian">Georgian</option>
+                    <option value="german">German</option>
+                    <option value="greek">Greek</option>
+                    <option value="gujarati">Gujarati</option>
+                    <option value="haitian">Haitian Creole</option>
+                    <option value="hausa">Hausa</option>
+                    <option value="hawaiian">Hawaiian</option>
+                    <option value="hebrew">Hebrew</option>
+                    <option value="hindi">Hindi</option>
+                    <option value="hinglish">Hinglish</option>
+                    <option value="hmong">Hmong</option>
+                    <option value="hungarian">Hungarian</option>
+                    <option value="icelandic">Icelandic</option>
+                    <option value="igbo">Igbo</option>
+                    <option value="indonesian">Indonesian</option>
+                    <option value="irish">Irish</option>
+                    <option value="italian">Italian</option>
+                    <option value="japanese">Japanese</option>
+                    <option value="javanese">Javanese</option>
+                    <option value="kannada">Kannada</option>
+                    <option value="kazakh">Kazakh</option>
+                    <option value="khmer">Khmer</option>
+                    <option value="kinyarwanda">Kinyarwanda</option>
+                    <option value="korean">Korean</option>
+                    <option value="kurdish">Kurdish</option>
+                    <option value="kyrgyz">Kyrgyz</option>
+                    <option value="lao">Lao</option>
+                    <option value="latin">Latin</option>
+                    <option value="latvian">Latvian</option>
+                    <option value="lithuanian">Lithuanian</option>
+                    <option value="luxembourgish">Luxembourgish</option>
+                    <option value="macedonian">Macedonian</option>
+                    <option value="malagasy">Malagasy</option>
+                    <option value="malay">Malay</option>
+                    <option value="malayalam">Malayalam</option>
+                    <option value="maltese">Maltese</option>
+                    <option value="maori">Maori</option>
+                    <option value="marathi">Marathi</option>
+                    <option value="mongolian">Mongolian</option>
+                    <option value="nepali">Nepali</option>
+                    <option value="norwegian">Norwegian</option>
+                    <option value="odia">Odia</option>
+                    <option value="pashto">Pashto</option>
+                    <option value="persian">Persian</option>
+                    <option value="polish">Polish</option>
+                    <option value="portuguese">Portuguese</option>
+                    <option value="punjabi">Punjabi</option>
+                    <option value="romanian">Romanian</option>
+                    <option value="russian">Russian</option>
+                    <option value="samoan">Samoan</option>
+                    <option value="scots">Scots Gaelic</option>
+                    <option value="serbian">Serbian</option>
+                    <option value="sesotho">Sesotho</option>
+                    <option value="shona">Shona</option>
+                    <option value="sindhi">Sindhi</option>
+                    <option value="sinhala">Sinhala</option>
+                    <option value="slovak">Slovak</option>
+                    <option value="slovenian">Slovenian</option>
+                    <option value="somali">Somali</option>
+                    <option value="spanish">Spanish</option>
+                    <option value="sundanese">Sundanese</option>
+                    <option value="swahili">Swahili</option>
+                    <option value="swedish">Swedish</option>
+                    <option value="tajik">Tajik</option>
+                    <option value="tamil">Tamil</option>
+                    <option value="tatar">Tatar</option>
+                    <option value="telugu">Telugu</option>
+                    <option value="thai">Thai</option>
+                    <option value="turkish">Turkish</option>
+                    <option value="turkmen">Turkmen</option>
+                    <option value="ukrainian">Ukrainian</option>
+                    <option value="urdu">Urdu</option>
+                    <option value="uyghur">Uyghur</option>
+                    <option value="uzbek">Uzbek</option>
+                    <option value="vietnamese">Vietnamese</option>
+                    <option value="welsh">Welsh</option>
+                    <option value="xhosa">Xhosa</option>
+                    <option value="yiddish">Yiddish</option>
+                    <option value="yoruba">Yoruba</option>
+                    <option value="zulu">Zulu</option>
+                </select>
+            </div>
 
         </div>
     </div>
@@ -558,7 +779,7 @@
             };
         }
         
-        // --- SETTINGS INITIALIZATION LOGIC ---
+        // --- INITIALIZE SETTINGS FROM LOCAL STORAGE ---
         // 1. Theme
         if(localStorage.getItem('datex_theme') === 'dark') {
             document.body.classList.add('dark-mode');
@@ -572,7 +793,12 @@
         const voiceRadio = document.querySelector(`input[name="ai_voice"][value="${savedVoice}"]`);
         if(voiceRadio) voiceRadio.checked = true;
 
-        // 3. Response Language
+        // 3. App Language
+        const savedAppLang = localStorage.getItem('datex_app_lang') || 'english';
+        const appLangSelect = document.getElementById('app-language-select');
+        if(appLangSelect) appLangSelect.value = savedAppLang;
+
+        // 4. Response Language
         const savedLang = localStorage.getItem('datex_response_lang') || 'auto';
         const langSelect = document.getElementById('response-language-select');
         if(langSelect) langSelect.value = savedLang;
@@ -600,6 +826,11 @@
     function saveVoiceSettings() {
         const voice = document.querySelector('input[name="ai_voice"]:checked').value;
         localStorage.setItem('datex_voice_type', voice);
+    }
+
+    function saveAppLanguageSettings() {
+        const lang = document.getElementById('app-language-select').value;
+        localStorage.setItem('datex_app_lang', lang);
     }
 
     function saveLanguageSettings() {
@@ -1677,12 +1908,8 @@
 
         let responseLangPref = localStorage.getItem('datex_response_lang') || 'auto';
         let langInstruction = "Always respond naturally in the exact language and script the user is speaking.";
-        if (responseLangPref === 'english') {
-            langInstruction = "You MUST strictly respond in English only.";
-        } else if (responseLangPref === 'hindi') {
-            langInstruction = "You MUST strictly respond in Hindi (Devanagari script) only.";
-        } else if (responseLangPref === 'hinglish') {
-            langInstruction = "You MUST strictly respond in Hinglish (Hindi words written in English letters).";
+        if (responseLangPref !== 'auto') {
+            langInstruction = `You MUST strictly respond in the ${responseLangPref} language only, regardless of what language the user speaks.`;
         }
 
         let dynamicSystemPrompt = `You are DATEX AI. Your name is strictly 'DATEX AI'. You must never identify as Llama, Meta, or OpenAI. 
