@@ -83,7 +83,7 @@
         .sidebar-header { padding: 35px 20px 15px 20px; flex-shrink: 0; background-color: #f9f9f9; z-index: 2; transition: background-color 0.3s; }
         .sidebar h2 { margin: 0 0 10px 0; font-size: 12px; color: #000; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
 
-        .sidebar-content { padding: 0 20px 20px 20px; flex: 1; overflow-y: auto; }
+        .sidebar-content { padding: 0 20px 20px 20px; flex: 1; overflow-y: auto; touch-action: pan-y !important; -webkit-overflow-scrolling: touch !important; overscroll-behavior-y: contain !important; }
         .chat-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
         .chat-item-wrapper { display: flex; align-items: center; gap: 12px; }
         .chat-item { flex: 1; padding: 10px 15px; cursor: pointer; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background: transparent; border: 1.5px solid #888; border-radius: 20px; text-align: left; color: #333; transition: 0.2s; }
@@ -115,8 +115,8 @@
         .line-1 { width: 18px; } .line-2 { width: 13px; } .line-3 { width: 8px; }
 
         .header-center { flex: 1; text-align: center; }
-        .model-name { font-weight: 600; font-size: 18px; color: #1a1a1a; }
-        .version-pill { font-size: 11.5px; font-weight: 600; background: #f0f0f0; display: inline-block; padding: 4px 14px; border-radius: 14px; color: #000; border: 1px solid #ddd; margin-top: 7px; }
+        .model-name { font-weight: 600; font-size: 18px; color: #1a1a1a; margin-top: 4px; }
+        .version-pill { font-size: 11.5px; font-weight: 600; background: #f0f0f0; display: inline-block; padding: 4px 14px; border-radius: 14px; color: #000; border: 1px solid #ddd; margin-top: 9px; }
         
         .logo-container img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: none; }
         .avatar { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: none; flex-shrink: 0; }
@@ -252,9 +252,11 @@
         }
         .settings-header i, .lang-modal-header i { cursor: pointer; color: #555; padding: 5px; font-size: 20px; }
         
+        /* THE MAGIC FIX FOR MOBILE SCROLLING */
         .settings-body, .lang-list { 
-            flex: 1; 
-            overflow-y: scroll !important; 
+            flex: 1 1 auto; 
+            min-height: 0; 
+            overflow-y: auto !important; 
             -webkit-overflow-scrolling: touch !important; 
             touch-action: pan-y !important; 
             overscroll-behavior-y: contain !important; 
