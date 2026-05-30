@@ -76,8 +76,8 @@
         .sidebar.active { left: 0; }
 
         .sidebar-top { display: flex; justify-content: space-between; align-items: center; padding: 20px 20px 10px 20px; font-size: 18px; font-weight: 500; color: #333; flex-shrink: 0; }
-        .settings-group { display: flex; align-items: center; gap: 12px; cursor: pointer; }
-        .settings-group i.fa-cog { background: transparent; color: #333; width: 38px; height: 38px; border: 1.5px solid #555; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; transition: 0.2s; }
+        .settings-group { display: flex; align-items: center; gap: 12px; }
+        .settings-group i.fa-cog { cursor: pointer; background: transparent; color: #333; width: 38px; height: 38px; border: 1.5px solid #555; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; transition: 0.2s; }
         .close-sidebar-btn { cursor: pointer; color: #555; font-size: 20px; }
 
         .sidebar-header { padding: 35px 20px 15px 20px; flex-shrink: 0; background-color: #f9f9f9; z-index: 2; transition: background-color 0.3s; }
@@ -114,7 +114,7 @@
 
         .header-center { flex: 1; text-align: center; }
         .model-name { font-weight: 600; font-size: 18px; color: #1a1a1a; }
-        .version-pill { font-size: 10px; background: #f0f0f0; display: inline-block; padding: 2px 10px; border-radius: 12px; color: #777; border: 1px solid #ddd; }
+        .version-pill { font-size: 10px; background: #f0f0f0; display: inline-block; padding: 2px 10px; border-radius: 12px; color: #777; border: 1px solid #ddd; margin-top: 4px; }
         .logo-container img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 1.5px solid #eee; }
 
         .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 10px 20px 20px 20px; width: 100%; max-width: 800px; margin: 0 auto; scrollbar-width: none; }
@@ -247,19 +247,20 @@
         .radio-option input:checked + .custom-radio { border-color: #000; }
         .radio-option input:checked + .custom-radio::after { content: ''; position: absolute; width: 10px; height: 10px; background: #000; border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); }
 
-        /* FIX 1: Custom Dropdown Trigger (Arrow centered and moved left) */
         .select-wrapper { position: relative; width: 100%; margin-top: 5px; cursor: pointer; }
         .custom-select-btn { width: calc(100% - 10px); padding: 12px 40px 12px 15px; border-radius: 10px; background: #f5f5f5; border: 1.5px solid #ddd; font-size: 14px; margin-left: 5px; color: #333; font-weight: 500; display: flex; align-items: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .select-arrow { position: absolute; right: 25px; top: 50%; transform: translateY(-70%) rotate(45deg); width: 8px; height: 8px; border-right: 2.5px solid #000; border-bottom: 2.5px solid #000; pointer-events: none; }
 
-        /* FIX 2: Custom Dropdown Modal (Compact popup for languages) */
+        /* --- NEW PERFECT LANGUAGE MODAL UI --- */
         .lang-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2100; display: none; }
         .lang-modal-overlay.active { display: block; }
-        .lang-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 85%; max-width: 320px; max-height: 60vh; background: #fff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 2101; opacity: 0; visibility: hidden; transition: 0.2s; display: flex; flex-direction: column; overflow: hidden; }
+        
+        .lang-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 90%; max-width: 350px; max-height: 75vh; background: #fff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 2101; opacity: 0; visibility: hidden; transition: 0.2s; display: flex; flex-direction: column; overflow: hidden; }
         .lang-modal.active { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
-        .lang-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid #eee; font-size: 16px; font-weight: 700; color: #333; background: #fff; z-index: 10; }
-        .lang-modal-header i { cursor: pointer; color: #555; padding: 5px; font-size: 18px; }
-        .lang-list { flex: 1; overflow-y: auto; padding: 10px 10px; scrollbar-width: none; }
+        
+        .lang-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 25px; border-bottom: 1px solid #eee; font-size: 18px; font-weight: 700; color: #333; background: #fff; z-index: 10; }
+        .lang-modal-header i { cursor: pointer; color: #555; padding: 5px; font-size: 20px; }
+        .lang-list { flex: 1; overflow-y: auto; padding: 10px 15px 20px 15px; scrollbar-width: none; }
 
         /* --- DARK MODE LOGIC --- */
         body.dark-mode { background-color: #121212; color: #e0e0e0; }
@@ -450,8 +451,8 @@
 
     <div class="sidebar" id="sidebar">
         <div class="sidebar-top">
-            <div class="settings-group" onclick="toggleSettings()">
-                <i class="fas fa-cog"></i> <span>Settings</span>
+            <div class="settings-group">
+                <i class="fas fa-cog" onclick="toggleSettings()"></i> <span style="cursor: default;">Settings</span>
             </div>
             <i class="fas fa-times close-sidebar-btn" onclick="toggleSidebar()"></i>
         </div>
@@ -553,7 +554,7 @@
     <script>
     let userScrolledUp = false; 
 
-    // --- LANGUAGE DATA FOR CUSTOM DROPDOWN ---
+    // --- LANGUAGE DATA ---
     const appLanguages = [
         {val: 'english', label: 'English'}, {val: 'afrikaans', label: 'Afrikaans'}, {val: 'albanian', label: 'Albanian'},
         {val: 'amharic', label: 'Amharic'}, {val: 'arabic', label: 'Arabic'}, {val: 'armenian', label: 'Armenian'},
@@ -593,7 +594,7 @@
         {val: 'yiddish', label: 'Yiddish'}, {val: 'yoruba', label: 'Yoruba'}, {val: 'zulu', label: 'Zulu'}
     ];
 
-    let currentOpenLangType = ''; // 'app' or 'response'
+    let currentOpenLangType = ''; 
 
     function openLangModal(type) {
         currentOpenLangType = type;
@@ -611,7 +612,6 @@
         } else {
             modalTitle.innerText = 'Response Language';
             currentValue = localStorage.getItem('datex_response_lang') || 'auto';
-            // Insert Auto option for Response
             langList.insertAdjacentHTML('beforeend', createLangOptionHTML('auto', 'Auto (Detect)', currentValue === 'auto'));
         }
 
@@ -648,7 +648,7 @@
             localStorage.setItem('datex_response_lang', val);
             document.getElementById('response-lang-btn').innerText = label;
         }
-        setTimeout(() => closeLangModal(), 150); // slight delay for visual tap effect
+        setTimeout(() => closeLangModal(), 150); 
     }
 
     function scrollToBottomFunc() {
@@ -747,7 +747,7 @@
         resizeHandler();
     }
 
-    const GROQ_API_KEY = "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"; 
+    const GROQ_API_KEY = "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"; 
     const TAVILY_API_KEY = "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"; 
 
     let chatHistory = [];
