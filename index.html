@@ -194,9 +194,8 @@
         pre { background: #1e1e1e; color: #d4d4d4; padding: 45px 15px 15px 15px; border-radius: 12px; margin: 15px 0; overflow-x: auto; position: relative; font-family: 'Consolas', monospace; font-size: 14px; width: 100%; max-width: 100%; border: 1px solid #333; white-space: pre-wrap; word-break: break-word; }
         code { font-family: 'Consolas', monospace; }
 
-        .copy-code-btn { position: absolute; top: 8px; right: 8px; width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.08); color: #d4d4d4; border: none; display: flex; justify-content: center; align-items: center; font-size: 14px; cursor: pointer; z-index: 10; transition: all 0.2s ease; }
-        .copy-code-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
-        .copy-code-btn.active-click { background: rgba(138, 180, 248, 0.2) !important; color: #8ab4f8 !important; transform: scale(0.9); }
+        .copy-code-btn { position: absolute; top: 12px; right: 12px; background: transparent; color: #a1a1aa; border: none; display: flex; justify-content: center; align-items: center; font-size: 16px; cursor: pointer; z-index: 10; transition: color 0.2s ease; padding: 4px; }
+        .copy-code-btn:hover { color: #e4e4e7; }
         
         .msg-menu { position: fixed; background: #fff; border: 1px solid #ddd; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); display: none; z-index: 2000; flex-direction: column; width: 140px; overflow: hidden; transition: background-color 0.3s, border-color 0.3s; }
         .msg-menu button { padding: 12px; border: none; background: none; text-align: left; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 10px; width: 100%; border-bottom: 0.5px solid #f0f0f0; transition: color 0.3s, border-color 0.3s; }
@@ -231,21 +230,35 @@
         /* --- SETTINGS MODAL UI --- */
         .settings-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 2000; display: none; cursor: pointer; }
         .settings-overlay.active { display: block; }
-        .settings-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 90%; max-width: 350px; background: #fff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 2001; opacity: 0; visibility: hidden; transition: 0.2s; padding: 25px; display: flex; flex-direction: column; }
-        .settings-modal.active { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
         
-        .settings-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 18px; font-weight: 700; color: #333; }
-        .settings-header i { cursor: pointer; color: #555; padding: 5px; font-size: 20px; }
-        .settings-body { display: flex; flex-direction: column; overflow-y: auto; max-height: 70vh; scrollbar-width: none; }
+        .settings-modal, .lang-modal { 
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); 
+            width: 90%; max-width: 350px; height: auto; max-height: 480px; 
+            background: #fff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); 
+            z-index: 2001; opacity: 0; visibility: hidden; transition: 0.2s; 
+            display: flex; flex-direction: column; overflow: hidden;
+        }
+        .settings-modal.active, .lang-modal.active { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
+        
+        .settings-header, .lang-modal-header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 20px 25px 15px 25px; border-bottom: 1px solid #eee; 
+            font-size: 18px; font-weight: 700; color: #333; background: #fff; z-index: 10; flex-shrink: 0; 
+        }
+        .settings-header i, .lang-modal-header i { cursor: pointer; color: #555; padding: 5px; font-size: 20px; }
+        
+        .settings-body, .lang-list { 
+            flex: 1; overflow-y: auto; padding: 15px 25px 25px 25px; scrollbar-width: none; 
+        }
 
         .setting-section { margin-bottom: 25px; }
         .setting-section:last-child { margin-bottom: 10px; }
         .setting-section-title { font-size: 16px; font-weight: 700; color: #111; display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
         .setting-section-title svg { color: #555; display: inline-block; flex-shrink: 0; } 
         
-        .radio-option { display: flex; justify-content: space-between; align-items: center; cursor: pointer; color: #333; font-weight: 500; font-size: 15px; padding: 8px 5px 8px 10px; }
+        .radio-option { display: flex; justify-content: space-between; align-items: center; cursor: pointer; color: #333; font-weight: 500; font-size: 15px; padding: 8px 5px 8px 10px; margin-bottom: 4px; }
         .radio-option input { display: none; }
-        .custom-radio { width: 20px; height: 20px; border: 2px solid #aaa; border-radius: 50%; position: relative; transition: 0.2s; }
+        .custom-radio { width: 20px; height: 20px; border: 2px solid #aaa; border-radius: 50%; position: relative; transition: 0.2s; flex-shrink: 0; }
         .radio-option input:checked + .custom-radio { border-color: #000; }
         .radio-option input:checked + .custom-radio::after { content: ''; position: absolute; width: 10px; height: 10px; background: #000; border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); }
 
@@ -253,16 +266,9 @@
         .custom-select-btn { width: calc(100% - 10px); padding: 12px 40px 12px 15px; border-radius: 10px; background: #f5f5f5; border: 1.5px solid #ddd; font-size: 14px; margin-left: 5px; color: #333; font-weight: 500; display: flex; align-items: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .select-arrow { position: absolute; right: 25px; top: 50%; transform: translateY(-70%) rotate(45deg); width: 8px; height: 8px; border-right: 2.5px solid #000; border-bottom: 2.5px solid #000; pointer-events: none; }
 
-        /* --- LANGUAGE MODAL UI --- */
+        /* --- LANGUAGE MODAL OVERLAY --- */
         .lang-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2100; display: none; }
         .lang-modal-overlay.active { display: block; }
-        
-        .lang-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 90%; max-width: 350px; max-height: 75vh; background: #fff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 2101; opacity: 0; visibility: hidden; transition: 0.2s; display: flex; flex-direction: column; overflow: hidden; }
-        .lang-modal.active { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
-        
-        .lang-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 25px; border-bottom: 1px solid #eee; font-size: 18px; font-weight: 700; color: #333; background: #fff; z-index: 10; }
-        .lang-modal-header i { cursor: pointer; color: #555; padding: 5px; font-size: 20px; }
-        .lang-list { flex: 1; overflow-y: auto; padding: 10px 15px 20px 15px; scrollbar-width: none; }
 
         /* --- DARK MODE LOGIC --- */
         body.dark-mode { background-color: #121212; color: #e0e0e0; }
@@ -667,7 +673,6 @@
         setTimeout(() => closeLangModal(), 150); 
     }
 
-    // --- MAGIC AUTO TRANSLATE UI ENGINE ---
     async function translateUI(targetLangVal) {
         let isoCode = langToIso[targetLangVal] || 'en';
         
@@ -696,7 +701,14 @@
                 let data = await res.json();
                 let translatedStr = "";
                 data[0].forEach(item => { if(item[0]) translatedStr += item[0]; });
-                let translatedArray = translatedStr.split('\n').map(s => s.trim());
+                
+                let translatedArray = translatedStr.split('\n').map(s => {
+                    let cleaned = s.trim();
+                    if (cleaned.endsWith('|') || cleaned.endsWith('।')) {
+                        cleaned = cleaned.slice(0, -1).trim();
+                    }
+                    return cleaned;
+                });
                 
                 uniqueTexts.forEach((original, index) => {
                     translationMap[original] = translatedArray[index] || original;
@@ -759,7 +771,7 @@
         }
         document.getElementById('response-lang-btn').innerText = respLangLabel;
 
-        translateUI(savedAppLang); // Start UI translation engine instantly
+        translateUI(savedAppLang); 
     });
 
     function toggleSettings() {
@@ -785,17 +797,13 @@
         localStorage.setItem('datex_voice_type', voice);
     }
 
-    document.addEventListener('gesturestart', function (e) {
-        e.preventDefault();
-    });
-    let lastTouchEnd = 0;
-    document.addEventListener('touchend', function (event) {
-        let now = (new Date()).getTime();
-        if (now - lastTouchEnd <= 300) {
-            event.preventDefault();
+    // FIX: REMOVED THE 300ms TOUCH DELAY HACK TO ENABLE RAPID TAPPING
+
+    document.addEventListener('contextmenu', function(e) {
+        if (e.target.tagName !== 'TEXTAREA' && e.target.tagName !== 'INPUT') {
+            e.preventDefault();
         }
-        lastTouchEnd = now;
-    }, false);
+    });
 
     if (window.visualViewport) {
         const resizeHandler = () => {
@@ -958,7 +966,6 @@
         else { globalAudioPlayer.pause(); icon.className = 'fas fa-play play-btn-icon'; }
     }
 
-    // --- AI VOICE ENGINE MALE/FEMALE LOGIC ---
     function playNextTtsSegment() {
         if (!isTtsPlaying || currentSegmentIdx >= ttsSegments.length || !currentTtsBtn) {
             if (currentSegmentIdx >= ttsSegments.length) stopTTS();
@@ -1009,11 +1016,16 @@
 
         if (!fullText) { btn.querySelector('i').className = 'fas fa-volume-up'; isTtsPlaying = false; return; }
 
-        ttsSegments = fullText.split(/(?<!\d)[.!?\n।]+(?!\d)/).reduce((acc, current) => { if (current && current.trim()) acc.push(current.trim()); return acc; }, []);
+        ttsSegments = fullText.replace(/([.!?।\n])\s*/g, "$1|").split("|").filter(s => s.trim().length > 0);
         if (ttsSegments.length === 0) ttsSegments = [fullText];
 
         currentTtsBtn = currentTtsBtn || btn; currentSegmentIdx = 0; isTtsPlaying = true; btn.querySelector('i').className = 'fas fa-pause';
-        playNextTtsSegment();
+        
+        if(window.speechSynthesis.getVoices().length === 0) {
+            window.speechSynthesis.onvoiceschanged = () => { playNextTtsSegment(); window.speechSynthesis.onvoiceschanged = null; };
+        } else {
+            playNextTtsSegment();
+        }
     }
 
     let isDictating = false; 
@@ -1034,7 +1046,7 @@
                 input.value = currentVal + finalTranscript; autoGrow(input); input.dispatchEvent(new Event('input', { bubbles: true }));
             }
         };
-        recognition.onerror = (e) => { isDictating = false; document.getElementById('mike-btn').classList.remove('recording'); }
+        recognition.onerror = (e) => { console.error("Speech error: " + e.error); isDictating = false; document.getElementById('mike-btn').classList.remove('recording'); }
     }
 
     let ignoreNextClick = false; 
@@ -1169,7 +1181,6 @@
         if (container && !container.querySelector('.action-bar')) {
             let html = '<div class="action-bar ai-action-bar">';
             
-            // ACTION BUTTON ORDER: 3 Dots -> Retry (if stopped) -> Speaker
             html += `<button class="action-btn btn-black-icon" onclick="openMenu(event, this)"><i class="fas fa-ellipsis-v"></i></button>`;
             if (isStopped) { html += `<button class="action-btn btn-black-icon" onclick="regenerateMessage(this)"><i class="fas fa-redo"></i></button>`; }
             html += `<button class="action-btn tts-btn" onclick="speakText(this)" style="background: #000; color: #fff; width: 30px; height: 30px; border-radius: 50%; padding: 0;"><i class="fas fa-volume-up" style="font-size: 13px;"></i></button></div>`;
@@ -1235,7 +1246,22 @@
         hideMsgMenu();
     }
 
-    function copyCode(btn) { const code = btn.parentElement.querySelector('code').innerText; navigator.clipboard.writeText(code).then(() => { btn.classList.add('active-click'); setTimeout(() => { btn.classList.remove('active-click'); }, 300); }); }
+    function copyCode(btn) { 
+        const code = btn.parentElement.querySelector('code').innerText; 
+        navigator.clipboard.writeText(code).then(() => { 
+            const icon = btn.querySelector('i');
+            icon.className = 'fas fa-check'; 
+            icon.style.color = '#4ade80'; 
+
+            if (btn.timeoutId) clearTimeout(btn.timeoutId);
+            
+            btn.timeoutId = setTimeout(() => { 
+                icon.className = 'far fa-copy'; 
+                icon.style.color = '';
+            }, 2000); 
+        }); 
+    }
+
     function escapeHTML(str) { return str.replace(/[&<>"']/g, function(m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; }); }
 
     function formatLinksAndStyles(text) {
@@ -1362,20 +1388,26 @@
         }
 
         const now = new Date(); const dateStr = now.toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }); const timeStr = now.toLocaleTimeString('en-IN');
-        let responseLangPref = localStorage.getItem('datex_response_lang') || 'auto'; let langInstruction = "Always respond naturally in the exact language and script the user is speaking.";
-        if (responseLangPref !== 'auto') { langInstruction = `You MUST strictly respond in the ${responseLangPref} language only, regardless of what language the user speaks.`; }
+        
+        let responseLangPref = localStorage.getItem('datex_response_lang') || 'auto'; 
+        let langInstruction = "";
+        if (responseLangPref === 'auto') {
+            langInstruction = "AUTO-DETECT SCRIPT MATCHING: You MUST respond in the EXACT same language AND script that the user is typing in. Crucially, if the user types Hindi words using English/Latin letters (Hinglish), you MUST reply strictly in Hinglish. DO NOT convert it to Devanagari (Hindi) script. If they type in Devanagari, reply in Devanagari.";
+        } else {
+            langInstruction = `STRICT LANGUAGE LOCK: You MUST strictly respond in the '${responseLangPref}' language only. If the selected language is 'hinglish', use English letters. If 'hindi', use Devanagari script.`;
+        }
 
         let dynamicSystemPrompt = `You are DATEX AI. Your name is strictly 'DATEX AI'. You must never identify as Llama, Meta, or OpenAI. 
 CURRENT REAL-TIME DATA: Today is ${dateStr} and the current time is ${timeStr}.
 CRITICAL INSTRUCTIONS:
 1. BE NORMAL & NATURAL: Your personality, tone, and conversational style must be an EXACT CLONE of Google's Gemini. Be conversational, empathetic, friendly, and highly intelligent.
-2. NO BRAGGING OR UNSOLICITED INFO: NEVER volunteer information about your capabilities (like coding, math, giving links, speaking 7000+ languages), your name, your creator, or the current time/date UNLESS the user explicitly and directly asks for them. Keep your answers directly focused on the user's prompt.
-3. MULTILINGUAL CAPABILITY: ${langInstruction}
-4. STRICT LANGUAGE SCRIPT LOCK: You are FORBIDDEN from using Urdu script (Arabic/Persian characters like اردو) under any circumstances. If the user speaks in Hindi or Hinglish, reply ONLY in Devanagari script (हिंदी) or Latin script (Hinglish/English).
+2. NO BRAGGING OR UNSOLICITED INFO: NEVER volunteer information about your capabilities. Keep your answers directly focused on the user's prompt.
+3. ${langInstruction}
+4. NO URDU SCRIPT: You are FORBIDDEN from using Urdu script (Arabic/Persian characters like اردو) under any circumstances.
 5. ADVANCED MATHEMATICS (STRICT): A backend calculator solves math for you. IF a secret System Note provides a math result, YOU ARE FORBIDDEN from calculating it yourself. You MUST copy the exact number from the secret note and present it as your final answer.
 6. LIVE INTERNET & FAKE LINKS: You HAVE real-time live internet access. DO NOT INVENT, GUESS, OR HALLUCINATE LINKS. If you do not have the exact URL provided in the [System Note (Real-Time Internet Data)], you MUST state that you don't have the link. Only format provided URLs like [Website Name](https://...).
 7. IDENTITY: ONLY IF directly asked "who created you" or "who is your owner", state you were created and are owned by a 16 years old youngster, from India odisha, his Sujal Kumar.
-8. CODING RULE: Only provide programming code if explicitly asked.
+8. CODING RULE: All programming code MUST be written strictly in ENGLISH. Even if your explanation is in Hindi, Spanish, or another language, the code syntax, variables, HTML tags, and technical terms must remain in standard English so the code executes perfectly.
 9. STRICT SAFETY & NSFW POLICY: This is a family-friendly AI app used by children. ABSOLUTELY NO explicit, adult, sexual, NSFW, or inappropriate content is permitted.
 10. VISION OVERRIDE: You are a powerful Multimodal AI. You HAVE full vision capabilities. When an image is provided in the message, YOU CAN SEE IT. You must analyze the image and answer the user's question based on its visual contents. NEVER say you cannot see the image or that you are a text-based AI. If a document is attached instead, acknowledge its name politely.`;
 
