@@ -107,7 +107,9 @@
 
         .wrapper { flex: 1; display: flex; flex-direction: column; height: 100%; width: 100%; overflow: hidden; }
         
-        header { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; border-bottom: 1px solid #f9f9f9; background: #fff; z-index: 100; flex-shrink: 0; transition: background-color 0.3s, border-color 0.3s; }
+        header { position: relative; display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; border-bottom: 1px solid #f9f9f9; background: #fff; z-index: 100; flex-shrink: 0; transition: background-color 0.3s, border-color 0.3s; }
+        header::after { content: ''; position: absolute; bottom: -30px; left: 0; width: 100%; height: 30px; background: linear-gradient(to bottom, #ffffff, transparent); pointer-events: none; z-index: 10; transition: background 0.3s; }
+        
         .menu-btn-container { width: 38px; height: 38px; border: 1.5px solid #333; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding-left: 9px; cursor: pointer; gap: 4px; }
         .menu-line { height: 2px; background: #333; border-radius: 2px; }
         .line-1 { width: 18px; } .line-2 { width: 13px; } .line-3 { width: 8px; }
@@ -119,7 +121,7 @@
         .logo-container img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: none; }
         .avatar { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: none; flex-shrink: 0; }
 
-        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 10px 20px 20px 20px; width: 100%; max-width: 800px; margin: 0 auto; scrollbar-width: none; touch-action: pan-y; -webkit-overflow-scrolling: touch; }
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 10px 20px 20px 20px; width: 100%; max-width: 800px; margin: 0 auto; scrollbar-width: none; touch-action: pan-y !important; -webkit-overflow-scrolling: touch !important; overscroll-behavior-y: contain !important; }
         
         .welcome-screen { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; flex: 1; text-align: center; color: #222; font-size: 24px; font-weight: 500; line-height: 1.0; }
         .welcome-screen span { display: block; font-size: 42px; letter-spacing: 4px; font-weight: 700; color: #000; margin-top: 5px; } 
@@ -141,6 +143,7 @@
         @keyframes typingBounce { 0%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-6px); } }
 
         .bottom-container { width: 100%; background: #ffffff; padding: 10px 20px 20px 20px; display: flex; justify-content: center; z-index: 100; flex-shrink: 0; touch-action: none; position: relative; transition: background-color 0.3s; }
+        .bottom-container::before { content: ''; position: absolute; top: -30px; left: 0; width: 100%; height: 30px; background: linear-gradient(to top, #ffffff, transparent); pointer-events: none; z-index: 10; transition: background 0.3s; }
 
         .scroll-bottom-btn { position: absolute; top: -55px; right: 20px; width: 38px; height: 38px; background: #ffffff; color: #000000; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.2); cursor: pointer; border: 1px solid #eee; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; transform: translateY(10px); font-size: 16px; }
         .scroll-bottom-btn.active { opacity: 1; pointer-events: auto; transform: translateY(0); }
@@ -249,12 +252,12 @@
         }
         .settings-header i, .lang-modal-header i { cursor: pointer; color: #555; padding: 5px; font-size: 20px; }
         
-        /* SETTINGS & LANG SCROLL ENABLED */
         .settings-body, .lang-list { 
             flex: 1; 
-            overflow-y: auto; 
-            -webkit-overflow-scrolling: touch; 
-            touch-action: pan-y; 
+            overflow-y: scroll !important; 
+            -webkit-overflow-scrolling: touch !important; 
+            touch-action: pan-y !important; 
+            overscroll-behavior-y: contain !important; 
             scrollbar-width: none; 
         } 
         .settings-body::-webkit-scrollbar, .lang-list::-webkit-scrollbar { display: none; }
@@ -267,7 +270,6 @@
         .setting-section-title { font-size: 16px; font-weight: 700; color: #111; display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
         .setting-section-title svg { color: #555; display: inline-block; flex-shrink: 0; } 
         
-        /* STRICT RADIO CLICK AREA - TEXT DECOUPLED FROM INPUT */
         .radio-option { display: flex; justify-content: space-between; align-items: center; color: #333; font-weight: 500; font-size: 15px; padding: 8px 5px 8px 10px; margin-bottom: 4px; }
         .radio-label { cursor: pointer; display: flex; align-items: center; } 
         .radio-label input { display: none; }
@@ -295,12 +297,14 @@
         body.dark-mode .profile-icon i { color: #aaa; }
         body.dark-mode .settings-group i.fa-cog { background: transparent; color: #e0e0e0; border-color: #aaa; }
         body.dark-mode header { background: #1a1a1a; border-color: #333; }
+        body.dark-mode header::after { background: linear-gradient(to bottom, #1a1a1a, transparent); }
         body.dark-mode .model-name { color: #e0e0e0; }
         body.dark-mode .menu-line { background: #ccc; }
         body.dark-mode .version-pill { background: #333; border-color: #444; color: #fff; }
         body.dark-mode .welcome-screen { color: #ccc; }
         body.dark-mode .welcome-screen span { color: #fff; }
         body.dark-mode .bottom-container { background: #121212; }
+        body.dark-mode .bottom-container::before { background: linear-gradient(to top, #121212, transparent); }
         body.dark-mode .chat-input-container { background: #1e1e1e; border-color: #333; }
         body.dark-mode .input-bar textarea { color: #e0e0e0; }
         body.dark-mode #mike-btn { color: #aaa; }
