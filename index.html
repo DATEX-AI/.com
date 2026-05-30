@@ -229,19 +229,15 @@
         /* --- SETTINGS MODAL UI --- */
         .settings-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 2000; display: none; cursor: pointer; }
         .settings-overlay.active { display: block; }
-        
-        /* Modal is now compact and elegant */
         .settings-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 90%; max-width: 350px; background: #fff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 2001; opacity: 0; visibility: hidden; transition: 0.2s; padding: 25px; display: flex; flex-direction: column; }
         .settings-modal.active { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
         
         .settings-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 18px; font-weight: 700; color: #333; }
         .settings-header i { cursor: pointer; color: #555; padding: 5px; font-size: 20px; }
-        
-        /* Removed fixed scroll height to keep it compact */
-        .settings-body { display: flex; flex-direction: column; }
+        .settings-body { display: flex; flex-direction: column; overflow-y: auto; max-height: 70vh; scrollbar-width: none; }
 
         .setting-section { margin-bottom: 25px; }
-        .setting-section:last-child { margin-bottom: 5px; }
+        .setting-section:last-child { margin-bottom: 10px; }
         .setting-section-title { font-size: 16px; font-weight: 700; color: #111; display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
         .setting-section-title svg { color: #555; display: inline-block; flex-shrink: 0; } 
         
@@ -251,10 +247,19 @@
         .radio-option input:checked + .custom-radio { border-color: #000; }
         .radio-option input:checked + .custom-radio::after { content: ''; position: absolute; width: 10px; height: 10px; background: #000; border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); }
 
-        /* Custom Select Styling with the Arrow you requested */
-        .select-wrapper { position: relative; width: 100%; margin-top: 5px; }
-        .custom-select { width: 100%; padding: 12px 35px 12px 15px; border-radius: 10px; background: #f5f5f5; border: 1.5px solid #ddd; font-size: 14px; outline: none; color: #333; font-weight: 500; appearance: none; -webkit-appearance: none; cursor: pointer; }
-        .select-wrapper::after { content: ''; position: absolute; top: 50%; right: 15px; transform: translateY(-30%) rotate(45deg); width: 8px; height: 8px; border-right: 2.5px solid #000; border-bottom: 2.5px solid #000; pointer-events: none; }
+        /* FIX 1: Custom Dropdown Trigger (Arrow centered and moved left) */
+        .select-wrapper { position: relative; width: 100%; margin-top: 5px; cursor: pointer; }
+        .custom-select-btn { width: calc(100% - 10px); padding: 12px 40px 12px 15px; border-radius: 10px; background: #f5f5f5; border: 1.5px solid #ddd; font-size: 14px; margin-left: 5px; color: #333; font-weight: 500; display: flex; align-items: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .select-arrow { position: absolute; right: 25px; top: 50%; transform: translateY(-70%) rotate(45deg); width: 8px; height: 8px; border-right: 2.5px solid #000; border-bottom: 2.5px solid #000; pointer-events: none; }
+
+        /* FIX 2: Custom Dropdown Modal (Compact popup for languages) */
+        .lang-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2100; display: none; }
+        .lang-modal-overlay.active { display: block; }
+        .lang-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 85%; max-width: 320px; max-height: 60vh; background: #fff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 2101; opacity: 0; visibility: hidden; transition: 0.2s; display: flex; flex-direction: column; overflow: hidden; }
+        .lang-modal.active { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
+        .lang-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid #eee; font-size: 16px; font-weight: 700; color: #333; background: #fff; z-index: 10; }
+        .lang-modal-header i { cursor: pointer; color: #555; padding: 5px; font-size: 18px; }
+        .lang-list { flex: 1; overflow-y: auto; padding: 10px 10px; scrollbar-width: none; }
 
         /* --- DARK MODE LOGIC --- */
         body.dark-mode { background-color: #121212; color: #e0e0e0; }
@@ -287,17 +292,18 @@
         body.dark-mode .attachment-option .icon-box { background: #2c2c2c; border-color: #444; color: #ccc; }
         body.dark-mode .attachment-option span { color: #ccc; }
         
-        body.dark-mode .settings-modal { background: #1a1a1a; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        body.dark-mode .settings-header { color: #fff; }
-        body.dark-mode .settings-header i { color: #aaa; }
+        body.dark-mode .settings-modal, body.dark-mode .lang-modal { background: #1a1a1a; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        body.dark-mode .settings-header, body.dark-mode .lang-modal-header { color: #fff; background: #1a1a1a; border-color:#333; }
+        body.dark-mode .settings-header i, body.dark-mode .lang-modal-header i { color: #aaa; }
         body.dark-mode .setting-section-title { color: #fff; }
         body.dark-mode .setting-section-title svg { color: #bbb; } 
         body.dark-mode .radio-option { color: #e0e0e0; }
         body.dark-mode .custom-radio { border-color: #666; }
         body.dark-mode .radio-option input:checked + .custom-radio { border-color: #fff; }
         body.dark-mode .radio-option input:checked + .custom-radio::after { background: #fff; }
-        body.dark-mode .custom-select { background: #2c2c2c; color: #fff; border-color: #444; }
-        body.dark-mode .select-wrapper::after { border-color: #fff; }
+        
+        body.dark-mode .custom-select-btn { background: #2c2c2c; color: #fff; border-color: #444; }
+        body.dark-mode .select-arrow { border-color: #fff; }
         
         body.dark-mode pre { background: #000; border-color: #444; }
     </style>
@@ -333,17 +339,7 @@
             
             <div class="setting-section">
                 <div class="setting-section-title">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="5"></circle>
-                        <line x1="12" y1="2" x2="12" y2="4"></line>
-                        <line x1="12" y1="20" x2="12" y2="22"></line>
-                        <line x1="4.93" y1="4.93" x2="6.34" y2="6.34"></line>
-                        <line x1="17.66" y1="17.66" x2="19.07" y2="19.07"></line>
-                        <line x1="2" y1="12" x2="4" y2="12"></line>
-                        <line x1="20" y1="12" x2="22" y2="12"></line>
-                        <line x1="4.93" y1="19.07" x2="6.34" y2="17.66"></line>
-                        <line x1="17.66" y1="6.34" x2="19.07" y2="4.93"></line>
-                    </svg>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="2" x2="12" y2="4"></line><line x1="12" y1="20" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="6.34" y2="6.34"></line><line x1="17.66" y1="17.66" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="4" y2="12"></line><line x1="20" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="6.34" y2="17.66"></line><line x1="17.66" y1="6.34" x2="19.07" y2="4.93"></line></svg>
                     Theme
                 </div>
                 <label class="radio-option">
@@ -360,13 +356,7 @@
 
             <div class="setting-section">
                 <div class="setting-section-title">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="5" y1="10" x2="5" y2="14"></line>
-                        <line x1="9" y1="6" x2="9" y2="18"></line>
-                        <line x1="13" y1="3" x2="13" y2="21"></line>
-                        <line x1="17" y1="6" x2="17" y2="18"></line>
-                        <line x1="21" y1="10" x2="21" y2="14"></line>
-                    </svg>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="10" x2="5" y2="14"></line><line x1="9" y1="6" x2="9" y2="18"></line><line x1="13" y1="3" x2="13" y2="21"></line><line x1="17" y1="6" x2="17" y2="18"></line><line x1="21" y1="10" x2="21" y2="14"></line></svg>
                     AI Voice
                 </div>
                 <label class="radio-option">
@@ -383,249 +373,37 @@
 
             <div class="setting-section">
                 <div class="setting-section-title">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="2" y1="12" x2="22" y2="12"></line>
-                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                    </svg>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
                     App Language
                 </div>
-                <div class="select-wrapper">
-                    <select id="app-language-select" class="custom-select" onchange="saveAppLanguageSettings()">
-                        <option value="english" selected>English</option>
-                        <option value="afrikaans">Afrikaans</option>
-                        <option value="albanian">Albanian</option>
-                        <option value="amharic">Amharic</option>
-                        <option value="arabic">Arabic</option>
-                        <option value="armenian">Armenian</option>
-                        <option value="azerbaijani">Azerbaijani</option>
-                        <option value="basque">Basque</option>
-                        <option value="belarusian">Belarusian</option>
-                        <option value="bengali">Bengali</option>
-                        <option value="bosnian">Bosnian</option>
-                        <option value="bulgarian">Bulgarian</option>
-                        <option value="burmese">Burmese</option>
-                        <option value="catalan">Catalan</option>
-                        <option value="cebuano">Cebuano</option>
-                        <option value="chinese_simp">Chinese (Simplified)</option>
-                        <option value="chinese_trad">Chinese (Traditional)</option>
-                        <option value="croatian">Croatian</option>
-                        <option value="czech">Czech</option>
-                        <option value="danish">Danish</option>
-                        <option value="dutch">Dutch</option>
-                        <option value="esperanto">Esperanto</option>
-                        <option value="estonian">Estonian</option>
-                        <option value="filipino">Filipino</option>
-                        <option value="finnish">Finnish</option>
-                        <option value="french">French</option>
-                        <option value="galician">Galician</option>
-                        <option value="georgian">Georgian</option>
-                        <option value="german">German</option>
-                        <option value="greek">Greek</option>
-                        <option value="gujarati">Gujarati</option>
-                        <option value="haitian">Haitian Creole</option>
-                        <option value="hausa">Hausa</option>
-                        <option value="hawaiian">Hawaiian</option>
-                        <option value="hebrew">Hebrew</option>
-                        <option value="hindi">Hindi</option>
-                        <option value="hmong">Hmong</option>
-                        <option value="hungarian">Hungarian</option>
-                        <option value="icelandic">Icelandic</option>
-                        <option value="igbo">Igbo</option>
-                        <option value="indonesian">Indonesian</option>
-                        <option value="irish">Irish</option>
-                        <option value="italian">Italian</option>
-                        <option value="japanese">Japanese</option>
-                        <option value="javanese">Javanese</option>
-                        <option value="kannada">Kannada</option>
-                        <option value="kazakh">Kazakh</option>
-                        <option value="khmer">Khmer</option>
-                        <option value="kinyarwanda">Kinyarwanda</option>
-                        <option value="korean">Korean</option>
-                        <option value="kurdish">Kurdish</option>
-                        <option value="kyrgyz">Kyrgyz</option>
-                        <option value="lao">Lao</option>
-                        <option value="latin">Latin</option>
-                        <option value="latvian">Latvian</option>
-                        <option value="lithuanian">Lithuanian</option>
-                        <option value="luxembourgish">Luxembourgish</option>
-                        <option value="macedonian">Macedonian</option>
-                        <option value="malagasy">Malagasy</option>
-                        <option value="malay">Malay</option>
-                        <option value="malayalam">Malayalam</option>
-                        <option value="maltese">Maltese</option>
-                        <option value="maori">Maori</option>
-                        <option value="marathi">Marathi</option>
-                        <option value="mongolian">Mongolian</option>
-                        <option value="nepali">Nepali</option>
-                        <option value="norwegian">Norwegian</option>
-                        <option value="odia">Odia</option>
-                        <option value="pashto">Pashto</option>
-                        <option value="persian">Persian</option>
-                        <option value="polish">Polish</option>
-                        <option value="portuguese">Portuguese</option>
-                        <option value="punjabi">Punjabi</option>
-                        <option value="romanian">Romanian</option>
-                        <option value="russian">Russian</option>
-                        <option value="samoan">Samoan</option>
-                        <option value="scots">Scots Gaelic</option>
-                        <option value="serbian">Serbian</option>
-                        <option value="sesotho">Sesotho</option>
-                        <option value="shona">Shona</option>
-                        <option value="sindhi">Sindhi</option>
-                        <option value="sinhala">Sinhala</option>
-                        <option value="slovak">Slovak</option>
-                        <option value="slovenian">Slovenian</option>
-                        <option value="somali">Somali</option>
-                        <option value="spanish">Spanish</option>
-                        <option value="sundanese">Sundanese</option>
-                        <option value="swahili">Swahili</option>
-                        <option value="swedish">Swedish</option>
-                        <option value="tajik">Tajik</option>
-                        <option value="tamil">Tamil</option>
-                        <option value="tatar">Tatar</option>
-                        <option value="telugu">Telugu</option>
-                        <option value="thai">Thai</option>
-                        <option value="turkish">Turkish</option>
-                        <option value="turkmen">Turkmen</option>
-                        <option value="ukrainian">Ukrainian</option>
-                        <option value="urdu">Urdu</option>
-                        <option value="uyghur">Uyghur</option>
-                        <option value="uzbek">Uzbek</option>
-                        <option value="vietnamese">Vietnamese</option>
-                        <option value="welsh">Welsh</option>
-                        <option value="xhosa">Xhosa</option>
-                        <option value="yiddish">Yiddish</option>
-                        <option value="yoruba">Yoruba</option>
-                        <option value="zulu">Zulu</option>
-                    </select>
+                <div class="select-wrapper" onclick="openLangModal('app')">
+                    <div class="custom-select-btn" id="app-lang-btn">English</div>
+                    <div class="select-arrow"></div>
                 </div>
             </div>
 
             <div class="setting-section">
                 <div class="setting-section-title">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                        <path d="M10.5 17.5L16 12l-1.5-1.5L9 16v1.5h1.5z"></path>
-                    </svg>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M10.5 17.5L16 12l-1.5-1.5L9 16v1.5h1.5z"></path></svg>
                     Response Language
                 </div>
-                <div class="select-wrapper">
-                    <select id="response-language-select" class="custom-select" onchange="saveLanguageSettings()">
-                        <option value="auto">Auto (Detect)</option>
-                        <option value="afrikaans">Afrikaans</option>
-                        <option value="albanian">Albanian</option>
-                        <option value="amharic">Amharic</option>
-                        <option value="arabic">Arabic</option>
-                        <option value="armenian">Armenian</option>
-                        <option value="azerbaijani">Azerbaijani</option>
-                        <option value="basque">Basque</option>
-                        <option value="belarusian">Belarusian</option>
-                        <option value="bengali">Bengali</option>
-                        <option value="bosnian">Bosnian</option>
-                        <option value="bulgarian">Bulgarian</option>
-                        <option value="burmese">Burmese</option>
-                        <option value="catalan">Catalan</option>
-                        <option value="cebuano">Cebuano</option>
-                        <option value="chinese_simp">Chinese (Simplified)</option>
-                        <option value="chinese_trad">Chinese (Traditional)</option>
-                        <option value="croatian">Croatian</option>
-                        <option value="czech">Czech</option>
-                        <option value="danish">Danish</option>
-                        <option value="dutch">Dutch</option>
-                        <option value="english">English</option>
-                        <option value="esperanto">Esperanto</option>
-                        <option value="estonian">Estonian</option>
-                        <option value="filipino">Filipino</option>
-                        <option value="finnish">Finnish</option>
-                        <option value="french">French</option>
-                        <option value="galician">Galician</option>
-                        <option value="georgian">Georgian</option>
-                        <option value="german">German</option>
-                        <option value="greek">Greek</option>
-                        <option value="gujarati">Gujarati</option>
-                        <option value="haitian">Haitian Creole</option>
-                        <option value="hausa">Hausa</option>
-                        <option value="hawaiian">Hawaiian</option>
-                        <option value="hebrew">Hebrew</option>
-                        <option value="hindi">Hindi</option>
-                        <option value="hinglish">Hinglish</option>
-                        <option value="hmong">Hmong</option>
-                        <option value="hungarian">Hungarian</option>
-                        <option value="icelandic">Icelandic</option>
-                        <option value="igbo">Igbo</option>
-                        <option value="indonesian">Indonesian</option>
-                        <option value="irish">Irish</option>
-                        <option value="italian">Italian</option>
-                        <option value="japanese">Japanese</option>
-                        <option value="javanese">Javanese</option>
-                        <option value="kannada">Kannada</option>
-                        <option value="kazakh">Kazakh</option>
-                        <option value="khmer">Khmer</option>
-                        <option value="kinyarwanda">Kinyarwanda</option>
-                        <option value="korean">Korean</option>
-                        <option value="kurdish">Kurdish</option>
-                        <option value="kyrgyz">Kyrgyz</option>
-                        <option value="lao">Lao</option>
-                        <option value="latin">Latin</option>
-                        <option value="latvian">Latvian</option>
-                        <option value="lithuanian">Lithuanian</option>
-                        <option value="luxembourgish">Luxembourgish</option>
-                        <option value="macedonian">Macedonian</option>
-                        <option value="malagasy">Malagasy</option>
-                        <option value="malay">Malay</option>
-                        <option value="malayalam">Malayalam</option>
-                        <option value="maltese">Maltese</option>
-                        <option value="maori">Maori</option>
-                        <option value="marathi">Marathi</option>
-                        <option value="mongolian">Mongolian</option>
-                        <option value="nepali">Nepali</option>
-                        <option value="norwegian">Norwegian</option>
-                        <option value="odia">Odia</option>
-                        <option value="pashto">Pashto</option>
-                        <option value="persian">Persian</option>
-                        <option value="polish">Polish</option>
-                        <option value="portuguese">Portuguese</option>
-                        <option value="punjabi">Punjabi</option>
-                        <option value="romanian">Romanian</option>
-                        <option value="russian">Russian</option>
-                        <option value="samoan">Samoan</option>
-                        <option value="scots">Scots Gaelic</option>
-                        <option value="serbian">Serbian</option>
-                        <option value="sesotho">Sesotho</option>
-                        <option value="shona">Shona</option>
-                        <option value="sindhi">Sindhi</option>
-                        <option value="sinhala">Sinhala</option>
-                        <option value="slovak">Slovak</option>
-                        <option value="slovenian">Slovenian</option>
-                        <option value="somali">Somali</option>
-                        <option value="spanish">Spanish</option>
-                        <option value="sundanese">Sundanese</option>
-                        <option value="swahili">Swahili</option>
-                        <option value="swedish">Swedish</option>
-                        <option value="tajik">Tajik</option>
-                        <option value="tamil">Tamil</option>
-                        <option value="tatar">Tatar</option>
-                        <option value="telugu">Telugu</option>
-                        <option value="thai">Thai</option>
-                        <option value="turkish">Turkish</option>
-                        <option value="turkmen">Turkmen</option>
-                        <option value="ukrainian">Ukrainian</option>
-                        <option value="urdu">Urdu</option>
-                        <option value="uyghur">Uyghur</option>
-                        <option value="uzbek">Uzbek</option>
-                        <option value="vietnamese">Vietnamese</option>
-                        <option value="welsh">Welsh</option>
-                        <option value="xhosa">Xhosa</option>
-                        <option value="yiddish">Yiddish</option>
-                        <option value="yoruba">Yoruba</option>
-                        <option value="zulu">Zulu</option>
-                    </select>
+                <div class="select-wrapper" onclick="openLangModal('response')">
+                    <div class="custom-select-btn" id="response-lang-btn">Auto (Detect)</div>
+                    <div class="select-arrow"></div>
                 </div>
             </div>
 
         </div>
+    </div>
+
+    <div class="lang-modal-overlay" id="lang-modal-overlay" onclick="closeLangModal()"></div>
+    <div class="lang-modal" id="lang-modal">
+        <div class="lang-modal-header">
+            <span id="lang-modal-title">Select Language</span>
+            <i class="fas fa-times" onclick="closeLangModal()"></i>
+        </div>
+        <div class="lang-list" id="lang-list">
+            </div>
     </div>
 
     <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
@@ -775,6 +553,104 @@
     <script>
     let userScrolledUp = false; 
 
+    // --- LANGUAGE DATA FOR CUSTOM DROPDOWN ---
+    const appLanguages = [
+        {val: 'english', label: 'English'}, {val: 'afrikaans', label: 'Afrikaans'}, {val: 'albanian', label: 'Albanian'},
+        {val: 'amharic', label: 'Amharic'}, {val: 'arabic', label: 'Arabic'}, {val: 'armenian', label: 'Armenian'},
+        {val: 'azerbaijani', label: 'Azerbaijani'}, {val: 'basque', label: 'Basque'}, {val: 'belarusian', label: 'Belarusian'},
+        {val: 'bengali', label: 'Bengali'}, {val: 'bosnian', label: 'Bosnian'}, {val: 'bulgarian', label: 'Bulgarian'},
+        {val: 'burmese', label: 'Burmese'}, {val: 'catalan', label: 'Catalan'}, {val: 'cebuano', label: 'Cebuano'},
+        {val: 'chinese_simp', label: 'Chinese (Simplified)'}, {val: 'chinese_trad', label: 'Chinese (Traditional)'},
+        {val: 'croatian', label: 'Croatian'}, {val: 'czech', label: 'Czech'}, {val: 'danish', label: 'Danish'},
+        {val: 'dutch', label: 'Dutch'}, {val: 'esperanto', label: 'Esperanto'}, {val: 'estonian', label: 'Estonian'},
+        {val: 'filipino', label: 'Filipino'}, {val: 'finnish', label: 'Finnish'}, {val: 'french', label: 'French'},
+        {val: 'galician', label: 'Galician'}, {val: 'georgian', label: 'Georgian'}, {val: 'german', label: 'German'},
+        {val: 'greek', label: 'Greek'}, {val: 'gujarati', label: 'Gujarati'}, {val: 'haitian', label: 'Haitian Creole'},
+        {val: 'hausa', label: 'Hausa'}, {val: 'hawaiian', label: 'Hawaiian'}, {val: 'hebrew', label: 'Hebrew'},
+        {val: 'hindi', label: 'Hindi (हिंदी)'}, {val: 'hinglish', label: 'Hinglish'}, {val: 'hmong', label: 'Hmong'},
+        {val: 'hungarian', label: 'Hungarian'}, {val: 'icelandic', label: 'Icelandic'}, {val: 'igbo', label: 'Igbo'},
+        {val: 'indonesian', label: 'Indonesian'}, {val: 'irish', label: 'Irish'}, {val: 'italian', label: 'Italian'},
+        {val: 'japanese', label: 'Japanese'}, {val: 'javanese', label: 'Javanese'}, {val: 'kannada', label: 'Kannada'},
+        {val: 'kazakh', label: 'Kazakh'}, {val: 'khmer', label: 'Khmer'}, {val: 'kinyarwanda', label: 'Kinyarwanda'},
+        {val: 'korean', label: 'Korean'}, {val: 'kurdish', label: 'Kurdish'}, {val: 'kyrgyz', label: 'Kyrgyz'},
+        {val: 'lao', label: 'Lao'}, {val: 'latin', label: 'Latin'}, {val: 'latvian', label: 'Latvian'},
+        {val: 'lithuanian', label: 'Lithuanian'}, {val: 'luxembourgish', label: 'Luxembourgish'}, {val: 'macedonian', label: 'Macedonian'},
+        {val: 'malagasy', label: 'Malagasy'}, {val: 'malay', label: 'Malay'}, {val: 'malayalam', label: 'Malayalam'},
+        {val: 'maltese', label: 'Maltese'}, {val: 'maori', label: 'Maori'}, {val: 'marathi', label: 'Marathi'},
+        {val: 'mongolian', label: 'Mongolian'}, {val: 'nepali', label: 'Nepali'}, {val: 'norwegian', label: 'Norwegian'},
+        {val: 'odia', label: 'Odia'}, {val: 'pashto', label: 'Pashto'}, {val: 'persian', label: 'Persian'},
+        {val: 'polish', label: 'Polish'}, {val: 'portuguese', label: 'Portuguese'}, {val: 'punjabi', label: 'Punjabi'},
+        {val: 'romanian', label: 'Romanian'}, {val: 'russian', label: 'Russian'}, {val: 'samoan', label: 'Samoan'},
+        {val: 'scots', label: 'Scots Gaelic'}, {val: 'serbian', label: 'Serbian'}, {val: 'sesotho', label: 'Sesotho'},
+        {val: 'shona', label: 'Shona'}, {val: 'sindhi', label: 'Sindhi'}, {val: 'sinhala', label: 'Sinhala'},
+        {val: 'slovak', label: 'Slovak'}, {val: 'slovenian', label: 'Slovenian'}, {val: 'somali', label: 'Somali'},
+        {val: 'spanish', label: 'Spanish'}, {val: 'sundanese', label: 'Sundanese'}, {val: 'swahili', label: 'Swahili'},
+        {val: 'swedish', label: 'Swedish'}, {val: 'tajik', label: 'Tajik'}, {val: 'tamil', label: 'Tamil'},
+        {val: 'tatar', label: 'Tatar'}, {val: 'telugu', label: 'Telugu'}, {val: 'thai', label: 'Thai'},
+        {val: 'turkish', label: 'Turkish'}, {val: 'turkmen', label: 'Turkmen'}, {val: 'ukrainian', label: 'Ukrainian'},
+        {val: 'urdu', label: 'Urdu'}, {val: 'uyghur', label: 'Uyghur'}, {val: 'uzbek', label: 'Uzbek'},
+        {val: 'vietnamese', label: 'Vietnamese'}, {val: 'welsh', label: 'Welsh'}, {val: 'xhosa', label: 'Xhosa'},
+        {val: 'yiddish', label: 'Yiddish'}, {val: 'yoruba', label: 'Yoruba'}, {val: 'zulu', label: 'Zulu'}
+    ];
+
+    let currentOpenLangType = ''; // 'app' or 'response'
+
+    function openLangModal(type) {
+        currentOpenLangType = type;
+        const modalTitle = document.getElementById('lang-modal-title');
+        const langList = document.getElementById('lang-list');
+        const overlay = document.getElementById('lang-modal-overlay');
+        const modal = document.getElementById('lang-modal');
+
+        langList.innerHTML = '';
+        
+        let currentValue = '';
+        if (type === 'app') {
+            modalTitle.innerText = 'App Language';
+            currentValue = localStorage.getItem('datex_app_lang') || 'english';
+        } else {
+            modalTitle.innerText = 'Response Language';
+            currentValue = localStorage.getItem('datex_response_lang') || 'auto';
+            // Insert Auto option for Response
+            langList.insertAdjacentHTML('beforeend', createLangOptionHTML('auto', 'Auto (Detect)', currentValue === 'auto'));
+        }
+
+        appLanguages.forEach(lang => {
+            let label = lang.label;
+            if(type === 'response' && lang.val === 'english') label = 'English Only';
+            langList.insertAdjacentHTML('beforeend', createLangOptionHTML(lang.val, label, currentValue === lang.val));
+        });
+
+        overlay.classList.add('active');
+        modal.classList.add('active');
+    }
+
+    function createLangOptionHTML(val, label, isSelected) {
+        return `
+            <label class="radio-option" onclick="handleLangSelection('${val}', '${label}')">
+                <span>${label}</span>
+                <input type="radio" name="temp_lang" value="${val}" ${isSelected ? 'checked' : ''}>
+                <div class="custom-radio"></div>
+            </label>
+        `;
+    }
+
+    function closeLangModal() {
+        document.getElementById('lang-modal-overlay').classList.remove('active');
+        document.getElementById('lang-modal').classList.remove('active');
+    }
+
+    function handleLangSelection(val, label) {
+        if (currentOpenLangType === 'app') {
+            localStorage.setItem('datex_app_lang', val);
+            document.getElementById('app-lang-btn').innerText = label;
+        } else {
+            localStorage.setItem('datex_response_lang', val);
+            document.getElementById('response-lang-btn').innerText = label;
+        }
+        setTimeout(() => closeLangModal(), 150); // slight delay for visual tap effect
+    }
+
     function scrollToBottomFunc() {
         const container = document.getElementById('chat-container');
         userScrolledUp = false; 
@@ -804,12 +680,19 @@
         if(voiceRadio) voiceRadio.checked = true;
 
         const savedAppLang = localStorage.getItem('datex_app_lang') || 'english';
-        const appLangSelect = document.getElementById('app-language-select');
-        if(appLangSelect) appLangSelect.value = savedAppLang;
+        let appLangLabel = 'English';
+        const appObj = appLanguages.find(l => l.val === savedAppLang);
+        if(appObj) appLangLabel = appObj.label;
+        document.getElementById('app-lang-btn').innerText = appLangLabel;
 
-        const savedLang = localStorage.getItem('datex_response_lang') || 'auto';
-        const langSelect = document.getElementById('response-language-select');
-        if(langSelect) langSelect.value = savedLang;
+        const savedRespLang = localStorage.getItem('datex_response_lang') || 'auto';
+        let respLangLabel = 'Auto (Detect)';
+        if(savedRespLang !== 'auto') {
+            const respObj = appLanguages.find(l => l.val === savedRespLang);
+            if(respObj) respLangLabel = respObj.label;
+            if(savedRespLang === 'english') respLangLabel = 'English Only';
+        }
+        document.getElementById('response-lang-btn').innerText = respLangLabel;
     });
 
     function toggleSettings() {
@@ -833,16 +716,6 @@
     function saveVoiceSettings() {
         const voice = document.querySelector('input[name="ai_voice"]:checked').value;
         localStorage.setItem('datex_voice_type', voice);
-    }
-
-    function saveAppLanguageSettings() {
-        const lang = document.getElementById('app-language-select').value;
-        localStorage.setItem('datex_app_lang', lang);
-    }
-
-    function saveLanguageSettings() {
-        const lang = document.getElementById('response-language-select').value;
-        localStorage.setItem('datex_response_lang', lang);
     }
 
     document.addEventListener('gesturestart', function (e) {
@@ -1976,8 +1849,13 @@ CRITICAL INSTRUCTIONS:
 
         const selectedModel = useVision ? "llama-3.2-11b-vision-preview" : "llama-3.3-70b-versatile";
 
+        const isDeepResearchOn = localStorage.getItem('datex_deep_research') === 'true';
         const searchKeywords = ['aaj', 'ajj', 'today', 'news', 'khabar', 'price', 'match', 'ipl', 'score', 'latest', 'update', 'weather', 'mausam', 'kal', 'yesterday', 'current', 'stock', 'who won', 'kaun jeeta', 'batao', 'search', 'link', 'youtube', 'video', 'channel', 'instagram', 'linkedin', 'facebook', 'twitter', 'website', 'profile', 'account', 'url', 'site', 'browser', 'google'];
-        const needsSearch = searchKeywords.some(keyword => message.toLowerCase().includes(keyword));
+        
+        let needsSearch = searchKeywords.some(keyword => message.toLowerCase().includes(keyword));
+        if (isDeepResearchOn) {
+            needsSearch = true; 
+        }
 
         if (needsSearch && !useVision) {
             bubble.innerText = "Searching the web...";
