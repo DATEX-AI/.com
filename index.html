@@ -114,11 +114,10 @@
 
         .header-center { flex: 1; text-align: center; }
         .model-name { font-weight: 600; font-size: 18px; color: #1a1a1a; }
-        
-        /* FIX 1: Increased size, bold text, changed color to #000, and moved it down slightly */
         .version-pill { font-size: 11.5px; font-weight: 600; background: #f0f0f0; display: inline-block; padding: 4px 14px; border-radius: 14px; color: #000; border: 1px solid #ddd; margin-top: 7px; }
         
-        .logo-container img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 1.5px solid #eee; }
+        .logo-container img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: none; }
+        .avatar { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: none; flex-shrink: 0; }
 
         .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 10px 20px 20px 20px; width: 100%; max-width: 800px; margin: 0 auto; scrollbar-width: none; }
         
@@ -134,8 +133,6 @@
         .user-bubble { background-color: #f3f4f6; color: #000; border-bottom-right-radius: 4px; white-space: pre-wrap; }
         .ai-bubble { background-color: #fff; border: 1px solid #e5e7eb; border-bottom-left-radius: 4px; width: 100%; }
         
-        .avatar { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: 1px solid #eee; flex-shrink: 0; }
-
         .typing-indicator { display: flex; align-items: center; gap: 4px; padding: 4px 6px; height: 24px; }
         .typing-dot { width: 6px; height: 6px; background-color: #888; border-radius: 50%; animation: typingBounce 1.4s infinite ease-in-out both; }
         .typing-dot:nth-child(1) { animation-delay: -0.32s; }
@@ -214,8 +211,6 @@
         
         .action-btn { background: transparent; border: none; color: #aaa; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; transition: 0.2s; padding: 5px; }
         .action-btn:hover { color: #333; }
-        
-        /* FIX 3: Custom class to make 3-dots and retry button pure black */
         .btn-black-icon { color: #000 !important; }
 
         .attachment-menu { position: fixed; bottom: -350px; left: 0; width: 100%; background: #fff; border-top-left-radius: 20px; border-top-right-radius: 20px; box-shadow: 0 -5px 25px rgba(0,0,0,0.15); padding: 0 0 40px 0; transition: bottom 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); z-index: 2000; }
@@ -261,14 +256,17 @@
         /* --- LANGUAGE MODAL UI --- */
         .lang-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2100; display: none; }
         .lang-modal-overlay.active { display: block; }
+        
         .lang-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 90%; max-width: 350px; max-height: 75vh; background: #fff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 2101; opacity: 0; visibility: hidden; transition: 0.2s; display: flex; flex-direction: column; overflow: hidden; }
         .lang-modal.active { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
+        
         .lang-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 25px; border-bottom: 1px solid #eee; font-size: 18px; font-weight: 700; color: #333; background: #fff; z-index: 10; }
         .lang-modal-header i { cursor: pointer; color: #555; padding: 5px; font-size: 20px; }
         .lang-list { flex: 1; overflow-y: auto; padding: 10px 15px 20px 15px; scrollbar-width: none; }
 
         /* --- DARK MODE LOGIC --- */
         body.dark-mode { background-color: #121212; color: #e0e0e0; }
+        body.dark-mode #splash-screen { background-color: #121212; }
         body.dark-mode .sidebar { background: #1a1a1a; border-color: #333; }
         body.dark-mode .sidebar-header, body.dark-mode .sidebar-top { background: #1a1a1a; color: #e0e0e0; }
         body.dark-mode .sidebar h2 { color: #888; }
@@ -281,10 +279,7 @@
         body.dark-mode header { background: #1a1a1a; border-color: #333; }
         body.dark-mode .model-name { color: #e0e0e0; }
         body.dark-mode .menu-line { background: #ccc; }
-        
-        /* Dark mode pill update */
         body.dark-mode .version-pill { background: #333; border-color: #444; color: #fff; }
-        
         body.dark-mode .welcome-screen { color: #ccc; }
         body.dark-mode .welcome-screen span { color: #fff; }
         body.dark-mode .bottom-container { background: #121212; }
@@ -295,8 +290,6 @@
         body.dark-mode .ai-bubble { background-color: #1a1a1a; border-color: #444; color: #e0e0e0; }
         body.dark-mode .action-btn { color: #888; }
         body.dark-mode .action-btn:hover { color: #fff; }
-        
-        /* Dark mode 3-dots color update */
         body.dark-mode .btn-black-icon { color: #fff !important; }
 
         body.dark-mode .msg-menu { background: #2c2c2c; border-color: #444; }
@@ -321,7 +314,12 @@
         body.dark-mode pre { background: #000; border-color: #444; }
     </style>
 </head>
-<body onclick="hideMsgMenu()">
+<body>
+    <script>
+        if(localStorage.getItem('datex_theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
 
     <div id="splash-screen">
         <img src="logo.jpg" alt="DATEX AI">
@@ -345,7 +343,7 @@
     <div class="settings-overlay" id="settings-overlay" onclick="toggleSettings()"></div>
     <div class="settings-modal" id="settings-modal">
         <div class="settings-header">
-            <span>Settings</span>
+            <span data-i18n="Settings">Settings</span>
             <i class="fas fa-times" onclick="toggleSettings()"></i>
         </div>
         <div class="settings-body">
@@ -353,15 +351,15 @@
             <div class="setting-section">
                 <div class="setting-section-title">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="2" x2="12" y2="4"></line><line x1="12" y1="20" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="6.34" y2="6.34"></line><line x1="17.66" y1="17.66" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="4" y2="12"></line><line x1="20" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="6.34" y2="17.66"></line><line x1="17.66" y1="6.34" x2="19.07" y2="4.93"></line></svg>
-                    Theme
+                    <span data-i18n="Theme">Theme</span>
                 </div>
                 <label class="radio-option">
-                    <span>Light</span>
+                    <span data-i18n="Light">Light</span>
                     <input type="radio" name="app_theme" value="light" checked onchange="applyThemeSetting()">
                     <div class="custom-radio"></div>
                 </label>
                 <label class="radio-option">
-                    <span>Dark</span>
+                    <span data-i18n="Dark">Dark</span>
                     <input type="radio" name="app_theme" value="dark" onchange="applyThemeSetting()">
                     <div class="custom-radio"></div>
                 </label>
@@ -370,15 +368,15 @@
             <div class="setting-section">
                 <div class="setting-section-title">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="10" x2="5" y2="14"></line><line x1="9" y1="6" x2="9" y2="18"></line><line x1="13" y1="3" x2="13" y2="21"></line><line x1="17" y1="6" x2="17" y2="18"></line><line x1="21" y1="10" x2="21" y2="14"></line></svg>
-                    AI Voice
+                    <span data-i18n="AI Voice">AI Voice</span>
                 </div>
                 <label class="radio-option">
-                    <span>Male</span>
+                    <span data-i18n="Male">Male</span>
                     <input type="radio" name="ai_voice" value="male" onchange="saveVoiceSettings()">
                     <div class="custom-radio"></div>
                 </label>
                 <label class="radio-option">
-                    <span>Female</span>
+                    <span data-i18n="Female">Female</span>
                     <input type="radio" name="ai_voice" value="female" checked onchange="saveVoiceSettings()">
                     <div class="custom-radio"></div>
                 </label>
@@ -387,7 +385,7 @@
             <div class="setting-section">
                 <div class="setting-section-title">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-                    App Language
+                    <span data-i18n="App Language">App Language</span>
                 </div>
                 <div class="select-wrapper" onclick="openLangModal('app')">
                     <div class="custom-select-btn" id="app-lang-btn">English</div>
@@ -398,7 +396,7 @@
             <div class="setting-section">
                 <div class="setting-section-title">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M10.5 17.5L16 12l-1.5-1.5L9 16v1.5h1.5z"></path></svg>
-                    Response Language
+                    <span data-i18n="Response Language">Response Language</span>
                 </div>
                 <div class="select-wrapper" onclick="openLangModal('response')">
                     <div class="custom-select-btn" id="response-lang-btn">Auto (Detect)</div>
@@ -412,7 +410,7 @@
     <div class="lang-modal-overlay" id="lang-modal-overlay" onclick="closeLangModal()"></div>
     <div class="lang-modal" id="lang-modal">
         <div class="lang-modal-header">
-            <span id="lang-modal-title">Select Language</span>
+            <span id="lang-modal-title" data-i18n="Select Language">Select Language</span>
             <i class="fas fa-times" onclick="closeLangModal()"></i>
         </div>
         <div class="lang-list" id="lang-list">
@@ -423,9 +421,9 @@
     <div class="attachment-overlay" id="attachment-overlay" onclick="toggleAttachmentMenu()"></div>
 
     <div id="msg-menu" class="msg-menu">
-        <button id="copy-btn-ui" onclick="copyMsg()"><i class="fas fa-copy"></i> Copy</button>
-        <button id="edit-btn-ui" onclick="editMsg()"><i class="fas fa-pen"></i> Edit</button>
-        <button id="delete-btn-ui" onclick="deleteSelectedMsg()" style="color:#ff4d4d;"><i class="fas fa-trash"></i> Delete</button>
+        <button id="copy-btn-ui" onclick="copyMsg()"><i class="fas fa-copy"></i> <span data-i18n="Copy">Copy</span></button>
+        <button id="edit-btn-ui" onclick="editMsg()"><i class="fas fa-pen"></i> <span data-i18n="Edit">Edit</span></button>
+        <button id="delete-btn-ui" onclick="deleteSelectedMsg()" style="color:#ff4d4d;"><i class="fas fa-trash"></i> <span data-i18n="Delete">Delete</span></button>
     </div>
 
     <div class="attachment-menu" id="attachment-menu">
@@ -438,21 +436,21 @@
                     <i class="fas fa-camera" style="opacity: 0.2;"></i>
                     <i class="fas fa-lock" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 28px; color: #555;"></i>
                 </div>
-                <span style="color: #999;">Camera</span>
+                <span style="color: #999;" data-i18n="Camera">Camera</span>
             </div>
             <div class="attachment-option" style="cursor: default;">
                 <div class="icon-box" style="position: relative; background: #f0f0f0;">
                     <i class="fas fa-image" style="opacity: 0.2;"></i>
                     <i class="fas fa-lock" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 28px; color: #555;"></i>
                 </div>
-                <span style="color: #999;">Photos</span>
+                <span style="color: #999;" data-i18n="Photos">Photos</span>
             </div>
             <div class="attachment-option" style="cursor: default;">
                 <div class="icon-box" style="position: relative; background: #f0f0f0;">
                     <i class="fas fa-file-alt" style="opacity: 0.2;"></i>
                     <i class="fas fa-lock" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 28px; color: #555;"></i>
                 </div>
-                <span style="color: #999;">Files</span>
+                <span style="color: #999;" data-i18n="Files">Files</span>
             </div>
         </div>
     </div>
@@ -464,13 +462,13 @@
     <div class="sidebar" id="sidebar">
         <div class="sidebar-top">
             <div class="settings-group">
-                <i class="fas fa-cog" onclick="toggleSettings()"></i> <span style="cursor: default;">Settings</span>
+                <i class="fas fa-cog" onclick="toggleSettings()"></i> <span style="cursor: default;" data-i18n="Settings">Settings</span>
             </div>
             <i class="fas fa-times close-sidebar-btn" onclick="toggleSidebar()"></i>
         </div>
         
         <div class="sidebar-header">
-            <h2>RECENT CHATS</h2>
+            <h2 data-i18n="RECENT CHATS">RECENT CHATS</h2>
         </div>
         
         <div class="sidebar-content">
@@ -480,13 +478,13 @@
         <div class="sidebar-footer">
             <div class="profile-icon">
                 <i class="far fa-user-circle"></i>
-                <span>User</span>
+                <span data-i18n="User">User</span>
             </div>
-            <button class="new-chat-btn" onclick="createNewChat()">Chat +</button>
+            <button class="new-chat-btn" onclick="createNewChat()" data-i18n="Chat +">Chat +</button>
         </div>
     </div>
 
-    <div class="wrapper">
+    <div class="wrapper" onclick="hideMsgMenu()">
         <header>
             <div class="header-left">
                 <div class="menu-btn-container" onclick="toggleSidebar()">
@@ -500,7 +498,7 @@
         </header>
 
         <main class="main-content" id="chat-container">
-            <div class="welcome-screen" id="welcome-screen">Welcome To<br><span>DATEX AI</span></div>
+            <div class="welcome-screen" id="welcome-screen"><span data-i18n="Welcome To" style="font-size:24px; font-weight:500; display:block; letter-spacing:0px;">Welcome To</span><br><span>DATEX AI</span></div>
         </main>
 
         <div class="bottom-container">
@@ -534,7 +532,7 @@
                             <i class="fas fa-plus" onclick="toggleAttachmentMenu(event)" style="color:#777; cursor:pointer; font-size: 18px;"></i>
                         </div>
                         
-                        <textarea id="user-input" placeholder="Ask Anything" rows="1" oninput="autoGrow(this)"></textarea>
+                        <textarea id="user-input" placeholder="Ask Anything" data-i18n-placeholder="Ask Anything" rows="1" oninput="autoGrow(this)"></textarea>
                         
                         <div id="recording-ui" class="recording-ui">
                             <div class="recording-pill">
@@ -566,7 +564,7 @@
     <script>
     let userScrolledUp = false; 
 
-    // --- LANGUAGE DATA ---
+    // --- LANGUAGE DATA ENGINE ---
     const appLanguages = [
         {val: 'english', label: 'English'}, {val: 'afrikaans', label: 'Afrikaans'}, {val: 'albanian', label: 'Albanian'},
         {val: 'amharic', label: 'Amharic'}, {val: 'arabic', label: 'Arabic'}, {val: 'armenian', label: 'Armenian'},
@@ -606,6 +604,10 @@
         {val: 'yiddish', label: 'Yiddish'}, {val: 'yoruba', label: 'Yoruba'}, {val: 'zulu', label: 'Zulu'}
     ];
 
+    const langToIso = {
+        'english': 'en', 'afrikaans': 'af', 'albanian': 'sq', 'amharic': 'am', 'arabic': 'ar', 'armenian': 'hy', 'azerbaijani': 'az', 'basque': 'eu', 'belarusian': 'be', 'bengali': 'bn', 'bosnian': 'bs', 'bulgarian': 'bg', 'burmese': 'my', 'catalan': 'ca', 'cebuano': 'ceb', 'chinese_simp': 'zh-CN', 'chinese_trad': 'zh-TW', 'croatian': 'hr', 'czech': 'cs', 'danish': 'da', 'dutch': 'nl', 'esperanto': 'eo', 'estonian': 'et', 'filipino': 'tl', 'finnish': 'fi', 'french': 'fr', 'galician': 'gl', 'georgian': 'ka', 'german': 'de', 'greek': 'el', 'gujarati': 'gu', 'haitian': 'ht', 'hausa': 'ha', 'hawaiian': 'haw', 'hebrew': 'he', 'hindi': 'hi', 'hinglish': 'hi', 'hmong': 'hmn', 'hungarian': 'hu', 'icelandic': 'is', 'igbo': 'ig', 'indonesian': 'id', 'irish': 'ga', 'italian': 'it', 'japanese': 'ja', 'javanese': 'jv', 'kannada': 'kn', 'kazakh': 'kk', 'khmer': 'km', 'kinyarwanda': 'rw', 'korean': 'ko', 'kurdish': 'ku', 'kyrgyz': 'ky', 'lao': 'lo', 'latin': 'la', 'latvian': 'lv', 'lithuanian': 'lt', 'luxembourgish': 'lb', 'macedonian': 'mk', 'malagasy': 'mg', 'malay': 'ms', 'malayalam': 'ml', 'maltese': 'mt', 'maori': 'mi', 'marathi': 'mr', 'mongolian': 'mn', 'nepali': 'ne', 'norwegian': 'no', 'odia': 'or', 'pashto': 'ps', 'persian': 'fa', 'polish': 'pl', 'portuguese': 'pt', 'punjabi': 'pa', 'romanian': 'ro', 'russian': 'ru', 'samoan': 'sm', 'scots': 'gd', 'serbian': 'sr', 'sesotho': 'st', 'shona': 'sn', 'sindhi': 'sd', 'sinhala': 'si', 'slovak': 'sk', 'slovenian': 'sl', 'somali': 'so', 'spanish': 'es', 'sundanese': 'su', 'swahili': 'sw', 'swedish': 'sv', 'tajik': 'tg', 'tamil': 'ta', 'tatar': 'tt', 'telugu': 'te', 'thai': 'th', 'turkish': 'tr', 'turkmen': 'tk', 'ukrainian': 'uk', 'urdu': 'ur', 'uyghur': 'ug', 'uzbek': 'uz', 'vietnamese': 'vi', 'welsh': 'cy', 'xhosa': 'xh', 'yiddish': 'yi', 'yoruba': 'yo', 'zulu': 'zu'
+    };
+
     let currentOpenLangType = ''; 
 
     function openLangModal(type) {
@@ -619,12 +621,13 @@
         
         let currentValue = '';
         if (type === 'app') {
-            modalTitle.innerText = 'App Language';
+            modalTitle.innerText = document.querySelector('[data-i18n="Select Language"]').innerText;
             currentValue = localStorage.getItem('datex_app_lang') || 'english';
         } else {
-            modalTitle.innerText = 'Response Language';
+            modalTitle.innerText = document.querySelector('[data-i18n="Select Language"]').innerText;
             currentValue = localStorage.getItem('datex_response_lang') || 'auto';
-            langList.insertAdjacentHTML('beforeend', createLangOptionHTML('auto', 'Auto (Detect)', currentValue === 'auto'));
+            let autoText = document.querySelector('[data-i18n="Auto (Detect)"]')?.innerText || 'Auto (Detect)';
+            langList.insertAdjacentHTML('beforeend', createLangOptionHTML('auto', autoText, currentValue === 'auto'));
         }
 
         appLanguages.forEach(lang => {
@@ -656,11 +659,63 @@
         if (currentOpenLangType === 'app') {
             localStorage.setItem('datex_app_lang', val);
             document.getElementById('app-lang-btn').innerText = label;
+            translateUI(val); 
         } else {
             localStorage.setItem('datex_response_lang', val);
             document.getElementById('response-lang-btn').innerText = label;
         }
         setTimeout(() => closeLangModal(), 150); 
+    }
+
+    // --- MAGIC AUTO TRANSLATE UI ENGINE ---
+    async function translateUI(targetLangVal) {
+        let isoCode = langToIso[targetLangVal] || 'en';
+        
+        document.querySelectorAll('[data-i18n]').forEach(el => el.innerText = el.getAttribute('data-i18n'));
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => el.placeholder = el.getAttribute('data-i18n-placeholder'));
+
+        if(isoCode === 'en' || targetLangVal === 'english' || targetLangVal === 'hinglish') return;
+
+        let elements = Array.from(document.querySelectorAll('[data-i18n]'));
+        let placeholders = Array.from(document.querySelectorAll('[data-i18n-placeholder]'));
+        
+        let uniqueTexts = [...new Set([
+            ...elements.map(el => el.getAttribute('data-i18n')),
+            ...placeholders.map(el => el.getAttribute('data-i18n-placeholder'))
+        ])];
+
+        let translationMap = {};
+        let cached = localStorage.getItem('datex_ui_trans_' + isoCode);
+        
+        if (cached) {
+            translationMap = JSON.parse(cached);
+        } else {
+            let queryStr = uniqueTexts.join('\n'); 
+            try {
+                let res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${isoCode}&dt=t&q=${encodeURIComponent(queryStr)}`);
+                let data = await res.json();
+                let translatedStr = "";
+                data[0].forEach(item => { if(item[0]) translatedStr += item[0]; });
+                let translatedArray = translatedStr.split('\n').map(s => s.trim());
+                
+                uniqueTexts.forEach((original, index) => {
+                    translationMap[original] = translatedArray[index] || original;
+                });
+                localStorage.setItem('datex_ui_trans_' + isoCode, JSON.stringify(translationMap));
+            } catch(e) {
+                console.error("UI Translation error:", e);
+                return; 
+            }
+        }
+
+        elements.forEach(el => {
+            let orig = el.getAttribute('data-i18n');
+            if(translationMap[orig]) el.innerText = translationMap[orig];
+        });
+        placeholders.forEach(el => {
+            let orig = el.getAttribute('data-i18n-placeholder');
+            if(translationMap[orig]) el.placeholder = translationMap[orig];
+        });
     }
 
     function scrollToBottomFunc() {
@@ -679,9 +734,7 @@
             };
         }
         
-        // --- INITIALIZE SETTINGS FROM LOCAL STORAGE ---
         if(localStorage.getItem('datex_theme') === 'dark') {
-            document.body.classList.add('dark-mode');
             document.querySelector('input[name="app_theme"][value="dark"]').checked = true;
         } else {
             document.querySelector('input[name="app_theme"][value="light"]').checked = true;
@@ -705,6 +758,8 @@
             if(savedRespLang === 'english') respLangLabel = 'English Only';
         }
         document.getElementById('response-lang-btn').innerText = respLangLabel;
+
+        translateUI(savedAppLang); // Start UI translation engine instantly
     });
 
     function toggleSettings() {
@@ -741,12 +796,6 @@
         }
         lastTouchEnd = now;
     }, false);
-
-    document.addEventListener('contextmenu', function(e) {
-        if (e.target.tagName !== 'TEXTAREA' && e.target.tagName !== 'INPUT') {
-            e.preventDefault();
-        }
-    });
 
     if (window.visualViewport) {
         const resizeHandler = () => {
@@ -805,24 +854,12 @@
     }
 
     document.getElementById('chat-container').addEventListener('scroll', () => {
-        if(document.getElementById('msg-menu').style.display === 'flex') {
-            hideMsgMenu();
-        }
-        
+        if(document.getElementById('msg-menu').style.display === 'flex') hideMsgMenu();
         const container = document.getElementById('chat-container');
         const scrollBtn = document.getElementById('scroll-bottom-btn');
-        
         const distanceToBottom = container.scrollHeight - container.scrollTop - container.clientHeight;
-        
-        if (distanceToBottom > 150) {
-            scrollBtn.classList.add('active');
-            userScrolledUp = true; 
-        } else {
-            scrollBtn.classList.remove('active');
-            if (distanceToBottom <= 20) {
-                userScrolledUp = false; 
-            }
-        }
+        if (distanceToBottom > 150) { scrollBtn.classList.add('active'); userScrolledUp = true; } 
+        else { scrollBtn.classList.remove('active'); if (distanceToBottom <= 20) { userScrolledUp = false; } }
     });
     window.addEventListener('scroll', hideMsgMenu);
 
@@ -831,23 +868,16 @@
         const menu = document.getElementById('attachment-menu');
         const overlay = document.getElementById('attachment-overlay');
         if (menu.classList.contains('active')) {
-            menu.classList.remove('active');
-            overlay.classList.remove('active');
+            menu.classList.remove('active'); overlay.classList.remove('active');
         } else {
-            menu.classList.add('active');
-            overlay.classList.add('active');
+            menu.classList.add('active'); overlay.classList.add('active');
         }
     }
 
     function handleFileSelect(event) {
         const file = event.target.files[0];
         if(file) {
-            if (file.type.startsWith('video/')) {
-                alert("Videos are not allowed! Please select a valid photo or document.");
-                event.target.value = '';
-                return;
-            }
-
+            if (file.type.startsWith('video/')) { alert("Videos are not allowed! Please select a valid photo or document."); event.target.value = ''; return; }
             const previewContainer = document.getElementById('attachment-preview');
             const imgPreview = document.getElementById('attachment-img-preview');
             const filePreview = document.getElementById('attachment-file-preview');
@@ -859,47 +889,29 @@
                     const img = new Image();
                     img.onload = function() {
                         const canvas = document.createElement('canvas');
-                        const MAX_WIDTH = 300;
-                        const scaleSize = MAX_WIDTH / img.width;
-                        canvas.width = MAX_WIDTH;
-                        canvas.height = img.height * scaleSize;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        const MAX_WIDTH = 300; const scaleSize = MAX_WIDTH / img.width;
+                        canvas.width = MAX_WIDTH; canvas.height = img.height * scaleSize;
+                        const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                         const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6);
-
                         currentAttachmentData = { type: 'image', name: file.name, data: compressedBase64 };
-                        imgPreview.src = compressedBase64;
-                        imgPreview.style.display = 'block';
-                        filePreview.style.display = 'none';
-                        previewContainer.style.display = 'flex';
+                        imgPreview.src = compressedBase64; imgPreview.style.display = 'block'; filePreview.style.display = 'none'; previewContainer.style.display = 'flex';
                     }
                     img.src = e.target.result;
                 }
                 reader.readAsDataURL(file);
             } else {
                 currentAttachmentData = { type: 'file', name: file.name, data: null };
-                imgPreview.style.display = 'none';
-                filePreview.style.display = 'flex';
+                imgPreview.style.display = 'none'; filePreview.style.display = 'flex';
                 let shortName = file.name.length > 12 ? file.name.substring(0, 8) + ".." + file.name.substring(file.name.lastIndexOf('.')) : file.name;
-                fileNameSpan.innerText = shortName;
-                previewContainer.style.display = 'flex';
+                fileNameSpan.innerText = shortName; previewContainer.style.display = 'flex';
             }
         }
         event.target.value = '';
     }
 
-    function removeAttachment() {
-        currentAttachmentData = null;
-        document.getElementById('attachment-preview').style.display = 'none';
-        document.getElementById('attachment-img-preview').src = "";
-    }
+    function removeAttachment() { currentAttachmentData = null; document.getElementById('attachment-preview').style.display = 'none'; document.getElementById('attachment-img-preview').src = ""; }
 
-    function autoGrow(element) {
-        element.style.height = "44px"; 
-        if (element.scrollHeight > 44) {
-            element.style.height = (element.scrollHeight) + "px";
-        }
-    }
+    function autoGrow(element) { element.style.height = "44px"; if (element.scrollHeight > 44) { element.style.height = (element.scrollHeight) + "px"; } }
 
     let globalAudioPlayer = null;
     let currentPlayingBtn = null;
@@ -909,169 +921,98 @@
             globalAudioPlayer.pause();
             document.querySelectorAll('.play-btn-icon').forEach(i => i.className = 'fas fa-play play-btn-icon');
             if (currentPlayingBtn) {
-                let oldDot = currentPlayingBtn.nextElementSibling.querySelector('div');
-                if (oldDot) oldDot.style.left = '0%';
-                let oldTimer = currentPlayingBtn.parentElement.querySelector('.audio-timer');
-                if (oldTimer) oldTimer.innerText = oldTimer.getAttribute('data-duration');
+                let oldDot = currentPlayingBtn.nextElementSibling.querySelector('div'); if (oldDot) oldDot.style.left = '0%';
+                let oldTimer = currentPlayingBtn.parentElement.querySelector('.audio-timer'); if (oldTimer) oldTimer.innerText = oldTimer.getAttribute('data-duration');
             }
         }
     }
 
     function playAudioBubble(btn, url) {
-        if (window.speechSynthesis && (window.speechSynthesis.speaking || isTtsPlaying)) {
-            stopTTS();
-        }
-
+        if (window.speechSynthesis && (window.speechSynthesis.speaking || isTtsPlaying)) stopTTS();
         if(globalAudioPlayer && globalAudioPlayer.src !== url) {
             globalAudioPlayer.pause();
             document.querySelectorAll('.play-btn-icon').forEach(i => i.className = 'fas fa-play play-btn-icon');
             if (currentPlayingBtn) {
-                let oldDot = currentPlayingBtn.nextElementSibling.querySelector('div');
-                if (oldDot) oldDot.style.left = '0%';
-                let oldTimer = currentPlayingBtn.parentElement.querySelector('.audio-timer');
-                if (oldTimer) oldTimer.innerText = oldTimer.getAttribute('data-duration');
+                let oldDot = currentPlayingBtn.nextElementSibling.querySelector('div'); if (oldDot) oldDot.style.left = '0%';
+                let oldTimer = currentPlayingBtn.parentElement.querySelector('.audio-timer'); if (oldTimer) oldTimer.innerText = oldTimer.getAttribute('data-duration');
             }
         }
         if(!globalAudioPlayer || globalAudioPlayer.src !== url) {
-            globalAudioPlayer = new Audio(url);
-            currentPlayingBtn = btn;
-            
+            globalAudioPlayer = new Audio(url); currentPlayingBtn = btn;
             globalAudioPlayer.onended = () => { 
                 btn.querySelector('i').className = 'fas fa-play play-btn-icon'; 
-                let dot = btn.nextElementSibling.querySelector('div');
-                if(dot) dot.style.left = '0%';
-                let timerSpan = btn.parentElement.querySelector('.audio-timer');
-                if(timerSpan) timerSpan.innerText = timerSpan.getAttribute('data-duration');
+                let dot = btn.nextElementSibling.querySelector('div'); if(dot) dot.style.left = '0%';
+                let timerSpan = btn.parentElement.querySelector('.audio-timer'); if(timerSpan) timerSpan.innerText = timerSpan.getAttribute('data-duration');
             };
-            
             globalAudioPlayer.ontimeupdate = () => {
                 let dot = btn.nextElementSibling.querySelector('div');
                 let timerSpan = btn.parentElement.querySelector('.audio-timer');
-                if(dot && globalAudioPlayer.duration) {
-                    let percent = (globalAudioPlayer.currentTime / globalAudioPlayer.duration) * 100;
-                    if(percent > 100) percent = 100;
-                    dot.style.left = `calc(${percent}% - 4px)`;
-                }
+                if(dot && globalAudioPlayer.duration) { let percent = (globalAudioPlayer.currentTime / globalAudioPlayer.duration) * 100; if(percent > 100) percent = 100; dot.style.left = `calc(${percent}% - 4px)`; }
                 if(timerSpan && globalAudioPlayer.currentTime) {
-                    let currentSec = Math.floor(globalAudioPlayer.currentTime);
-                    let m = Math.floor(currentSec / 60);
-                    let s = currentSec % 60;
-                    timerSpan.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+                    let currentSec = Math.floor(globalAudioPlayer.currentTime); let m = Math.floor(currentSec / 60); let s = currentSec % 60; timerSpan.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
                 }
             };
         }
-        
         let icon = btn.querySelector('i');
-        if(globalAudioPlayer.paused) {
-            globalAudioPlayer.play();
-            icon.className = 'fas fa-pause play-btn-icon';
-        } else {
-            globalAudioPlayer.pause();
-            icon.className = 'fas fa-play play-btn-icon';
-        }
+        if(globalAudioPlayer.paused) { globalAudioPlayer.play(); icon.className = 'fas fa-pause play-btn-icon'; } 
+        else { globalAudioPlayer.pause(); icon.className = 'fas fa-play play-btn-icon'; }
     }
 
+    // --- AI VOICE ENGINE MALE/FEMALE LOGIC ---
     function playNextTtsSegment() {
         if (!isTtsPlaying || currentSegmentIdx >= ttsSegments.length || !currentTtsBtn) {
-            if (currentSegmentIdx >= ttsSegments.length) {
-                stopTTS();
-            }
+            if (currentSegmentIdx >= ttsSegments.length) stopTTS();
             return;
         }
 
         let textSegment = ttsSegments[currentSegmentIdx].trim();
-        if (!textSegment) {
-            currentSegmentIdx++;
-            playNextTtsSegment();
-            return;
-        }
+        if (!textSegment) { currentSegmentIdx++; playNextTtsSegment(); return; }
 
         ttsUtterance = new SpeechSynthesisUtterance(textSegment);
         
         let prefType = localStorage.getItem('datex_voice_type') || 'female';
+        let isMale = (prefType === 'male');
+        let maleKeywords = ['male', 'david', 'daniel', 'mark', 'george', 'alex', 'fred', 'brian', 'james', 'guy', 'aaron', 'arthur', 'martin'];
+        let femaleKeywords = ['female', 'samantha', 'zira', 'victoria', 'tessa', 'karen', 'hazel', 'susan', 'catherine', 'laura', 'alice', 'veena', 'lekha'];
 
         let voices = window.speechSynthesis.getVoices();
         if(voices.length > 0) {
-            let selectedVoice = voices.find(v => v.name.toLowerCase().includes(prefType) && (v.lang.includes('en') || v.lang.includes('hi'))) 
-                                || voices.find(v => v.name.toLowerCase().includes(prefType))
-                                || voices.find(v => v.lang === 'hi-IN' || v.lang === 'en-IN') 
-                                || voices[0];
-            if (selectedVoice) ttsUtterance.voice = selectedVoice;
+            let selectedVoice = voices.find(v => {
+                let n = v.name.toLowerCase();
+                return isMale ? maleKeywords.some(k => n.includes(k)) : femaleKeywords.some(k => n.includes(k));
+            });
+            if (!selectedVoice) {
+                selectedVoice = voices.find(v => v.lang.includes('en-US') || v.lang.includes('en-GB')) || voices[0];
+            }
+            ttsUtterance.voice = selectedVoice;
         }
 
-        ttsUtterance.onend = () => {
-            if (isTtsPlaying) {
-                currentSegmentIdx++;
-                playNextTtsSegment();
-            }
-        };
-
-        ttsUtterance.onerror = (e) => {
-            console.log("Segment Event Code:", e);
-            if (e.error !== 'interrupted' && isTtsPlaying) {
-                currentSegmentIdx++;
-                playNextTtsSegment();
-            }
-        };
-
+        ttsUtterance.onend = () => { if (isTtsPlaying) { currentSegmentIdx++; playNextTtsSegment(); } };
+        ttsUtterance.onerror = (e) => { if (e.error !== 'interrupted' && isTtsPlaying) { currentSegmentIdx++; playNextTtsSegment(); } };
         window.speechSynthesis.speak(ttsUtterance);
     }
 
     function speakText(btn) {
-        if (!window.speechSynthesis) {
-            alert("Your browser does not support Text-to-Speech.");
-            return;
-        }
-
-        stopVoiceNoteBubble();
-        window.speechSynthesis.resume();
+        if (!window.speechSynthesis) { alert("Your browser does not support Text-to-Speech."); return; }
+        stopVoiceNoteBubble(); window.speechSynthesis.resume();
 
         if (currentTtsBtn === btn) {
-            if (isTtsPlaying) {
-                isTtsPlaying = false;
-                window.speechSynthesis.cancel();
-                btn.querySelector('i').className = 'fas fa-play';
-            } else {
-                isTtsPlaying = true;
-                btn.querySelector('i').className = 'fas fa-pause';
-                playNextTtsSegment();
-            }
+            if (isTtsPlaying) { isTtsPlaying = false; window.speechSynthesis.cancel(); btn.querySelector('i').className = 'fas fa-play'; } 
+            else { isTtsPlaying = true; btn.querySelector('i').className = 'fas fa-pause'; playNextTtsSegment(); }
             return;
         }
-
         stopTTS();
-
         const bubble = btn.closest('.bubble-container').querySelector('.bubble');
-        
         let clone = bubble.cloneNode(true);
-        let preTags = clone.querySelectorAll('pre');
-        preTags.forEach(p => p.remove()); 
-        
+        let preTags = clone.querySelectorAll('pre'); preTags.forEach(p => p.remove()); 
         let fullText = clone.innerText.trim();
 
-        if (!fullText) {
-            alert("No readable text found.");
-            btn.querySelector('i').className = 'fas fa-volume-up';
-            isTtsPlaying = false;
-            return;
-        }
+        if (!fullText) { btn.querySelector('i').className = 'fas fa-volume-up'; isTtsPlaying = false; return; }
 
-        ttsSegments = fullText.split(/(?<!\d)[.!?\n।]+(?!\d)/).reduce((acc, current) => {
-            if (current && current.trim()) {
-                acc.push(current.trim());
-            }
-            return acc;
-        }, []);
+        ttsSegments = fullText.split(/(?<!\d)[.!?\n।]+(?!\d)/).reduce((acc, current) => { if (current && current.trim()) acc.push(current.trim()); return acc; }, []);
+        if (ttsSegments.length === 0) ttsSegments = [fullText];
 
-        if (ttsSegments.length === 0) {
-            ttsSegments = [fullText];
-        }
-
-        currentTtsBtn = currentTtsBtn || btn; 
-        currentSegmentIdx = 0;
-        isTtsPlaying = true;
-        btn.querySelector('i').className = 'fas fa-pause';
-
+        currentTtsBtn = currentTtsBtn || btn; currentSegmentIdx = 0; isTtsPlaying = true; btn.querySelector('i').className = 'fas fa-pause';
         playNextTtsSegment();
     }
 
@@ -1081,228 +1022,80 @@
     let recognition;
     
     if (SpeechRecognition) {
-        recognition = new SpeechRecognition();
-        recognition.interimResults = false; 
-        recognition.continuous = false; 
-        
-        recognition.onstart = () => { 
-            isDictating = true; 
-            sessionFinalText = document.getElementById('user-input').value; 
-            if (sessionFinalText.length > 0 && !sessionFinalText.endsWith(" ")) { sessionFinalText += " "; } 
-            const btn = document.getElementById('mike-btn'); 
-            btn.classList.add('recording'); 
-        };
-        
-        recognition.onend = () => { 
-            isDictating = false; 
-            const btn = document.getElementById('mike-btn'); 
-            btn.classList.remove('recording'); 
-        };
-        
+        recognition = new SpeechRecognition(); recognition.interimResults = false; recognition.continuous = false; 
+        recognition.onstart = () => { isDictating = true; sessionFinalText = document.getElementById('user-input').value; if (sessionFinalText.length > 0 && !sessionFinalText.endsWith(" ")) { sessionFinalText += " "; } document.getElementById('mike-btn').classList.add('recording'); };
+        recognition.onend = () => { isDictating = false; document.getElementById('mike-btn').classList.remove('recording'); };
         recognition.onresult = (e) => { 
             let finalTranscript = ""; 
-            for (let i = e.resultIndex; i < e.results.length; ++i) { 
-                if (e.results[i].isFinal) { 
-                    finalTranscript += e.results[i][0].transcript; 
-                } 
-            }
+            for (let i = e.resultIndex; i < e.results.length; ++i) { if (e.results[i].isFinal) finalTranscript += e.results[i][0].transcript; }
             if (finalTranscript) {
-                const input = document.getElementById('user-input'); 
-                let currentVal = input.value;
-                if (currentVal.length > 0 && !currentVal.endsWith(" ")) {
-                    currentVal += " ";
-                }
-                input.value = currentVal + finalTranscript; 
-                autoGrow(input); 
-                input.dispatchEvent(new Event('input', { bubbles: true }));
+                const input = document.getElementById('user-input'); let currentVal = input.value;
+                if (currentVal.length > 0 && !currentVal.endsWith(" ")) currentVal += " ";
+                input.value = currentVal + finalTranscript; autoGrow(input); input.dispatchEvent(new Event('input', { bubbles: true }));
             }
         };
-        
-        recognition.onerror = (e) => {
-            console.error("Speech error: " + e.error);
-            isDictating = false;
-            document.getElementById('mike-btn').classList.remove('recording'); 
-        }
+        recognition.onerror = (e) => { isDictating = false; document.getElementById('mike-btn').classList.remove('recording'); }
     }
 
     let ignoreNextClick = false; 
-    
     document.getElementById('mike-btn').onclick = () => {
-        if (ignoreNextClick) {
-            ignoreNextClick = false;
-            return;
-        }
-        if (!recognition) {
-            alert("Speech recognition is not supported in this browser.");
-            return;
-        }
+        if (ignoreNextClick) { ignoreNextClick = false; return; }
+        if (!recognition) { alert("Speech recognition is not supported in this browser."); return; }
         if (isDictating) { recognition.stop(); } else { recognition.start(); }
     };
 
-    let vnMediaRecorder;
-    let vnAudioChunks = [];
-    let isVoiceNoteActive = false; 
-    let isSendingAudio = false; 
-    let isCancelingAudio = false; 
-    let recTimerInterval;
-    let recSeconds = 0;
-    
-    let vnPointerStartY = 0;
-    let vnIsDragging = false;
-    let vnHoldTimer = null;
+    let vnMediaRecorder; let vnAudioChunks = []; let isVoiceNoteActive = false; let isSendingAudio = false; let isCancelingAudio = false; let recTimerInterval; let recSeconds = 0;
+    let vnPointerStartY = 0; let vnIsDragging = false; let vnHoldTimer = null;
 
-    const micBtn = document.getElementById('mike-btn');
-    const micBtnContainer = document.getElementById('mike-btn-container');
-    const txtArea = document.getElementById('user-input');
-    const recUi = document.getElementById('recording-ui');
-    const recTimerDisplay = document.getElementById('recording-timer');
-    const recStopBtn = document.getElementById('rec-stop-btn');
-    const recWave = document.getElementById('rec-wave');
-    const dragLockUi = document.getElementById('drag-lock-ui');
+    const micBtn = document.getElementById('mike-btn'); const micBtnContainer = document.getElementById('mike-btn-container'); const txtArea = document.getElementById('user-input'); const recUi = document.getElementById('recording-ui'); const recTimerDisplay = document.getElementById('recording-timer'); const recStopBtn = document.getElementById('rec-stop-btn'); const recWave = document.getElementById('rec-wave'); const dragLockUi = document.getElementById('drag-lock-ui');
 
     micBtn.addEventListener('pointerdown', (e) => {
         if (isVoiceNoteActive || isGenerating || currentAttachmentData?.type === 'audio') return;
-        vnPointerStartY = e.clientY || (e.touches && e.touches[0].clientY);
-        vnIsDragging = true;
-        ignoreNextClick = false;
-
-        vnHoldTimer = setTimeout(() => {
-            if (vnIsDragging && !isVoiceNoteActive) {
-                dragLockUi.classList.add('active'); 
-            }
-        }, 200); 
+        vnPointerStartY = e.clientY || (e.touches && e.touches[0].clientY); vnIsDragging = true; ignoreNextClick = false;
+        vnHoldTimer = setTimeout(() => { if (vnIsDragging && !isVoiceNoteActive) { dragLockUi.classList.add('active'); } }, 200); 
     });
 
     micBtn.addEventListener('pointermove', (e) => {
         if (!vnIsDragging || isVoiceNoteActive) return;
-        let currentY = e.clientY || (e.touches && e.touches[0].clientY);
-        let diff = vnPointerStartY - currentY;
-
-        if (diff > 40) {
-            vnIsDragging = false;
-            ignoreNextClick = true; 
-            clearTimeout(vnHoldTimer);
-            dragLockUi.classList.remove('active');
-            
-            if (isDictating && recognition) recognition.stop(); 
-            startVoiceNoteRecord();
-        }
+        let currentY = e.clientY || (e.touches && e.touches[0].clientY); let diff = vnPointerStartY - currentY;
+        if (diff > 40) { vnIsDragging = false; ignoreNextClick = true; clearTimeout(vnHoldTimer); dragLockUi.classList.remove('active'); if (isDictating && recognition) recognition.stop(); startVoiceNoteRecord(); }
     });
-
-    micBtn.addEventListener('pointerup', (e) => {
-        vnIsDragging = false;
-        clearTimeout(vnHoldTimer);
-        dragLockUi.classList.remove('active');
-    });
-
-    micBtn.addEventListener('pointercancel', (e) => {
-        vnIsDragging = false;
-        clearTimeout(vnHoldTimer);
-        dragLockUi.classList.remove('active');
-    });
+    micBtn.addEventListener('pointerup', (e) => { vnIsDragging = false; clearTimeout(vnHoldTimer); dragLockUi.classList.remove('active'); });
+    micBtn.addEventListener('pointercancel', (e) => { vnIsDragging = false; clearTimeout(vnHoldTimer); dragLockUi.classList.remove('active'); });
 
     async function startVoiceNoteRecord() {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            vnMediaRecorder = new MediaRecorder(stream);
-            vnAudioChunks = [];
+            vnMediaRecorder = new MediaRecorder(stream); vnAudioChunks = [];
             vnMediaRecorder.ondataavailable = e => { if (e.data.size > 0) vnAudioChunks.push(e.data); };
             
-            isVoiceNoteActive = true;
-            isSendingAudio = false;
-            isCancelingAudio = false; 
-            
-            txtArea.style.display = 'none';
-            micBtnContainer.style.display = 'none';
-            recUi.classList.add('active');
-            recStopBtn.style.display = 'flex'; 
-            recWave.classList.add('playing');
-            
-            recSeconds = 0;
-            recTimerDisplay.innerText = "0:00";
-            recTimerInterval = setInterval(() => {
-                recSeconds++;
-                let m = Math.floor(recSeconds / 60);
-                let s = recSeconds % 60;
-                recTimerDisplay.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
-            }, 1000);
+            isVoiceNoteActive = true; isSendingAudio = false; isCancelingAudio = false; 
+            txtArea.style.display = 'none'; micBtnContainer.style.display = 'none'; recUi.classList.add('active'); recStopBtn.style.display = 'flex'; recWave.classList.add('playing');
+            recSeconds = 0; recTimerDisplay.innerText = "0:00";
+            recTimerInterval = setInterval(() => { recSeconds++; let m = Math.floor(recSeconds / 60); let s = recSeconds % 60; recTimerDisplay.innerText = `${m}:${s < 10 ? '0' : ''}${s}`; }, 1000);
 
             vnMediaRecorder.onstop = () => {
-                if (isCancelingAudio) {
-                    isVoiceNoteActive = false; 
-                    clearInterval(recTimerInterval);
-                    recWave.classList.remove('playing');
-                    recStopBtn.style.display = 'none'; 
-                    currentAttachmentData = null; 
-                    return; 
-                }
-
-                const audioBlob = new Blob(vnAudioChunks, { type: 'audio/webm' });
-                const audioUrl = URL.createObjectURL(audioBlob);
+                if (isCancelingAudio) { isVoiceNoteActive = false; clearInterval(recTimerInterval); recWave.classList.remove('playing'); recStopBtn.style.display = 'none'; currentAttachmentData = null; return; }
+                const audioBlob = new Blob(vnAudioChunks, { type: 'audio/webm' }); const audioUrl = URL.createObjectURL(audioBlob);
                 currentAttachmentData = { type: 'audio', name: 'Voice Note', data: audioBlob, url: audioUrl, duration: recTimerDisplay.innerText };
-                
-                if (isSendingAudio) {
-                    callDatexAPI();
-                    resetVoiceNoteUI();
-                } else {
-                    isVoiceNoteActive = false; 
-                    clearInterval(recTimerInterval);
-                    recWave.classList.remove('playing');
-                    recStopBtn.style.display = 'none'; 
-                }
+                if (isSendingAudio) { callDatexAPI(); resetVoiceNoteUI(); } 
+                else { isVoiceNoteActive = false; clearInterval(recTimerInterval); recWave.classList.remove('playing'); recStopBtn.style.display = 'none'; }
             };
-            
             vnMediaRecorder.start();
-
-        } catch (err) {
-            alert("Microphone permission denied!");
-            resetVoiceNoteUI();
-        }
+        } catch (err) { alert("Microphone permission denied!"); resetVoiceNoteUI(); }
     }
 
-    function stopVoiceNoteMidway() {
-        if(vnMediaRecorder && vnMediaRecorder.state !== 'inactive') {
-            vnMediaRecorder.stop();
-        }
-    }
+    function stopVoiceNoteMidway() { if(vnMediaRecorder && vnMediaRecorder.state !== 'inactive') { vnMediaRecorder.stop(); } }
+    function cancelVoiceNoteRecord() { isCancelingAudio = true; if(vnMediaRecorder && vnMediaRecorder.state !== 'inactive') { vnMediaRecorder.stop(); } currentAttachmentData = null; resetVoiceNoteUI(); }
+    function resetVoiceNoteUI() { isVoiceNoteActive = false; clearInterval(recTimerInterval); txtArea.style.display = 'block'; micBtnContainer.style.display = 'flex'; recUi.classList.remove('active'); dragLockUi.classList.remove('active'); }
 
-    function cancelVoiceNoteRecord() {
-        isCancelingAudio = true; 
-        if(vnMediaRecorder && vnMediaRecorder.state !== 'inactive') { 
-            vnMediaRecorder.stop(); 
-        }
-        currentAttachmentData = null;
-        resetVoiceNoteUI();
-    }
-
-    function resetVoiceNoteUI() {
-        isVoiceNoteActive = false;
-        clearInterval(recTimerInterval);
-        txtArea.style.display = 'block';
-        micBtnContainer.style.display = 'flex'; 
-        recUi.classList.remove('active');
-        dragLockUi.classList.remove('active');
-    }
-
-    window.onload = () => { 
-        try {
-            renderChatList(); 
-            if(chatHistory.length === 0) createNewChat();
-        } catch(err) {
-            console.error("Startup shell script catch:", err);
-        }
-    };
+    window.onload = () => { try { renderChatList(); if(chatHistory.length === 0) createNewChat(); } catch(err) { console.error("Startup shell script catch:", err); } };
 
     function renderChatList() {
-        const listElement = document.getElementById('chat-list');
-        listElement.innerHTML = "";
+        const listElement = document.getElementById('chat-list'); listElement.innerHTML = "";
         chatHistory.slice().reverse().forEach((chatObj, index) => {
-            const actualIndex = chatHistory.length - 1 - index;
-            const wrap = document.createElement('div');
-            wrap.className = "chat-item-wrapper";
-            
+            const actualIndex = chatHistory.length - 1 - index; const wrap = document.createElement('div'); wrap.className = "chat-item-wrapper";
             const activeHighlightClass = (actualIndex === activeChatIndex) ? "selected-active" : "";
-            
             wrap.innerHTML = `<div class="chat-item ${activeHighlightClass}" onclick="loadSelectedChat(${actualIndex}, true)">${chatObj.title}</div><i class="fas fa-trash delete-chat-btn" onclick="deleteHistoryItem(event, ${actualIndex})"></i>`;
             listElement.appendChild(wrap);
         });
@@ -1310,141 +1103,75 @@
 
     function deleteHistoryItem(event, index) {
         if(event) event.stopPropagation();
-        if (isGenerating && activeChatIndex === index) stopGeneration(); 
-        stopTTS(); 
-        chatHistory.splice(index, 1);
-        try {
-            localStorage.setItem('datex_full_history', JSON.stringify(chatHistory));
-        } catch(e) {}
+        if (isGenerating && activeChatIndex === index) stopGeneration(); stopTTS(); chatHistory.splice(index, 1);
+        try { localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); } catch(e) {}
         renderChatList();
         if (activeChatIndex === index) { createNewChat(true); } else if (activeChatIndex > index) { activeChatIndex--; }
     }
 
     function loadSelectedChat(index, shouldToggleSidebar = false) {
-        if (isGenerating) stopGeneration(); 
-        stopTTS(); 
-        activeChatIndex = index;
-        isNewSession = false;
-        editingMsgIdx = -1; 
-        const container = document.getElementById('chat-container');
-        container.innerHTML = "";
+        if (isGenerating) stopGeneration(); stopTTS(); 
+        activeChatIndex = index; isNewSession = false; editingMsgIdx = -1; 
+        const container = document.getElementById('chat-container'); container.innerHTML = "";
         chatHistory[index].messages.forEach((msg, msgIdx) => {
-            if(msg.role === "user") { 
-                addUserMessageToUI(msg.content, false, msgIdx, msg.attachment); 
-            } else { 
-                let isMsgStopped = (msg.content === "You stopped this response");
-                addAiMessageToUI(msg.content, false, msgIdx, isMsgStopped); 
-            }
+            if(msg.role === "user") { addUserMessageToUI(msg.content, false, msgIdx, msg.attachment); } 
+            else { let isMsgStopped = (msg.content === "You stopped this response"); addAiMessageToUI(msg.content, false, msgIdx, isMsgStopped); }
         });
-        
-        renderChatList(); 
-        
-        if(shouldToggleSidebar) toggleSidebar();
-        document.getElementById('scroll-bottom-btn').classList.remove('active');
+        renderChatList(); if(shouldToggleSidebar) toggleSidebar(); document.getElementById('scroll-bottom-btn').classList.remove('active');
     }
 
     function createNewChat(keepSidebarOpen = false) {
-        if (isGenerating) stopGeneration(); 
-        stopTTS(); 
-        isNewSession = true;
-        activeChatIndex = -1;
-        editingMsgIdx = -1; 
-        document.getElementById('chat-container').innerHTML = `<div class="welcome-screen" id="welcome-screen">Welcome To<br><span>DATEX AI</span></div>`;
-        const input = document.getElementById('user-input');
-        input.value = "";
-        autoGrow(input);
-        
+        if (isGenerating) stopGeneration(); stopTTS(); 
+        isNewSession = true; activeChatIndex = -1; editingMsgIdx = -1; 
+        document.getElementById('chat-container').innerHTML = `<div class="welcome-screen" id="welcome-screen"><span data-i18n="Welcome To" style="font-size:24px; font-weight:500; display:block; letter-spacing:0px;">Welcome To</span><br><span>DATEX AI</span></div>`;
+        const input = document.getElementById('user-input'); input.value = ""; autoGrow(input);
         renderChatList(); 
         
+        let appLang = localStorage.getItem('datex_app_lang') || 'english'; translateUI(appLang);
+
         if(!keepSidebarOpen && document.getElementById('sidebar').classList.contains('active')) toggleSidebar();
         document.getElementById('scroll-bottom-btn').classList.remove('active');
     }
 
-    function toggleSidebar() {
-        document.getElementById('sidebar').classList.toggle('active');
-        document.getElementById('overlay').classList.toggle('active');
-    }
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
 
     function addUserMessageToUI(text, isTyping, msgIdx, attachment = null) {
         const container = document.getElementById('chat-container');
         if(document.getElementById('welcome-screen')) document.getElementById('welcome-screen').remove();
-        const row = document.createElement('div');
-        row.className = 'message-row user-row';
-        row.setAttribute('data-index', msgIdx); 
+        const row = document.createElement('div'); row.className = 'message-row user-row'; row.setAttribute('data-index', msgIdx); 
 
         let attachmentHTML = '';
         if (attachment) {
-            if (attachment.type === 'image') {
-                attachmentHTML = `<img src="${attachment.data}" style="width: 100%; max-width: 250px; border-radius: 12px; margin-bottom: 8px; object-fit: cover;">`;
-            } else if (attachment.type === 'file') {
-                attachmentHTML = `
-                <div style="display: flex; align-items: center; gap: 10px; background: #e5e7eb; padding: 10px 14px; border-radius: 12px; margin-bottom: 8px;">
-                    <i class="fas fa-file-pdf" style="color: #333; font-size: 24px;"></i>
-                    <span style="font-size: 13px; font-weight: 500; color: #333; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${attachment.name}</span>
-                </div>`;
-            } else if (attachment.type === 'audio') {
+            if (attachment.type === 'image') { attachmentHTML = `<img src="${attachment.data}" style="width: 100%; max-width: 250px; border-radius: 12px; margin-bottom: 8px; object-fit: cover;">`; } 
+            else if (attachment.type === 'file') { attachmentHTML = `<div style="display: flex; align-items: center; gap: 10px; background: #e5e7eb; padding: 10px 14px; border-radius: 12px; margin-bottom: 8px;"><i class="fas fa-file-pdf" style="color: #333; font-size: 24px;"></i><span style="font-size: 13px; font-weight: 500; color: #333; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${attachment.name}</span></div>`; } 
+            else if (attachment.type === 'audio') {
                 let dur = attachment.duration || "0:02";
-                attachmentHTML = `
-                <div style="background: #f0f0f0; padding: 6px 12px; border-radius: 22px; display: flex; align-items: center; gap: 10px; width: 200px; margin-bottom: 6px; border: 1px solid #ddd;">
-                    <div onclick="playAudioBubble(this, '${attachment.url}')" style="width: 32px; height: 32px; border-radius: 50%; background: #333; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0;">
-                        <i class="fas fa-play play-btn-icon" style="color: #fff; margin-left: 2px; font-size: 13px;"></i>
-                    </div>
-                    <div style="flex: 1; height: 2px; background: #bbb; position: relative;">
-                        <div style="position: absolute; left: 0; top: -3px; width: 8px; height: 8px; border-radius: 50%; background: #333; transition: left 0.1s linear;"></div>
-                    </div>
-                    <span class="audio-timer" data-duration="${dur}" style="font-size: 12px; color: #333; font-weight: 500; min-width: 30px; text-align: right;">${dur}</span>
-                </div>`;
+                attachmentHTML = `<div style="background: #f0f0f0; padding: 6px 12px; border-radius: 22px; display: flex; align-items: center; gap: 10px; width: 200px; margin-bottom: 6px; border: 1px solid #ddd;"><div onclick="playAudioBubble(this, '${attachment.url}')" style="width: 32px; height: 32px; border-radius: 50%; background: #333; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0;"><i class="fas fa-play play-btn-icon" style="color: #fff; margin-left: 2px; font-size: 13px;"></i></div><div style="flex: 1; height: 2px; background: #bbb; position: relative;"><div style="position: absolute; left: 0; top: -3px; width: 8px; height: 8px; border-radius: 50%; background: #333; transition: left 0.1s linear;"></div></div><span class="audio-timer" data-duration="${dur}" style="font-size: 12px; color: #333; font-weight: 500; min-width: 30px; text-align: right;">${dur}</span></div>`;
             }
         }
-
-        row.innerHTML = `<div class="bubble-container">
-                            <div class="bubble user-bubble" style="display: flex; flex-direction: column;">
-                                ${attachmentHTML}
-                                <span class="user-msg-text" style="${(attachment && attachment.type === 'audio') ? 'display:none !important;' : ''}">${text ? text : ''}</span>
-                            </div>
-                            <div class="action-bar user-action-bar">
-                                <button class="action-btn btn-black-icon" onclick="openMenu(event, this)"><i class="fas fa-ellipsis-v"></i></button>
-                            </div>
-                         </div>`;
-        container.appendChild(row);
-        
-        userScrolledUp = false; 
-        container.scrollTop = container.scrollHeight;
+        row.innerHTML = `<div class="bubble-container"><div class="bubble user-bubble" style="display: flex; flex-direction: column;">${attachmentHTML}<span class="user-msg-text" style="${(attachment && attachment.type === 'audio') ? 'display:none !important;' : ''}">${text ? text : ''}</span></div><div class="action-bar user-action-bar"><button class="action-btn btn-black-icon" onclick="openMenu(event, this)"><i class="fas fa-ellipsis-v"></i></button></div></div>`;
+        container.appendChild(row); userScrolledUp = false; container.scrollTop = container.scrollHeight;
     }
 
     function addAiMessageToUI(text, isNew, msgIdx, isStoppedStatus = false) {
         const container = document.getElementById('chat-container');
-        const row = document.createElement('div');
-        row.className = 'message-row ai-row';
-        row.setAttribute('data-index', msgIdx); 
+        const row = document.createElement('div'); row.className = 'message-row ai-row'; row.setAttribute('data-index', msgIdx); 
         row.innerHTML = `<img src="logo.jpg" class="avatar"><div class="bubble-container"><div class="bubble ai-bubble"></div></div>`;
-        const bubble = row.querySelector('.ai-bubble');
-        container.appendChild(row);
+        const bubble = row.querySelector('.ai-bubble'); container.appendChild(row); userScrolledUp = false; 
         
-        userScrolledUp = false; 
-        
-        if(isNew) { 
-            typeEffect(bubble, text, 5, activeChatIndex); 
-        } else { 
-            renderStoredContent(bubble, text); 
-            addAiActions(row, isStoppedStatus);
-        }
+        if(isNew) { typeEffect(bubble, text, 5, activeChatIndex); } 
+        else { renderStoredContent(bubble, text); addAiActions(row, isStoppedStatus); }
         container.scrollTop = container.scrollHeight;
     }
 
     function addAiActions(row, isStopped) {
-        if (!row) return;
-        const container = row.querySelector('.bubble-container');
+        if (!row) return; const container = row.querySelector('.bubble-container');
         if (container && !container.querySelector('.action-bar')) {
             let html = '<div class="action-bar ai-action-bar">';
             
-            /* FIX 2 & 3: 3 Dots First (Black), then Retry (Black) if stopped, then Speaker */
+            // ACTION BUTTON ORDER: 3 Dots -> Retry (if stopped) -> Speaker
             html += `<button class="action-btn btn-black-icon" onclick="openMenu(event, this)"><i class="fas fa-ellipsis-v"></i></button>`;
-            
-            if (isStopped) { 
-                html += `<button class="action-btn btn-black-icon" onclick="regenerateMessage(this)"><i class="fas fa-redo"></i></button>`;
-            }
-            
+            if (isStopped) { html += `<button class="action-btn btn-black-icon" onclick="regenerateMessage(this)"><i class="fas fa-redo"></i></button>`; }
             html += `<button class="action-btn tts-btn" onclick="speakText(this)" style="background: #000; color: #fff; width: 30px; height: 30px; border-radius: 50%; padding: 0;"><i class="fas fa-volume-up" style="font-size: 13px;"></i></button></div>`;
             
             container.insertAdjacentHTML('beforeend', html);
@@ -1452,56 +1179,24 @@
     }
 
     function openMenu(e, btn) {
-        e.stopPropagation(); 
-        const menu = document.getElementById('msg-menu');
-        const row = btn.closest('.message-row');
-        
+        e.stopPropagation(); const menu = document.getElementById('msg-menu'); const row = btn.closest('.message-row');
         if (menu.style.display === 'flex' && selectedMsgRow === row) { hideMsgMenu(); return; }
-
-        selectedMsgRow = row;
-        const copyBtn = document.getElementById('copy-btn-ui');
-        const editBtn = document.getElementById('edit-btn-ui');
-        const deleteBtn = document.getElementById('delete-btn-ui');
+        selectedMsgRow = row; const copyBtn = document.getElementById('copy-btn-ui'); const editBtn = document.getElementById('edit-btn-ui'); const deleteBtn = document.getElementById('delete-btn-ui');
         
-        let isUser = selectedMsgRow.classList.contains('user-row');
-        let hasAudio = selectedMsgRow.innerHTML.includes('playAudioBubble');
-
-        if(!isUser) { 
-            editBtn.style.display = 'none'; 
-            deleteBtn.style.display = 'none'; 
-            copyBtn.style.display = 'flex';
-        } else { 
-            let allUserRows = Array.from(document.querySelectorAll('.message-row.user-row'));
-            let isLastUserMsg = (selectedMsgRow === allUserRows[allUserRows.length - 1]);
-
+        let isUser = selectedMsgRow.classList.contains('user-row'); let hasAudio = selectedMsgRow.innerHTML.includes('playAudioBubble');
+        if(!isUser) { editBtn.style.display = 'none'; deleteBtn.style.display = 'none'; copyBtn.style.display = 'flex'; } 
+        else { 
+            let allUserRows = Array.from(document.querySelectorAll('.message-row.user-row')); let isLastUserMsg = (selectedMsgRow === allUserRows[allUserRows.length - 1]);
             if (isLastUserMsg) {
                 deleteBtn.style.display = 'flex'; 
-                if (hasAudio) {
-                    editBtn.style.display = 'none';
-                    copyBtn.style.display = 'none';
-                } else {
-                    editBtn.style.display = 'flex';
-                    copyBtn.style.display = 'flex';
-                }
+                if (hasAudio) { editBtn.style.display = 'none'; copyBtn.style.display = 'none'; } else { editBtn.style.display = 'flex'; copyBtn.style.display = 'flex'; }
             } else {
-                deleteBtn.style.display = 'none';
-                editBtn.style.display = 'none';
-                if (hasAudio) {
-                    copyBtn.style.display = 'none';
-                } else {
-                    copyBtn.style.display = 'flex';
-                }
+                deleteBtn.style.display = 'none'; editBtn.style.display = 'none';
+                if (hasAudio) { copyBtn.style.display = 'none'; } else { copyBtn.style.display = 'flex'; }
             }
         }
-        
-        const rect = btn.getBoundingClientRect();
-        let x = isUser ? (rect.left - 140) : (rect.right + 5);
-        let y = rect.top; 
-        
-        if (x < 10) x = 10;
-        if (x + 140 > window.innerWidth) x = window.innerWidth - 150;
-        if (y + 120 > window.innerHeight) y = window.innerHeight - 130; 
-        
+        const rect = btn.getBoundingClientRect(); let x = isUser ? (rect.left - 140) : (rect.right + 5); let y = rect.top; 
+        if (x < 10) x = 10; if (x + 140 > window.innerWidth) x = window.innerWidth - 150; if (y + 120 > window.innerHeight) y = window.innerHeight - 130; 
         menu.style.left = x + 'px'; menu.style.top = y + 'px'; menu.style.display = 'flex';
     }
 
@@ -1509,88 +1204,38 @@
     function copyMsg() { if(!selectedMsgRow) return; const text = selectedMsgRow.querySelector('.bubble').innerText; navigator.clipboard.writeText(text).then(() => { hideMsgMenu(); }); }
     
     function editMsg() { 
-        stopTTS(); 
-        if(!selectedMsgRow) return; 
-        editingMsgIdx = parseInt(selectedMsgRow.getAttribute('data-index')); 
-        const msgObj = chatHistory[activeChatIndex].messages[editingMsgIdx];
-        
-        const input = document.getElementById('user-input'); 
-        input.value = msgObj.content || ""; 
-        autoGrow(input); 
-        input.focus(); 
+        stopTTS(); if(!selectedMsgRow) return; editingMsgIdx = parseInt(selectedMsgRow.getAttribute('data-index')); 
+        const msgObj = chatHistory[activeChatIndex].messages[editingMsgIdx]; const input = document.getElementById('user-input'); 
+        input.value = msgObj.content || ""; autoGrow(input); input.focus(); 
         
         if (msgObj.attachment && msgObj.attachment.type !== 'audio') {
-            currentAttachmentData = msgObj.attachment;
-            const previewContainer = document.getElementById('attachment-preview');
-            const imgPreview = document.getElementById('attachment-img-preview');
-            const filePreview = document.getElementById('attachment-file-preview');
-            const fileNameSpan = document.getElementById('attachment-name');
-
-            if (msgObj.attachment.type === 'image') {
-                imgPreview.src = msgObj.attachment.data;
-                imgPreview.style.display = 'block';
-                filePreview.style.display = 'none';
-            } else {
-                imgPreview.style.display = 'none';
-                filePreview.style.display = 'flex';
-                let shortName = msgObj.attachment.name.length > 12 ? msgObj.attachment.name.substring(0, 8) + ".." + msgObj.attachment.name.substring(msgObj.attachment.name.lastIndexOf('.')) : msgObj.attachment.name;
-                fileNameSpan.innerText = shortName;
-            }
+            currentAttachmentData = msgObj.attachment; const previewContainer = document.getElementById('attachment-preview'); const imgPreview = document.getElementById('attachment-img-preview'); const filePreview = document.getElementById('attachment-file-preview'); const fileNameSpan = document.getElementById('attachment-name');
+            if (msgObj.attachment.type === 'image') { imgPreview.src = msgObj.attachment.data; imgPreview.style.display = 'block'; filePreview.style.display = 'none'; } 
+            else { imgPreview.style.display = 'none'; filePreview.style.display = 'flex'; let shortName = msgObj.attachment.name.length > 12 ? msgObj.attachment.name.substring(0, 8) + ".." + msgObj.attachment.name.substring(msgObj.attachment.name.lastIndexOf('.')) : msgObj.attachment.name; fileNameSpan.innerText = shortName; }
             previewContainer.style.display = 'flex';
-        } else {
-            removeAttachment();
-        }
-
+        } else { removeAttachment(); }
         hideMsgMenu(); 
     }
 
     function deleteSelectedMsg() {
-        stopTTS(); 
-        if(selectedMsgRow && activeChatIndex !== -1) {
-            const msgIdx = parseInt(selectedMsgRow.getAttribute('data-index'));
-            const isUserRow = selectedMsgRow.classList.contains('user-row');
-            
+        stopTTS(); if(selectedMsgRow && activeChatIndex !== -1) {
+            const msgIdx = parseInt(selectedMsgRow.getAttribute('data-index')); const isUserRow = selectedMsgRow.classList.contains('user-row');
             let targets = [selectedMsgRow];
-            if (isUserRow) {
-                let nextRow = selectedMsgRow.nextElementSibling;
-                if (nextRow && nextRow.classList.contains('ai-row') && parseInt(nextRow.getAttribute('data-index')) === msgIdx + 1) {
-                    targets.push(nextRow);
-                }
-            }
-
-            targets.forEach(row => {
-                row.classList.add('delete-msg-animation');
-            });
+            if (isUserRow) { let nextRow = selectedMsgRow.nextElementSibling; if (nextRow && nextRow.classList.contains('ai-row') && parseInt(nextRow.getAttribute('data-index')) === msgIdx + 1) { targets.push(nextRow); } }
+            targets.forEach(row => { row.classList.add('delete-msg-animation'); });
 
             setTimeout(() => {
                 chatHistory[activeChatIndex].messages.splice(msgIdx, 1);
-                if (isUserRow && chatHistory[activeChatIndex].messages[msgIdx] && chatHistory[activeChatIndex].messages[msgIdx].role === "assistant") {
-                    chatHistory[activeChatIndex].messages.splice(msgIdx, 1);
-                }
-                try {
-                    localStorage.setItem('datex_full_history', JSON.stringify(chatHistory));
-                } catch(e) {}
+                if (isUserRow && chatHistory[activeChatIndex].messages[msgIdx] && chatHistory[activeChatIndex].messages[msgIdx].role === "assistant") { chatHistory[activeChatIndex].messages.splice(msgIdx, 1); }
+                try { localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); } catch(e) {}
                 editingMsgIdx = -1; 
-                if (chatHistory[activeChatIndex].messages.length === 0) { 
-                    deleteHistoryItem(null, activeChatIndex); 
-                } else { 
-                    loadSelectedChat(activeChatIndex, false); 
-                }
+                if (chatHistory[activeChatIndex].messages.length === 0) { deleteHistoryItem(null, activeChatIndex); } else { loadSelectedChat(activeChatIndex, false); }
             }, 300);
         }
         hideMsgMenu();
     }
 
-    function copyCode(btn) { 
-        const code = btn.parentElement.querySelector('code').innerText; 
-        navigator.clipboard.writeText(code).then(() => { 
-            btn.classList.add('active-click');
-            setTimeout(() => { 
-                btn.classList.remove('active-click');
-            }, 300); 
-        }); 
-    }
-
+    function copyCode(btn) { const code = btn.parentElement.querySelector('code').innerText; navigator.clipboard.writeText(code).then(() => { btn.classList.add('active-click'); setTimeout(() => { btn.classList.remove('active-click'); }, 300); }); }
     function escapeHTML(str) { return str.replace(/[&<>"']/g, function(m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; }); }
 
     function formatLinksAndStyles(text) {
@@ -1608,16 +1253,10 @@
     }
 
     function renderStoredContent(element, text) {
-        let segments = text.split(/(```[\s\S]*?```)/g);
-        let finalHTML = "";
+        let segments = text.split(/(```[\s\S]*?```)/g); let finalHTML = "";
         segments.forEach(seg => {
-            if (seg.startsWith("```") && seg.endsWith("```")) {
-                let codeContent = seg.substring(3, seg.length - 3).trim();
-                finalHTML += `<pre><button class="copy-code-btn" onclick="copyCode(this)"><i class="far fa-copy"></i></button><code>${escapeHTML(codeContent)}</code></pre>`;
-            } else { 
-                let formattedSeg = formatLinksAndStyles(seg);
-                finalHTML += formattedSeg.replace(/\n/g, "<br>"); 
-            }
+            if (seg.startsWith("```") && seg.endsWith("```")) { let codeContent = seg.substring(3, seg.length - 3).trim(); finalHTML += `<pre><button class="copy-code-btn" onclick="copyCode(this)"><i class="far fa-copy"></i></button><code>${escapeHTML(codeContent)}</code></pre>`; } 
+            else { let formattedSeg = formatLinksAndStyles(seg); finalHTML += formattedSeg.replace(/\n/g, "<br>"); }
         });
         element.innerHTML = finalHTML;
         if(window.MathJax) { MathJax.typesetPromise([element]).catch((err) => console.log(err)); }
@@ -1647,9 +1286,7 @@
             if (currentSeg < segments.length) {
                 let seg = segments[currentSeg];
                 if (seg.startsWith("```") && seg.endsWith("```")) {
-                    let codeContent = seg.substring(3, seg.length - 3).trim();
-                    accumulatedHTML += `<pre><button class="copy-code-btn" onclick="copyCode(this)"><i class="far fa-copy"></i></button><code>${escapeHTML(codeContent)}</code></pre>`;
-                    element.innerHTML = accumulatedHTML; currentSeg++; setTimeout(typeNext, speed);
+                    let codeContent = seg.substring(3, seg.length - 3).trim(); accumulatedHTML += `<pre><button class="copy-code-btn" onclick="copyCode(this)"><i class="far fa-copy"></i></button><code>${escapeHTML(codeContent)}</code></pre>`; element.innerHTML = accumulatedHTML; currentSeg++; setTimeout(typeNext, speed);
                 } else {
                     let formattedSeg = formatLinksAndStyles(seg);
                     if (i < formattedSeg.length) {
@@ -1658,153 +1295,75 @@
                         element.innerHTML = accumulatedHTML; setTimeout(typeNext, speed);
                     } else { i = 0; currentSeg++; setTimeout(typeNext, speed); }
                 }
-
-                if (activeChatIndex === boundChatIndex && !userScrolledUp) {
-                    container.scrollTop = container.scrollHeight;
-                }
-
+                if (activeChatIndex === boundChatIndex && !userScrolledUp) container.scrollTop = container.scrollHeight;
             } else {
                 renderStoredContent(element, text); 
-                if (activeChatIndex === boundChatIndex) {
-                    resetSendButton(); addAiActions(rowElement, false);
-                    if (!userScrolledUp) {
-                        container.scrollTop = container.scrollHeight;
-                    }
-                }
+                if (activeChatIndex === boundChatIndex) { resetSendButton(); addAiActions(rowElement, false); if (!userScrolledUp) container.scrollTop = container.scrollHeight; }
             }
         }
         typeNext();
     }
 
     function handleSendClick() { 
-        if (isGenerating) { 
-            stopGeneration(); 
-        } else if (isVoiceNoteActive) {
-            isSendingAudio = true;
-            if(vnMediaRecorder && vnMediaRecorder.state !== 'inactive') vnMediaRecorder.stop();
-        } else if (currentAttachmentData && currentAttachmentData.type === 'audio') {
-            callDatexAPI();
-            resetVoiceNoteUI();
-        } else { 
-            callDatexAPI(); 
-        } 
+        if (isGenerating) { stopGeneration(); } 
+        else if (isVoiceNoteActive) { isSendingAudio = true; if(vnMediaRecorder && vnMediaRecorder.state !== 'inactive') vnMediaRecorder.stop(); } 
+        else if (currentAttachmentData && currentAttachmentData.type === 'audio') { callDatexAPI(); resetVoiceNoteUI(); } 
+        else { callDatexAPI(); } 
     }
     
-    function stopGeneration() { 
-        stopGenerationFlag = true; 
-        if (abortController) { abortController.abort(); } 
-        resetSendButton(); 
-        if (currentAiRow) { addAiActions(currentAiRow, true); } 
-    }
-    
+    function stopGeneration() { stopGenerationFlag = true; if (abortController) { abortController.abort(); } resetSendButton(); if (currentAiRow) { addAiActions(currentAiRow, true); } }
     function resetSendButton() { isGenerating = false; const sendBtn = document.querySelector('.send-btn'); if(sendBtn) { sendBtn.innerHTML = '<i class="fas fa-arrow-up"></i>'; } }
     
     function regenerateMessage(btn) {
-        if (isGenerating) stopGeneration();
-        stopTTS(); 
-        const row = btn.closest('.ai-row'); const indexAttr = row.getAttribute('data-index');
-        if (indexAttr) { 
-            const msgIdx = parseInt(indexAttr); 
-            if (chatHistory[activeChatIndex].messages[msgIdx]) { 
-                chatHistory[activeChatIndex].messages.splice(msgIdx, 1); 
-                try { localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); } catch(e) {}
-            } 
-        }
+        if (isGenerating) stopGeneration(); stopTTS(); const row = btn.closest('.ai-row'); const indexAttr = row.getAttribute('data-index');
+        if (indexAttr) { const msgIdx = parseInt(indexAttr); if (chatHistory[activeChatIndex].messages[msgIdx]) { chatHistory[activeChatIndex].messages.splice(msgIdx, 1); try { localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); } catch(e) {} } }
         row.remove(); callDatexAPI(true);
     }
 
     async function callDatexAPI(isRegenerate = false) {
-        stopTTS(); 
-        let message = "";
-        let attachmentToSave = null;
+        stopTTS(); let message = ""; let attachmentToSave = null;
         
         if (!isRegenerate) {
-            const input = document.getElementById('user-input');
-            message = input.value.trim();
-            
-            if (currentAttachmentData) {
-                attachmentToSave = currentAttachmentData;
-                removeAttachment(); 
-            }
-
+            const input = document.getElementById('user-input'); message = input.value.trim();
+            if (currentAttachmentData) { attachmentToSave = currentAttachmentData; removeAttachment(); }
             if (!message && !attachmentToSave) return;
             input.value = ""; input.style.height = "44px"; 
 
-            if (isNewSession) {
-                const titleText = message ? message.substring(0, 30) : (attachmentToSave && attachmentToSave.type==='audio' ? "Voice Note" : "Image Upload");
-                const newChat = { title: titleText, messages: [] };
-                chatHistory.push(newChat); activeChatIndex = chatHistory.length - 1; isNewSession = false;
-            } else if (editingMsgIdx !== -1) {
-                chatHistory[activeChatIndex].messages.splice(editingMsgIdx); editingMsgIdx = -1; loadSelectedChat(activeChatIndex, false); 
-            }
+            if (isNewSession) { const titleText = message ? message.substring(0, 30) : (attachmentToSave && attachmentToSave.type==='audio' ? "Voice Note" : "Image Upload"); const newChat = { title: titleText, messages: [] }; chatHistory.push(newChat); activeChatIndex = chatHistory.length - 1; isNewSession = false; } 
+            else if (editingMsgIdx !== -1) { chatHistory[activeChatIndex].messages.splice(editingMsgIdx); editingMsgIdx = -1; loadSelectedChat(activeChatIndex, false); }
             
-            const requestChatIndex = activeChatIndex;
-
-            const currentMsgIdx = chatHistory[requestChatIndex].messages.length;
-            const msgObj = { role: "user", content: message };
+            const requestChatIndex = activeChatIndex; const currentMsgIdx = chatHistory[requestChatIndex].messages.length; const msgObj = { role: "user", content: message };
             if (attachmentToSave) msgObj.attachment = attachmentToSave;
-
             chatHistory[requestChatIndex].messages.push(msgObj);
             try { localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); } catch(e) {}
             
-            renderChatList();
-            addUserMessageToUI(message, false, currentMsgIdx, attachmentToSave);
+            renderChatList(); addUserMessageToUI(message, false, currentMsgIdx, attachmentToSave);
         } else {
             const lastUserMsg = chatHistory[activeChatIndex].messages[chatHistory[activeChatIndex].messages.length - 1];
             if(lastUserMsg && lastUserMsg.role === 'user') { message = lastUserMsg.content; attachmentToSave = lastUserMsg.attachment; }
         }
 
-        const requestChatIndex = activeChatIndex;
-
-        isGenerating = true; stopGenerationFlag = false;
+        const requestChatIndex = activeChatIndex; isGenerating = true; stopGenerationFlag = false;
         const sendBtn = document.querySelector('.send-btn'); sendBtn.innerHTML = '<i class="fas fa-stop" style="font-size: 14px;"></i>';
 
-        const container = document.getElementById('chat-container');
-        const aiRow = document.createElement('div'); aiRow.className = 'message-row ai-row';
-        
+        const container = document.getElementById('chat-container'); const aiRow = document.createElement('div'); aiRow.className = 'message-row ai-row';
         const typingHTML = `<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
-        aiRow.innerHTML = `<img src="logo.jpg" class="avatar"><div class="bubble-container"><div class="bubble ai-bubble">${typingHTML}</div></div>`;
-        container.appendChild(aiRow); const bubble = aiRow.querySelector('.ai-bubble'); currentAiRow = aiRow;
+        aiRow.innerHTML = `<img src="logo.jpg" class="avatar"><div class="bubble-container"><div class="bubble ai-bubble">${typingHTML}</div></div>`; container.appendChild(aiRow); const bubble = aiRow.querySelector('.ai-bubble'); currentAiRow = aiRow;
 
         if (attachmentToSave && attachmentToSave.type === 'audio' && !isRegenerate) {
             bubble.innerText = "Transcribing voice note...";
             try {
-                const fd = new FormData();
-                fd.append('file', attachmentToSave.data, 'voicenote.webm');
-                fd.append('model', 'whisper-large-v3');
-                fd.append('temperature', '0.0'); 
-                fd.append('prompt', 'Namaste, kaise ho? Please transcribe strictly in English or Hindi (Devanagari or Latin script). NO URDU SCRIPT.'); 
-                
-                const wRes = await fetch("https://api.groq.com/openai/v1/audio/transcriptions", {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${GROQ_API_KEY}` },
-                    body: fd
-                });
-                const wData = await wRes.json();
-                
-                if (wData.text) {
-                    message = wData.text; 
-                    chatHistory[requestChatIndex].messages[chatHistory[requestChatIndex].messages.length - 1].content = message;
-                    try { localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); } catch(e) {}
-                } else {
-                    throw new Error("Empty audio");
-                }
-            } catch(err) {
-                bubble.innerText = "Error: Could not transcribe voice note. Please check your API key or connection.";
-                resetSendButton(); addAiActions(currentAiRow, true); return;
-            }
+                const fd = new FormData(); fd.append('file', attachmentToSave.data, 'voicenote.webm'); fd.append('model', 'whisper-large-v3'); fd.append('temperature', '0.0'); fd.append('prompt', 'Namaste, kaise ho? Please transcribe strictly in English or Hindi (Devanagari or Latin script). NO URDU SCRIPT.'); 
+                const wRes = await fetch("https://api.groq.com/openai/v1/audio/transcriptions", { method: 'POST', headers: { 'Authorization': `Bearer ${GROQ_API_KEY}` }, body: fd }); const wData = await wRes.json();
+                if (wData.text) { message = wData.text; chatHistory[requestChatIndex].messages[chatHistory[requestChatIndex].messages.length - 1].content = message; try { localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); } catch(e) {} } 
+                else { throw new Error("Empty audio"); }
+            } catch(err) { bubble.innerText = "Error: Could not transcribe voice note. Please check your API key or connection."; resetSendButton(); addAiActions(currentAiRow, true); return; }
             bubble.innerHTML = typingHTML;
         }
 
-        const now = new Date();
-        const dateStr = now.toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-        const timeStr = now.toLocaleTimeString('en-IN');
-
-        let responseLangPref = localStorage.getItem('datex_response_lang') || 'auto';
-        let langInstruction = "Always respond naturally in the exact language and script the user is speaking.";
-        if (responseLangPref !== 'auto') {
-            langInstruction = `You MUST strictly respond in the ${responseLangPref} language only, regardless of what language the user speaks.`;
-        }
+        const now = new Date(); const dateStr = now.toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }); const timeStr = now.toLocaleTimeString('en-IN');
+        let responseLangPref = localStorage.getItem('datex_response_lang') || 'auto'; let langInstruction = "Always respond naturally in the exact language and script the user is speaking.";
+        if (responseLangPref !== 'auto') { langInstruction = `You MUST strictly respond in the ${responseLangPref} language only, regardless of what language the user speaks.`; }
 
         let dynamicSystemPrompt = `You are DATEX AI. Your name is strictly 'DATEX AI'. You must never identify as Llama, Meta, or OpenAI. 
 CURRENT REAL-TIME DATA: Today is ${dateStr} and the current time is ${timeStr}.
@@ -1824,52 +1383,31 @@ CRITICAL INSTRUCTIONS:
         try {
             if (/[\d]\s*[\+\-\*\/\^]\s*[\d]/.test(message)) {
                 const cleanMessage = message.replace(/,/g, ''); const mathRegex = /(?:(?:\d+\.?\d*)\s*[\+\-\*\/\^\(\)]\s*)+(?:\d+\.?\d*)/g; const matches = cleanMessage.match(mathRegex);
-                if (matches) {
-                    matches.forEach(match => {
-                        try { if (/[\+\-\*\/\^]/.test(match)) { const result = math.evaluate(match); if(result !== undefined && !isNaN(result)) { mathContext += `${match} = ${result}\n`; hasValidMath = true; } } } catch(err) { }
-                    });
-                }
+                if (matches) { matches.forEach(match => { try { if (/[\+\-\*\/\^]/.test(match)) { const result = math.evaluate(match); if(result !== undefined && !isNaN(result)) { mathContext += `${match} = ${result}\n`; hasValidMath = true; } } } catch(err) { } }); }
             }
         } catch(e) { }
 
         if (hasValidMath) { dynamicSystemPrompt += `\n\n[CRITICAL SYSTEM OVERRIDE - MATH DETECTED]: The user has provided a mathematical expression. The absolute, mathematically proven correct answer is:\n${mathContext}\nDO NOT CALCULATE THIS YOURSELF. YOUR INTERNAL CALCULATOR IS BROKEN. YOU MUST COPY AND PASTE THIS EXACT NUMBER AS YOUR FINAL ANSWER. NO EXCEPTIONS.`; }
 
-        let useVision = false;
-        let apiMessages = [ { "role": "system", "content": dynamicSystemPrompt } ];
+        let useVision = false; let apiMessages = [ { "role": "system", "content": dynamicSystemPrompt } ];
         
         let recentMessages = chatHistory[requestChatIndex].messages.slice(-6);
         recentMessages.forEach(msg => {
             if (msg.role === 'user') {
                 if (msg.attachment && msg.attachment.type === 'image') {
-                    useVision = true;
-                    apiMessages.push({
-                        role: 'user',
-                        content: [
-                            { type: "text", text: msg.content ? msg.content : "Please analyze this image." },
-                            { type: "image_url", image_url: { url: msg.attachment.data } }
-                        ]
-                    });
+                    useVision = true; apiMessages.push({ role: 'user', content: [ { type: "text", text: msg.content ? msg.content : "Please analyze this image." }, { type: "image_url", image_url: { url: msg.attachment.data } } ] });
                 } else {
-                    let textContent = msg.content || "";
-                    if (msg.attachment && msg.attachment.type === 'file') {
-                        textContent = `[System Note: User has attached a document named "${msg.attachment.name}"]\n` + textContent;
-                    }
+                    let textContent = msg.content || ""; if (msg.attachment && msg.attachment.type === 'file') { textContent = `[System Note: User has attached a document named "${msg.attachment.name}"]\n` + textContent; }
                     apiMessages.push({ role: 'user', content: textContent });
                 }
-            } else {
-                apiMessages.push({ role: 'assistant', content: msg.content });
-            }
+            } else { apiMessages.push({ role: 'assistant', content: msg.content }); }
         });
 
         const selectedModel = useVision ? "llama-3.2-11b-vision-preview" : "llama-3.3-70b-versatile";
-
         const isDeepResearchOn = localStorage.getItem('datex_deep_research') === 'true';
         const searchKeywords = ['aaj', 'ajj', 'today', 'news', 'khabar', 'price', 'match', 'ipl', 'score', 'latest', 'update', 'weather', 'mausam', 'kal', 'yesterday', 'current', 'stock', 'who won', 'kaun jeeta', 'batao', 'search', 'link', 'youtube', 'video', 'channel', 'instagram', 'linkedin', 'facebook', 'twitter', 'website', 'profile', 'account', 'url', 'site', 'browser', 'google'];
         
-        let needsSearch = searchKeywords.some(keyword => message.toLowerCase().includes(keyword));
-        if (isDeepResearchOn) {
-            needsSearch = true; 
-        }
+        let needsSearch = searchKeywords.some(keyword => message.toLowerCase().includes(keyword)); if (isDeepResearchOn) { needsSearch = true; }
 
         if (needsSearch && !useVision) {
             bubble.innerText = "Searching the web...";
@@ -1880,12 +1418,8 @@ CRITICAL INSTRUCTIONS:
                     let searchResults = tavilyData.results.map(r => r.title + " (URL: " + r.url + ")\n" + r.content).join('\n\n');
                     let internetContext = `System Note (Real-Time Internet Data): Here are the latest internet search results for the user's query. Use this to give an accurate, up-to-date answer. ALWAYS include the 'URL' provided below in your response starting with https:// so it is clickable:\n${searchResults}\n`;
                     apiMessages.push({ "role": "system", "content": internetContext });
-                } else {
-                    apiMessages.push({ "role": "system", "content": "[System Note: Live internet search failed. Inform the user gracefully that you cannot fetch real-time data right now.]" });
-                }
-            } catch(e) {
-                apiMessages.push({ "role": "system", "content": "[System Note: Live internet search failed due to API limits. Inform the user gracefully that you cannot fetch real-time data right now.]" });
-            }
+                } else { apiMessages.push({ "role": "system", "content": "[System Note: Live internet search failed. Inform the user gracefully that you cannot fetch real-time data right now.]" }); }
+            } catch(e) { apiMessages.push({ "role": "system", "content": "[System Note: Live internet search failed due to API limits. Inform the user gracefully that you cannot fetch real-time data right now.]" }); }
             bubble.innerHTML = typingHTML;
         }
 
@@ -1894,52 +1428,27 @@ CRITICAL INSTRUCTIONS:
         try {
             const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: 'POST', headers: { 'Authorization': `Bearer ${GROQ_API_KEY}`, 'Content-Type': 'application/json' }, signal: abortController.signal,
-                body: JSON.stringify({ 
-                    "messages": apiMessages, 
-                    "model": selectedModel,
-                    "max_tokens": 4096 
-                }) 
+                body: JSON.stringify({ "messages": apiMessages, "model": selectedModel, "max_tokens": 4096 }) 
             });
-            
-            if (!res.ok) {
-                const errData = await res.json();
-                throw new Error(errData.error?.message || `Server Error ${res.status}`);
-            }
-            
+            if (!res.ok) { const errData = await res.json(); throw new Error(errData.error?.message || `Server Error ${res.status}`); }
             const data = await res.json();
-            if (data.error || !data.choices || data.choices.length === 0) { 
-                throw new Error("API Limit Reached or Internal Error"); 
-            }
+            if (data.error || !data.choices || data.choices.length === 0) { throw new Error("API Limit Reached or Internal Error"); }
             
-            const aiResponse = data.choices[0].message.content; 
-            const aiMsgIdx = chatHistory[requestChatIndex].messages.length;
+            const aiResponse = data.choices[0].message.content; const aiMsgIdx = chatHistory[requestChatIndex].messages.length;
             
             chatHistory[requestChatIndex].messages.push({ role: "assistant", content: aiResponse }); 
             try { localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); } catch(e) {}
             
-            if (activeChatIndex === requestChatIndex) {
-                aiRow.setAttribute('data-index', aiMsgIdx);
-                bubble.innerHTML = ""; 
-                typeEffect(bubble, aiResponse, 5, requestChatIndex);
-            }
-            
+            if (activeChatIndex === requestChatIndex) { aiRow.setAttribute('data-index', aiMsgIdx); bubble.innerHTML = ""; typeEffect(bubble, aiResponse, 5, requestChatIndex); }
         } catch (e) { 
             let errText = (e.name === 'AbortError') ? "You stopped this response" : "Server Error: " + e.message; 
-            
             chatHistory[requestChatIndex].messages.push({ role: "assistant", content: errText });
             try { localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); } catch(err) {}
-
-            if (activeChatIndex === requestChatIndex) {
-                if (bubble) bubble.innerText = errText;
-                resetSendButton(); 
-                if (currentAiRow) addAiActions(currentAiRow, true);
-            }
+            if (activeChatIndex === requestChatIndex) { if (bubble) bubble.innerText = errText; resetSendButton(); if (currentAiRow) addAiActions(currentAiRow, true); }
         }
     }
 
-    document.getElementById('user-input').addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) { if (window.innerWidth <= 768 || ('ontouchstart' in window)) { return; } e.preventDefault(); handleSendClick(); }
-    });
+    document.getElementById('user-input').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { if (window.innerWidth <= 768 || ('ontouchstart' in window)) { return; } e.preventDefault(); handleSendClick(); } });
     </script>
 </body>
 </html>
