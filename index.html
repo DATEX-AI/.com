@@ -116,7 +116,7 @@
 
         .header-center { flex: 1; text-align: center; }
         .model-name { font-weight: 600; font-size: 18px; color: #1a1a1a; margin-top: 6px; }
-        .version-pill { font-size: 11.5px; font-weight: 600; background: #f0f0f0; display: inline-block; padding: 4px 14px; border-radius: 14px; color: #000; border: 1px solid #ddd; margin-top: 15px; }
+        .version-pill { font-size: 11.5px; font-weight: 600; background: #f0f0f0; display: inline-block; padding: 4px 14px; border-radius: 14px; color: #000; border: 1px solid #ddd; margin-top: 8px; }
         
         .logo-container img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: none; }
         .avatar { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: none; flex-shrink: 0; }
@@ -131,9 +131,16 @@
         .ai-row { flex-direction: column; gap: 6px; } 
         
         .bubble-container { position: relative; max-width: 88%; display: flex; flex-direction: column; overflow: hidden; }
-        .bubble { padding: 14px 20px; border-radius: 22px; font-size: 16px; line-height: 1.6; word-wrap: break-word; min-height: 48px; }
+        .bubble { padding: 14px 20px; border-radius: 22px; font-size: 16px; line-height: 1.6; word-wrap: break-word; min-height: 48px; position: relative; transition: padding-bottom 0.2s; }
         .user-bubble { background-color: #f3f4f6; color: #000; border-bottom-right-radius: 4px; white-space: pre-wrap; }
         .ai-bubble { background-color: #fff; border: 1px solid #e5e7eb; border-bottom-left-radius: 4px; width: 100%; }
+
+        /* FIX 1: User Text Clamp and Gemini Expand Button Styles */
+        .user-msg-text { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+        .user-msg-text.expanded { -webkit-line-clamp: unset; }
+        .user-bubble.has-expand-btn { padding-bottom: 26px !important; } /* Ensures text doesn't hide behind button */
+        .user-expand-btn { position: absolute; bottom: -10px; right: 12px; width: 28px; height: 28px; border-radius: 50%; background: #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.15); display: flex; justify-content: center; align-items: center; cursor: pointer; color: #555; font-size: 12px; z-index: 5; border: 1px solid #f0f0f0; transition: transform 0.2s; }
+        .user-expand-btn:active { transform: scale(0.9); }
         
         .typing-indicator { display: flex; align-items: center; gap: 4px; padding: 4px 6px; height: 24px; }
         .typing-dot { width: 6px; height: 6px; background-color: #888; border-radius: 50%; animation: typingBounce 1.4s infinite ease-in-out both; }
@@ -343,6 +350,7 @@
         body.dark-mode .select-arrow { border-color: #fff; }
         
         body.dark-mode pre { background: #000; border-color: #444; }
+        body.dark-mode .user-expand-btn { background: #2c2c2c; color: #e0e0e0; box-shadow: 0 2px 6px rgba(0,0,0,0.5); border-color: #444; }
     </style>
 </head>
 <body>
@@ -532,7 +540,7 @@
                     <div class="menu-line line-3"></div>
                 </div>
             </div>
-            <div class="header-center"><div class="model-name"><span style="font-family: inherit;">DATEX AI</span> <span data-i18n="Model">Model</span></div><div class="version-pill">Kyro 2.5</div></div>
+            <div class="header-center"><div class="model-name"><span style="font-family: inherit;">DATEX AI</span>&nbsp;<span data-i18n="Model">Model</span></div><div class="version-pill">Kyro 2.5</div></div>
             <div class="header-right"><div class="logo-container"><img src="logo.jpg" alt="Logo"></div></div>
         </header>
 
@@ -1028,14 +1036,16 @@
             
             if (!selectedVoice) {
                 let langVoices = voices.filter(v => v.lang.startsWith('en') || v.lang.startsWith('hi'));
-                if (isMale && langVoices.length > 1) {
-                    selectedVoice = langVoices.find(v => v.name.toLowerCase().includes('local') || v.name.toLowerCase().includes('variant 2')) || langVoices[1] || langVoices[0];
+                if(langVoices.length > 0) {
+                     selectedVoice = (isMale && langVoices.length > 1) ? langVoices[1] : langVoices[0];
                 } else {
-                    selectedVoice = langVoices[0] || voices[0];
+                     selectedVoice = voices[0];
                 }
             }
-            ttsUtterance.voice = selectedVoice;
-            if (selectedVoice) ttsUtterance.lang = selectedVoice.lang;
+            if(selectedVoice) {
+                ttsUtterance.voice = selectedVoice;
+                ttsUtterance.lang = selectedVoice.lang;
+            }
         }
 
         ttsUtterance.onend = () => { 
@@ -1057,7 +1067,7 @@
 
     function speakText(btn) {
         if (!window.speechSynthesis) { alert("Your browser does not support Text-to-Speech."); return; }
-        stopVoiceNoteBubble(); window.speechSynthesis.resume();
+        stopVoiceNoteBubble();
 
         if (currentTtsBtn === btn) {
             if (isTtsPlaying) { 
@@ -1073,7 +1083,8 @@
             return;
         }
         
-        stopTTS();
+        stopTTS(); 
+        
         const bubble = btn.closest('.bubble-container').querySelector('.bubble');
         let clone = bubble.cloneNode(true);
         let preTags = clone.querySelectorAll('pre'); preTags.forEach(p => p.remove()); 
@@ -1087,8 +1098,7 @@
         currentTtsVoicePref = localStorage.getItem('datex_voice_type') || 'female';
         currentTtsBtn = btn; currentSegmentIdx = 0; isTtsPlaying = true; btn.querySelector('i').className = 'fas fa-pause';
         
-        window.speechSynthesis.cancel(); 
-        playNextTtsSegment();
+        setTimeout(() => { playNextTtsSegment(); }, 100); 
     }
 
     let isDictating = false; 
@@ -1215,6 +1225,7 @@
 
     function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
 
+    /* FIX: Added Text Clamping and Gemini-style Read More button without hiding any text */
     function addUserMessageToUI(text, isTyping, msgIdx, attachment = null) {
         const container = document.getElementById('chat-container');
         if(document.getElementById('welcome-screen')) document.getElementById('welcome-screen').remove();
@@ -1229,8 +1240,32 @@
                 attachmentHTML = `<div style="background: #f0f0f0; padding: 6px 12px; border-radius: 22px; display: flex; align-items: center; gap: 10px; width: 200px; margin-bottom: 6px; border: 1px solid #ddd;"><div onclick="playAudioBubble(this, '${attachment.url}')" style="width: 32px; height: 32px; border-radius: 50%; background: #333; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0;"><i class="fas fa-play play-btn-icon" style="color: #fff; margin-left: 2px; font-size: 13px;"></i></div><div style="flex: 1; height: 2px; background: #bbb; position: relative;"><div style="position: absolute; left: 0; top: -3px; width: 8px; height: 8px; border-radius: 50%; background: #333; transition: left 0.1s linear;"></div></div><span class="audio-timer" data-duration="${dur}" style="font-size: 12px; color: #333; font-weight: 500; min-width: 30px; text-align: right;">${dur}</span></div>`;
             }
         }
-        row.innerHTML = `<div class="bubble-container"><div class="bubble user-bubble" style="display: flex; flex-direction: column;">${attachmentHTML}<span class="user-msg-text" style="${(attachment && attachment.type === 'audio') ? 'display:none !important;' : ''}">${text ? text : ''}</span></div><div class="action-bar user-action-bar"><button class="action-btn btn-black-icon" onclick="openMenu(event, this)"><i class="fas fa-ellipsis-v"></i></button></div></div>`;
-        container.appendChild(row); userScrolledUp = false; container.scrollTop = container.scrollHeight;
+        
+        row.innerHTML = `<div class="bubble-container"><div class="bubble user-bubble" style="display: flex; flex-direction: column;">${attachmentHTML}<div class="user-msg-text" style="${(attachment && attachment.type === 'audio') ? 'display:none !important;' : ''}">${text ? text : ''}</div></div><div class="action-bar user-action-bar"><button class="action-btn btn-black-icon" onclick="openMenu(event, this)"><i class="fas fa-ellipsis-v"></i></button></div></div>`;
+        container.appendChild(row);
+        
+        setTimeout(() => {
+            const textDiv = row.querySelector('.user-msg-text');
+            if (textDiv && textDiv.scrollHeight > textDiv.clientHeight) {
+                const bubble = row.querySelector('.user-bubble');
+                bubble.classList.add('has-expand-btn');
+                const btn = document.createElement('div');
+                btn.className = 'user-expand-btn';
+                btn.innerHTML = '<i class="fas fa-chevron-down"></i>';
+                btn.onclick = function(e) {
+                    e.stopPropagation();
+                    textDiv.classList.toggle('expanded');
+                    if (textDiv.classList.contains('expanded')) {
+                        btn.innerHTML = '<i class="fas fa-chevron-up"></i>';
+                    } else {
+                        btn.innerHTML = '<i class="fas fa-chevron-down"></i>';
+                    }
+                };
+                bubble.appendChild(btn);
+            }
+        }, 10);
+        
+        userScrolledUp = false; container.scrollTop = container.scrollHeight;
     }
 
     function addAiMessageToUI(text, isNew, msgIdx, isStoppedStatus = false) {
@@ -1280,7 +1315,18 @@
     }
 
     function hideMsgMenu() { document.getElementById('msg-menu').style.display = 'none'; }
-    function copyMsg() { if(!selectedMsgRow) return; const text = selectedMsgRow.querySelector('.bubble').innerText; navigator.clipboard.writeText(text).then(() => { hideMsgMenu(); }); }
+    
+    function copyMsg() { 
+        if(!selectedMsgRow) return; 
+        let text = "";
+        if(selectedMsgRow.classList.contains('user-row')) {
+            let textDiv = selectedMsgRow.querySelector('.user-msg-text');
+            text = textDiv ? textDiv.textContent : selectedMsgRow.querySelector('.bubble').innerText;
+        } else {
+            text = selectedMsgRow.querySelector('.bubble').innerText; 
+        }
+        navigator.clipboard.writeText(text).then(() => { hideMsgMenu(); }); 
+    }
     
     function editMsg() { 
         stopTTS(); if(!selectedMsgRow) return; editingMsgIdx = parseInt(selectedMsgRow.getAttribute('data-index')); 
