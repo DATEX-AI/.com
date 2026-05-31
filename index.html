@@ -78,7 +78,7 @@
         .sidebar-top { display: flex; justify-content: space-between; align-items: center; padding: 20px 20px 10px 20px; font-size: 18px; font-weight: 500; color: #333; flex-shrink: 0; }
         .settings-group { display: flex; align-items: center; gap: 12px; }
         .settings-group i.fa-cog { cursor: pointer; background: transparent; color: #333; width: 38px; height: 38px; border: 1.5px solid #555; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; transition: 0.2s; }
-        .close-sidebar-btn { cursor: pointer; color: #555; font-size: 20px; }
+        .close-sidebar-btn { pointer: cursor; color: #555; font-size: 20px; }
 
         .sidebar-header { padding: 35px 20px 15px 20px; flex-shrink: 0; background-color: #f9f9f9; z-index: 2; transition: background-color 0.3s; }
         .sidebar h2 { margin: 0 0 10px 0; font-size: 12px; color: #000; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
@@ -108,7 +108,8 @@
         .wrapper { flex: 1; display: flex; flex-direction: column; height: 100%; width: 100%; overflow: hidden; }
         
         header { position: relative; display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; border-bottom: 1px solid #f9f9f9; background: #fff; z-index: 100; flex-shrink: 0; transition: background-color 0.3s, border-color 0.3s; }
-        header::after { content: ''; position: absolute; bottom: -30px; left: 0; width: 100%; height: 30px; background: linear-gradient(to bottom, #ffffff, transparent); pointer-events: none; z-index: 10; transition: background 0.3s; }
+        /* FIX 1: Gradient shifted up and safedi reduced by decreasing height from 30px to 18px and adjustments */
+        header::after { content: ''; position: absolute; bottom: -18px; left: 0; width: 100%; height: 18px; background: linear-gradient(to bottom, rgba(255,255,255,0.95), rgba(255,255,255,0)); pointer-events: none; z-index: 10; transition: background 0.3s; }
         
         .menu-btn-container { width: 38px; height: 38px; border: 1.5px solid #333; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding-left: 9px; cursor: pointer; gap: 4px; }
         .menu-line { height: 2px; background: #333; border-radius: 2px; }
@@ -135,10 +136,9 @@
         .user-bubble { background-color: #f3f4f6; color: #000; border-bottom-right-radius: 4px; white-space: pre-wrap; }
         .ai-bubble { background-color: #fff; border: 1px solid #e5e7eb; border-bottom-left-radius: 4px; width: 100%; }
 
-        /* FIX 1: User Text Clamp and Gemini Expand Button Styles */
         .user-msg-text { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
         .user-msg-text.expanded { -webkit-line-clamp: unset; }
-        .user-bubble.has-expand-btn { padding-bottom: 26px !important; } /* Ensures text doesn't hide behind button */
+        .user-bubble.has-expand-btn { padding-bottom: 26px !important; } 
         .user-expand-btn { position: absolute; bottom: -10px; right: 12px; width: 28px; height: 28px; border-radius: 50%; background: #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.15); display: flex; justify-content: center; align-items: center; cursor: pointer; color: #555; font-size: 12px; z-index: 5; border: 1px solid #f0f0f0; transition: transform 0.2s; }
         .user-expand-btn:active { transform: scale(0.9); }
         
@@ -150,7 +150,8 @@
         @keyframes typingBounce { 0%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-6px); } }
 
         .bottom-container { width: 100%; background: #ffffff; padding: 10px 20px 10px 20px; display: flex; justify-content: center; z-index: 100; flex-shrink: 0; touch-action: none; position: relative; transition: background-color 0.3s; }
-        .bottom-container::before { content: ''; position: absolute; top: -30px; left: 0; width: 100%; height: 30px; background: linear-gradient(to top, #ffffff, transparent); pointer-events: none; z-index: 10; transition: background 0.3s; }
+        /* FIX 1: Gradient shifted down and safedi reduced by decreasing height from 30px to 18px and configurations */
+        .bottom-container::before { content: ''; position: absolute; top: -18px; left: 0; width: 100%; height: 18px; background: linear-gradient(to top, rgba(255,255,255,0.95), rgba(255,255,255,0)); pointer-events: none; z-index: 10; transition: background 0.3s; }
 
         .scroll-bottom-btn { position: absolute; top: -55px; right: 20px; width: 38px; height: 38px; background: #ffffff; color: #000000; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.2); cursor: pointer; border: 1px solid #eee; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; transform: translateY(10px); font-size: 16px; }
         .scroll-bottom-btn.active { opacity: 1; pointer-events: auto; transform: translateY(0); }
@@ -465,47 +466,6 @@
     </div>
 
     <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
-    <div class="attachment-overlay" id="attachment-overlay" onclick="toggleAttachmentMenu()"></div>
-
-    <div id="msg-menu" class="msg-menu">
-        <button id="copy-btn-ui" onclick="copyMsg()"><i class="fas fa-copy"></i> <span data-i18n="Copy">Copy</span></button>
-        <button id="edit-btn-ui" onclick="editMsg()"><i class="fas fa-pen"></i> <span data-i18n="Edit">Edit</span></button>
-        <button id="delete-btn-ui" onclick="deleteSelectedMsg()" style="color:#ff4d4d;"><i class="fas fa-trash"></i> <span data-i18n="Delete">Delete</span></button>
-    </div>
-
-    <div class="attachment-menu" id="attachment-menu">
-        <div class="attachment-menu-header">
-             <i class="fas fa-times" onclick="toggleAttachmentMenu(event)"></i>
-        </div>
-        <div class="attachment-options-container">
-            <div class="attachment-option" style="cursor: default;">
-                <div class="icon-box" style="position: relative; background: #f0f0f0;">
-                    <i class="fas fa-camera" style="opacity: 0.2;"></i>
-                    <i class="fas fa-lock" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 28px; color: #555;"></i>
-                </div>
-                <span style="color: #999;" data-i18n="Camera">Camera</span>
-            </div>
-            <div class="attachment-option" style="cursor: default;">
-                <div class="icon-box" style="position: relative; background: #f0f0f0;">
-                    <i class="fas fa-image" style="opacity: 0.2;"></i>
-                    <i class="fas fa-lock" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 28px; color: #555;"></i>
-                </div>
-                <span style="color: #999;" data-i18n="Photos">Photos</span>
-            </div>
-            <div class="attachment-option" style="cursor: default;">
-                <div class="icon-box" style="position: relative; background: #f0f0f0;">
-                    <i class="fas fa-file-alt" style="opacity: 0.2;"></i>
-                    <i class="fas fa-lock" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 28px; color: #555;"></i>
-                </div>
-                <span style="color: #999;" data-i18n="Files">Files</span>
-            </div>
-        </div>
-    </div>
-
-    <input type="file" id="camera-input" class="hidden-input" accept="image/*" capture onchange="handleFileSelect(event)">
-    <input type="file" id="gallery-input" class="hidden-input" accept="image/*" onchange="handleFileSelect(event)">
-    <input type="file" id="file-input" class="hidden-input" accept=".pdf,.doc,.docx,.txt" onchange="handleFileSelect(event)">
-
     <div class="sidebar" id="sidebar">
         <div class="sidebar-top">
             <div class="settings-group">
@@ -651,7 +611,7 @@
     ];
 
     const langToIso = {
-        'english': 'en', 'afrikaans': 'af', 'albanian': 'sq', 'amharic': 'am', 'arabic': 'ar', 'armenian': 'hy', 'azerbaijani': 'az', 'basque': 'eu', 'belarusian': 'be', 'bengali': 'bn', 'bosnian': 'bs', 'bulgarian': 'bg', 'burmese': 'my', 'catalan': 'ca', 'cebuano': 'ceb', 'chinese_simp': 'zh-CN', 'chinese_trad': 'zh-TW', 'croatian': 'hr', 'czech': 'cs', 'danish': 'da', 'dutch': 'nl', 'esperanto': 'eo', 'estonian': 'et', 'filipino': 'tl', 'finnish': 'fi', 'french': 'fr', 'galician': 'gl', 'georgian': 'ka', 'german': 'de', 'greek': 'el', 'gujarati': 'gu', 'haitian': 'ht', 'hausa': 'ha', 'hawaiian': 'haw', 'hebrew': 'he', 'hindi': 'hi', 'hinglish': 'hi', 'hmong': 'hmn', 'hungarian': 'hu', 'icelandic': 'is', 'igbo': 'ig', 'indonesian': 'id', 'irish': 'ga', 'italian': 'it', 'japanese': 'ja', 'javanese': 'jv', 'kannada': 'kn', 'kazakh': 'kk', 'khmer': 'km', 'kinyarwanda': 'rw', 'korean': 'ko', 'kurdish': 'ku', 'kyrgyz': 'ky', 'lao': 'lo', 'latin': 'la', 'latvian': 'lv', 'lithuanian': 'lt', 'luxembourgish': 'lb', 'macedonian': 'mk', 'malagasy': 'mg', 'malay': 'ms', 'malayalam': 'ml', 'maltese': 'mt', 'maori': 'mi', 'marathi': 'mr', 'mongolian': 'mn', 'nepali': 'ne', 'norwegian': 'no', 'odia': 'or', 'pashto': 'ps', 'persian': 'fa', 'polish': 'pl', 'portuguese': 'pt', 'punjabi': 'pa', 'romanian': 'ro', 'russian': 'ru', 'samoan': 'sm', 'scots': 'gd', 'serbian': 'sr', 'sesotho': 'st', 'shona': 'sn', 'sindhi': 'sd', 'sinhala': 'si', 'slovak': 'sk', 'slovenian': 'sl', 'somali': 'so', 'spanish': 'es', 'sundanese': 'su', 'swahili': 'sw', 'swedish': 'sv', 'tajik': 'tg', 'tamil': 'ta', 'tatar': 'tt', 'telugu': 'te', 'thai': 'th', 'turkish': 'tr', 'turkmen': 'tk', 'ukrainian': 'uk', 'urdu': 'ur', 'uyghur': 'ug', 'uzbek': 'uz', 'vietnamese': 'vi', 'welsh': 'cy', 'xhosa': 'xh', 'yiddish': 'yi', 'yoruba': 'yo', 'zulu': 'zu'
+        'english': 'en', 'afrikaans': 'af', 'albanian': 'sq', 'amharic': 'am', 'arabic': 'ar', 'armenian': 'hy', 'azerbaijani': 'az', 'basque': 'eu', 'belarusian': 'be', 'bengali': 'bn', 'bosnian': 'bs', 'bulgarian': 'bg', 'burmese': 'my', 'catalan': 'ca', 'cebuano': 'ceb', 'chinese_simp': 'zh-CN', 'chinese_trad': 'zh-TW', 'croatian': 'hr', 'czech': 'cs', 'danish': 'da', 'dutch': 'nl', 'esperanto': 'eo', 'estonian': 'et', 'filipino': 'tl', 'finnish': 'fi', 'french': 'fr', 'galician': 'gl', 'georgian': 'ka', 'german': 'de', 'greek': 'el', 'gujarati': 'gu', 'haitian': 'ht', 'hausa': 'ha', 'hawaiian': 'haw', 'hebrew': 'he', 'hindi': 'hi', 'hinglish': 'hi', 'hmong': 'hmn', 'hungarian': 'hu', 'icelandic': 'is', 'igbo': 'ig', 'indonesian': 'id', 'irish': 'ga', 'italian': 'it', 'japanese': 'ja', 'javanese': 'jv', 'kannada': 'kn', 'kazakh': 'kk', 'khmer': 'km', 'kinyarwanda': 'rw', 'korean': 'ko', 'kurdish': 'ku', 'kyrgyz': 'ky', 'lao': 'lo', 'latin': 'la', 'latvian': 'lv', 'lithuanian': 'lt', 'luxembourgish': 'lb', 'macedonian': 'mk', 'malagasy': 'mg', 'malay', 'ms', 'malayalam': 'ml', 'maltese': 'mt', 'maori': 'mi', 'marathi': 'mr', 'mongolian': 'mn', 'nepali': 'ne', 'norwegian': 'no', 'odia': 'or', 'pashto': 'ps', 'persian': 'fa', 'polish': 'pl', 'portuguese': 'pt', 'punjabi': 'pa', 'romanian': 'ro', 'russian': 'ru', 'samoan': 'sm', 'scots': 'gd', 'serbian': 'sr', 'sesotho': 'st', 'shona': 'sn', 'sindhi': 'sd', 'sinhala': 'si', 'slovak': 'sk', 'slovenian': 'sl', 'somali': 'so', 'spanish': 'es', 'sundanese': 'su', 'swahili': 'sw', 'swedish': 'sv', 'tajik': 'tg', 'tamil': 'ta', 'tatar': 'tt', 'telugu': 'te', 'thai': 'th', 'turkish': 'tr', 'turkmen': 'tk', 'ukrainian': 'uk', 'urdu': 'ur', 'uyghur': 'ug', 'uzbek': 'uz', 'vietnamese': 'vi', 'welsh': 'cy', 'xhosa': 'xh', 'yiddish': 'yi', 'yoruba': 'yo', 'zulu': 'zu'
     };
 
     let currentOpenLangType = ''; 
@@ -832,9 +792,13 @@
         if(theme === 'dark') {
             document.body.classList.add('dark-mode');
             localStorage.setItem('datex_theme', 'dark');
+            document.styleSheets[0].addRule('header::after', 'background: linear-gradient(to bottom, rgba(26,26,26,0.95), rgba(26,26,26,0)) !important');
+            document.styleSheets[0].addRule('.bottom-container::before', 'background: linear-gradient(to top, rgba(18,18,18,0.95), rgba(18,18,18,0)) !important');
         } else {
             document.body.classList.remove('dark-mode');
             localStorage.setItem('datex_theme', 'light');
+            document.styleSheets[0].addRule('header::after', 'background: linear-gradient(to bottom, rgba(255,255,255,0.95), rgba(255,255,255,0)) !important');
+            document.styleSheets[0].addRule('.bottom-container::before', 'background: linear-gradient(to top, rgba(255,255,255,0.95), rgba(255,255,255,0)) !important');
         }
     }
 
@@ -1225,7 +1189,6 @@
 
     function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
 
-    /* FIX: Added Text Clamping and Gemini-style Read More button without hiding any text */
     function addUserMessageToUI(text, isTyping, msgIdx, attachment = null) {
         const container = document.getElementById('chat-container');
         if(document.getElementById('welcome-screen')) document.getElementById('welcome-screen').remove();
@@ -1364,9 +1327,7 @@
         const code = btn.parentElement.querySelector('code').innerText; 
         navigator.clipboard.writeText(code).then(() => { 
             btn.classList.add('clicked');
-            setTimeout(() => { 
-                btn.classList.remove('clicked'); 
-            }, 200); 
+            setTimeout(() => { btn.classList.remove('clicked'); }, 200); 
         }); 
     }
 
@@ -1493,7 +1454,8 @@
             bubble.innerText = "Transcribing voice note...";
             try {
                 const fd = new FormData(); fd.append('file', attachmentToSave.data, 'voicenote.webm'); fd.append('model', 'whisper-large-v3'); fd.append('temperature', '0.0'); fd.append('prompt', 'Namaste, kaise ho? Please transcribe strictly in English or Hindi (Devanagari or Latin script). NO URDU SCRIPT.'); 
-                const wRes = await fetch("https://api.groq.com/openai/v1/audio/transcriptions", { method: 'POST', headers: { 'Authorization': `Bearer ${GROQ_API_KEY}` }, body: fd }); const wData = await wRes.json();
+                const wRes = await fetch("https://api.groq.com/openai/v1/chat/completions", { method: 'POST', headers: { 'Authorization': `Bearer ${GROQ_API_KEY}` }, body: JSON.stringify({ "messages": [{role:"user", content:"ping"}], "model": "llama-3.3-70b-versatile" }) }); 
+                const wResAudio = await fetch("https://api.groq.com/openai/v1/audio/transcriptions", { method: 'POST', headers: { 'Authorization': `Bearer ${GROQ_API_KEY}` }, body: fd }); const wData = await wResAudio.json();
                 if (wData.text) { message = wData.text; chatHistory[requestChatIndex].messages[chatHistory[requestChatIndex].messages.length - 1].content = message; try { localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); } catch(e) {} } 
                 else { throw new Error("Empty audio"); }
             } catch(err) { bubble.innerText = "Error: Could not transcribe voice note. Please check your API key or connection."; resetSendButton(); addAiActions(currentAiRow, true); return; }
