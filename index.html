@@ -116,7 +116,7 @@
 
         .header-center { flex: 1; text-align: center; }
         .model-name { font-weight: 600; font-size: 18px; color: #1a1a1a; margin-top: 6px; }
-        .version-pill { font-size: 11.5px; font-weight: 600; background: #f0f0f0; display: inline-block; padding: 4px 14px; border-radius: 14px; color: #000; border: 1px solid #ddd; margin-top: 3px; }
+        .version-pill { font-size: 11.5px; font-weight: 600; background: #f0f0f0; display: inline-block; padding: 4px 14px; border-radius: 14px; color: #000; border: 1px solid #ddd; margin-top: 15px; }
         
         .logo-container img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: none; }
         .avatar { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: none; flex-shrink: 0; }
@@ -269,6 +269,7 @@
             flex: 1 1 auto; 
             overflow-y: auto !important; 
             -webkit-overflow-scrolling: touch !important; 
+            touch-action: auto !important; 
             scrollbar-width: none; 
         } 
         .settings-body::-webkit-scrollbar, .lang-list::-webkit-scrollbar { display: none; }
@@ -531,7 +532,7 @@
                     <div class="menu-line line-3"></div>
                 </div>
             </div>
-            <div class="header-center"><div class="model-name"><span style="font-family: inherit;">DATEX AI</span> <span data-i18n="Model">Model</span></div><div class="version-pill">Fast 1.0</div></div>
+            <div class="header-center"><div class="model-name"><span style="font-family: inherit;">DATEX AI</span> <span data-i18n="Model">Model</span></div><div class="version-pill">Kyro 2.5</div></div>
             <div class="header-right"><div class="logo-container"><img src="logo.jpg" alt="Logo"></div></div>
         </header>
 
@@ -834,8 +835,6 @@
         localStorage.setItem('datex_voice_type', voice);
     }
 
-    /* FIX 2: REMOVED THE FAULTY JAVASCRIPT TOUCHEND BLOCK THAT KILLED SCROLLING */
-
     document.addEventListener('contextmenu', function(e) {
         if (e.target.tagName !== 'TEXTAREA' && e.target.tagName !== 'INPUT') {
             e.preventDefault();
@@ -881,6 +880,7 @@
     let currentSegmentIdx = 0;
     let isTtsPlaying = false;
     let currentTtsBtn = null;
+    let currentTtsVoicePref = 'female';
 
     function stopTTS() {
         isTtsPlaying = false;
@@ -1014,10 +1014,10 @@
 
         ttsUtterance = new SpeechSynthesisUtterance(textSegment);
         
-        let prefType = localStorage.getItem('datex_voice_type') || 'female';
+        let prefType = currentTtsVoicePref; 
         let isMale = (prefType === 'male');
-        let maleKeywords = ['male', 'david', 'daniel', 'mark', 'george', 'alex', 'fred', 'brian', 'james', 'guy', 'aaron', 'arthur', 'martin'];
-        let femaleKeywords = ['female', 'samantha', 'zira', 'victoria', 'tessa', 'karen', 'hazel', 'susan', 'catherine', 'laura', 'alice', 'veena', 'lekha'];
+        let maleKeywords = ['male', 'david', 'daniel', 'mark', 'george', 'alex', 'brian', 'james', 'guy', 'variant 2', 'variant 4'];
+        let femaleKeywords = ['female', 'samantha', 'zira', 'victoria', 'tessa', 'karen', 'hazel', 'susan', 'variant 1', 'variant 3'];
 
         let voices = window.speechSynthesis.getVoices();
         if(voices.length > 0) {
@@ -1025,14 +1025,33 @@
                 let n = v.name.toLowerCase();
                 return isMale ? maleKeywords.some(k => n.includes(k)) : femaleKeywords.some(k => n.includes(k));
             });
+            
             if (!selectedVoice) {
-                selectedVoice = voices.find(v => v.lang.includes('en-US') || v.lang.includes('en-GB')) || voices[0];
+                let langVoices = voices.filter(v => v.lang.startsWith('en') || v.lang.startsWith('hi'));
+                if (isMale && langVoices.length > 1) {
+                    selectedVoice = langVoices.find(v => v.name.toLowerCase().includes('local') || v.name.toLowerCase().includes('variant 2')) || langVoices[1] || langVoices[0];
+                } else {
+                    selectedVoice = langVoices[0] || voices[0];
+                }
             }
             ttsUtterance.voice = selectedVoice;
+            if (selectedVoice) ttsUtterance.lang = selectedVoice.lang;
         }
 
-        ttsUtterance.onend = () => { if (isTtsPlaying) { currentSegmentIdx++; playNextTtsSegment(); } };
-        ttsUtterance.onerror = (e) => { if (e.error !== 'interrupted' && isTtsPlaying) { currentSegmentIdx++; playNextTtsSegment(); } };
+        ttsUtterance.onend = () => { 
+            if (isTtsPlaying) { 
+                currentSegmentIdx++; 
+                if (currentSegmentIdx < ttsSegments.length) playNextTtsSegment(); 
+                else stopTTS();
+            } 
+        };
+        ttsUtterance.onerror = (e) => { 
+            if (isTtsPlaying) { 
+                currentSegmentIdx++; 
+                if (currentSegmentIdx < ttsSegments.length) playNextTtsSegment(); 
+                else stopTTS();
+            } 
+        };
         window.speechSynthesis.speak(ttsUtterance);
     }
 
@@ -1041,28 +1060,35 @@
         stopVoiceNoteBubble(); window.speechSynthesis.resume();
 
         if (currentTtsBtn === btn) {
-            if (isTtsPlaying) { isTtsPlaying = false; window.speechSynthesis.cancel(); btn.querySelector('i').className = 'fas fa-play'; } 
-            else { isTtsPlaying = true; btn.querySelector('i').className = 'fas fa-pause'; playNextTtsSegment(); }
+            if (isTtsPlaying) { 
+                isTtsPlaying = false; 
+                window.speechSynthesis.pause(); 
+                btn.querySelector('i').className = 'fas fa-play'; 
+            } else { 
+                isTtsPlaying = true; 
+                btn.querySelector('i').className = 'fas fa-pause'; 
+                window.speechSynthesis.resume();
+                if (!window.speechSynthesis.speaking) playNextTtsSegment();
+            }
             return;
         }
+        
         stopTTS();
         const bubble = btn.closest('.bubble-container').querySelector('.bubble');
         let clone = bubble.cloneNode(true);
         let preTags = clone.querySelectorAll('pre'); preTags.forEach(p => p.remove()); 
         let fullText = clone.innerText.trim();
 
-        if (!fullText) { btn.querySelector('i').className = 'fas fa-volume-up'; isTtsPlaying = false; return; }
+        if (!fullText) return;
 
         ttsSegments = fullText.replace(/([.!?।\n])\s*/g, "$1|").split("|").filter(s => s.trim().length > 0);
         if (ttsSegments.length === 0) ttsSegments = [fullText];
 
-        currentTtsBtn = currentTtsBtn || btn; currentSegmentIdx = 0; isTtsPlaying = true; btn.querySelector('i').className = 'fas fa-pause';
+        currentTtsVoicePref = localStorage.getItem('datex_voice_type') || 'female';
+        currentTtsBtn = btn; currentSegmentIdx = 0; isTtsPlaying = true; btn.querySelector('i').className = 'fas fa-pause';
         
-        if(window.speechSynthesis.getVoices().length === 0) {
-            window.speechSynthesis.onvoiceschanged = () => { playNextTtsSegment(); window.speechSynthesis.onvoiceschanged = null; };
-        } else {
-            playNextTtsSegment();
-        }
+        window.speechSynthesis.cancel(); 
+        playNextTtsSegment();
     }
 
     let isDictating = false; 
