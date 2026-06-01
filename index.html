@@ -17,9 +17,10 @@
             --fade-color-bottom: rgba(255, 255, 255, 0.95);
         }
         
+        /* FIX 1: Fade effect updated to Pure Black for Dark Mode */
         body.dark-mode {
-            --fade-color-top: rgba(26, 26, 26, 0.95);
-            --fade-color-bottom: rgba(18, 18, 18, 0.95);
+            --fade-color-top: rgba(0, 0, 0, 0.95);
+            --fade-color-bottom: rgba(0, 0, 0, 0.95);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
@@ -320,8 +321,9 @@
         .select-arrow { position: absolute; right: 25px; top: 50%; transform: translateY(-70%) rotate(45deg); width: 8px; height: 8px; border-right: 2.5px solid #000; border-bottom: 2.5px solid #000; pointer-events: none; }
 
         /* --- DARK MODE LOGIC --- */
-        body.dark-mode { background-color: #121212; color: #e0e0e0; }
-        body.dark-mode #splash-screen { background-color: #121212; }
+        /* FIX 1 & 2: Pure Black AMOLED Theme Background and Border removal */
+        body.dark-mode { background-color: #000000; color: #e0e0e0; }
+        body.dark-mode #splash-screen { background-color: #000000; }
         body.dark-mode .sidebar { background: #1a1a1a; border-color: #333; }
         body.dark-mode .sidebar-header, body.dark-mode .sidebar-top { background: #1a1a1a; color: #e0e0e0; }
         body.dark-mode .sidebar h2 { color: #888; }
@@ -331,15 +333,15 @@
         body.dark-mode .profile-icon span { color: #e0e0e0; }
         body.dark-mode .profile-icon i { color: #aaa; }
         body.dark-mode .settings-group i.fa-cog { background: transparent; color: #e0e0e0; border-color: #aaa; }
-        body.dark-mode header { background: #1a1a1a; border-color: #333; }
-        body.dark-mode header::after { background: linear-gradient(to bottom, rgba(26,26,26,0.8), transparent); }
+        body.dark-mode header { background: #000000; border-color: #000000; }
+        body.dark-mode header::after { background: linear-gradient(to bottom, rgba(0,0,0,0.95), transparent); }
         body.dark-mode .model-name { color: #e0e0e0; }
         body.dark-mode .menu-line { background: #ccc; }
         body.dark-mode .version-pill { background: #333; border-color: #444; color: #fff; }
         body.dark-mode .welcome-screen { color: #ccc; }
         body.dark-mode .welcome-screen span { color: #fff; }
-        body.dark-mode .bottom-container { background: #121212; }
-        body.dark-mode .bottom-container::before { background: linear-gradient(to top, rgba(18,18,18,0.8), transparent); }
+        body.dark-mode .bottom-container { background: #000000; }
+        body.dark-mode .bottom-container::before { background: linear-gradient(to top, rgba(0,0,0,0.95), transparent); }
         body.dark-mode .chat-input-container { background: #1e1e1e; border-color: #333; }
         body.dark-mode .input-bar textarea { color: #e0e0e0; }
         body.dark-mode #mike-btn { color: #aaa; }
@@ -374,7 +376,6 @@
 </head>
 <body>
     <script>
-        // Extremely safe early theme initialization to prevent flashes
         if(localStorage.getItem('datex_theme') === 'dark') {
             document.body.classList.add('dark-mode');
             const fav = document.getElementById('dynamic-favicon');
@@ -949,7 +950,6 @@
         }
     }
 
-    /* --- FIX: Smart Gemini-Like Scroll Interruption Logic --- */
     const chatContainerEl = document.getElementById('chat-container');
     chatContainerEl.addEventListener('scroll', () => {
         if(document.getElementById('msg-menu').style.display === 'flex') hideMsgMenu();
@@ -959,12 +959,10 @@
         if (distanceToBottom > 150) { scrollBtn.classList.add('active'); } 
         else { scrollBtn.classList.remove('active'); }
         
-        // Auto-resume pulling if user manually goes back to bottom
         if (distanceToBottom <= 10) { userScrolledUp = false; }
         else if (distanceToBottom > 50) { userScrolledUp = true; }
     });
 
-    // Instantly pause auto-scroll the millisecond user touches the screen
     chatContainerEl.addEventListener('touchstart', () => { userScrolledUp = true; }, {passive: true});
     chatContainerEl.addEventListener('wheel', () => { userScrolledUp = true; }, {passive: true});
     window.addEventListener('scroll', hideMsgMenu);
