@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>DATEX AI.com</title>
-    <link rel="icon" type="image/jpeg" href="dark.logo.jpg">
+    <link id="dynamic-favicon" rel="icon" type="image/jpeg" href="light.logo.jpg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -49,6 +49,12 @@
             transition: background-color 0.3s, color 0.3s;
         }
 
+        /* --- Theme-Based Strict Logo Switcher --- */
+        .logo-light-theme { display: block !important; }
+        .logo-dark-theme { display: none !important; }
+        body.dark-mode .logo-light-theme { display: none !important; }
+        body.dark-mode .logo-dark-theme { display: block !important; }
+
         /* --- SPLASH SCREEN (INTRO) CSS --- */
         #splash-screen {
             position: fixed;
@@ -70,13 +76,6 @@
             object-fit: cover;
             animation: splashPop 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
-        
-        /* FIX: Theme-based logo display logic for splash screen */
-        .splash-dark-logo { display: block; }
-        .splash-light-logo { display: none; }
-        body.dark-mode .splash-dark-logo { display: none; }
-        body.dark-mode .splash-light-logo { display: block; }
-        
         @keyframes splashPop {
             0% { opacity: 0; }
             100% { opacity: 1; }
@@ -137,19 +136,7 @@
         .version-pill { font-size: 11.5px; font-weight: 600; background: #f0f0f0; display: inline-block; padding: 4px 14px; border-radius: 14px; color: #000; border: 1px solid #ddd; margin-top: 8px; }
         
         .logo-container img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: none; }
-        
-        /* FIX: Theme-based logo display logic for header */
-        .header-dark-logo { display: block; }
-        .header-light-logo { display: none; }
-        body.dark-mode .header-dark-logo { display: none; }
-        body.dark-mode .header-light-logo { display: block; }
-        
         .avatar { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: none; flex-shrink: 0; }
-        /* Avatar theme logic */
-        .avatar-dark { display: block; }
-        .avatar-light { display: none; }
-        body.dark-mode .avatar-dark { display: none; }
-        body.dark-mode .avatar-light { display: block; }
 
         .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 10px 20px 20px 20px; width: 100%; max-width: 800px; margin: 0 auto; scrollbar-width: none; touch-action: pan-y !important; -webkit-overflow-scrolling: touch !important; overscroll-behavior-y: contain !important; }
         
@@ -387,14 +374,17 @@
 </head>
 <body>
     <script>
+        // Extremely safe early theme initialization to prevent flashes
         if(localStorage.getItem('datex_theme') === 'dark') {
             document.body.classList.add('dark-mode');
+            const fav = document.getElementById('dynamic-favicon');
+            if(fav) fav.href = 'dark.logo.jpg';
         }
     </script>
 
     <div id="splash-screen">
-        <img src="dark.logo.jpg" alt="DATEX AI" class="splash-dark-logo">
-        <img src="light.logo.jpg" alt="DATEX AI" class="splash-light-logo">
+        <img src="light.logo.jpg" alt="DATEX AI" class="logo-light-theme">
+        <img src="dark.logo.jpg" alt="DATEX AI" class="logo-dark-theme">
     </div>
     
     <script>
@@ -576,8 +566,8 @@
             <div class="header-center"><div class="model-name"><span style="font-family: inherit;">DATEX AI</span>&nbsp;<span data-i18n="Model">Model</span></div><div class="version-pill">Kyro 2.5</div></div>
             <div class="header-right">
                 <div class="logo-container">
-                    <img src="dark.logo.jpg" alt="Logo" class="header-dark-logo">
-                    <img src="light.logo.jpg" alt="Logo" class="header-light-logo">
+                    <img src="light.logo.jpg" alt="Logo" class="logo-light-theme">
+                    <img src="dark.logo.jpg" alt="Logo" class="logo-dark-theme">
                 </div>
             </div>
         </header>
@@ -743,6 +733,7 @@
     function closeLangModal() {
         document.getElementById('lang-modal-overlay').classList.remove('active');
         document.getElementById('lang-modal').classList.remove('active');
+        setTimeout(() => { document.getElementById('lang-list').scrollTop = 0; }, 200);
     }
 
     function handleLangSelection(val, label) {
@@ -830,10 +821,18 @@
             };
         }
         
-        if(localStorage.getItem('datex_theme') === 'dark') {
-            document.querySelector('input[name="app_theme"][value="dark"]').checked = true;
+        const savedTheme = localStorage.getItem('datex_theme');
+        const fav = document.getElementById('dynamic-favicon');
+        if(savedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+            const toggle = document.querySelector('input[name="app_theme"][value="dark"]');
+            if(toggle) toggle.checked = true;
+            if(fav) fav.href = 'dark.logo.jpg';
         } else {
-            document.querySelector('input[name="app_theme"][value="light"]').checked = true;
+            document.body.classList.remove('dark-mode');
+            const toggle = document.querySelector('input[name="app_theme"][value="light"]');
+            if(toggle) toggle.checked = true;
+            if(fav) fav.href = 'light.logo.jpg';
         }
         
         const savedVoice = localStorage.getItem('datex_voice_type') || 'female';
@@ -863,16 +862,22 @@
         const overlay = document.getElementById('settings-overlay');
         modal.classList.toggle('active');
         overlay.classList.toggle('active');
+        if(!modal.classList.contains('active')) {
+            setTimeout(() => { document.querySelector('.settings-body').scrollTop = 0; }, 200);
+        }
     }
 
     function applyThemeSetting() {
         const theme = document.querySelector('input[name="app_theme"]:checked').value;
+        const fav = document.getElementById('dynamic-favicon');
         if(theme === 'dark') {
             document.body.classList.add('dark-mode');
             localStorage.setItem('datex_theme', 'dark');
+            if(fav) fav.href = 'dark.logo.jpg';
         } else {
             document.body.classList.remove('dark-mode');
             localStorage.setItem('datex_theme', 'light');
+            if(fav) fav.href = 'light.logo.jpg';
         }
     }
 
@@ -944,14 +949,24 @@
         }
     }
 
-    document.getElementById('chat-container').addEventListener('scroll', () => {
+    /* --- FIX: Smart Gemini-Like Scroll Interruption Logic --- */
+    const chatContainerEl = document.getElementById('chat-container');
+    chatContainerEl.addEventListener('scroll', () => {
         if(document.getElementById('msg-menu').style.display === 'flex') hideMsgMenu();
-        const container = document.getElementById('chat-container');
         const scrollBtn = document.getElementById('scroll-bottom-btn');
-        const distanceToBottom = container.scrollHeight - container.scrollTop - container.clientHeight;
-        if (distanceToBottom > 150) { scrollBtn.classList.add('active'); userScrolledUp = true; } 
-        else { scrollBtn.classList.remove('active'); if (distanceToBottom <= 20) { userScrolledUp = false; } }
+        const distanceToBottom = chatContainerEl.scrollHeight - chatContainerEl.scrollTop - chatContainerEl.clientHeight;
+        
+        if (distanceToBottom > 150) { scrollBtn.classList.add('active'); } 
+        else { scrollBtn.classList.remove('active'); }
+        
+        // Auto-resume pulling if user manually goes back to bottom
+        if (distanceToBottom <= 10) { userScrolledUp = false; }
+        else if (distanceToBottom > 50) { userScrolledUp = true; }
     });
+
+    // Instantly pause auto-scroll the millisecond user touches the screen
+    chatContainerEl.addEventListener('touchstart', () => { userScrolledUp = true; }, {passive: true});
+    chatContainerEl.addEventListener('wheel', () => { userScrolledUp = true; }, {passive: true});
     window.addEventListener('scroll', hideMsgMenu);
 
     function toggleAttachmentMenu(e) {
@@ -1311,8 +1326,7 @@
         const container = document.getElementById('chat-container');
         const row = document.createElement('div'); row.className = 'message-row ai-row'; row.setAttribute('data-index', msgIdx); 
         
-        /* FIX: Theme-based logo logic added to AI avatar */
-        row.innerHTML = `<div class="avatar-container"><img src="dark.logo.jpg" class="avatar avatar-dark"><img src="light.logo.jpg" class="avatar avatar-light"></div><div class="bubble-container"><div class="bubble ai-bubble"></div></div>`;
+        row.innerHTML = `<div class="avatar-container"><img src="light.logo.jpg" class="avatar logo-light-theme"><img src="dark.logo.jpg" class="avatar logo-dark-theme"></div><div class="bubble-container"><div class="bubble ai-bubble"></div></div>`;
         
         const bubble = row.querySelector('.ai-bubble'); container.appendChild(row); userScrolledUp = false; 
         
@@ -1528,8 +1542,7 @@
         const container = document.getElementById('chat-container'); const aiRow = document.createElement('div'); aiRow.className = 'message-row ai-row';
         const typingHTML = `<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
         
-        /* FIX: Theme-based logo logic applied to dynamically created AI messages as well */
-        aiRow.innerHTML = `<div class="avatar-container"><img src="dark.logo.jpg" class="avatar avatar-dark"><img src="light.logo.jpg" class="avatar avatar-light"></div><div class="bubble-container"><div class="bubble ai-bubble">${typingHTML}</div></div>`; 
+        aiRow.innerHTML = `<div class="avatar-container"><img src="light.logo.jpg" class="avatar logo-light-theme"><img src="dark.logo.jpg" class="avatar logo-dark-theme"></div><div class="bubble-container"><div class="bubble ai-bubble">${typingHTML}</div></div>`; 
         
         container.appendChild(aiRow); const bubble = aiRow.querySelector('.ai-bubble'); currentAiRow = aiRow;
 
