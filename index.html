@@ -17,7 +17,6 @@
             --fade-color-bottom: rgba(255, 255, 255, 0.95);
         }
         
-        /* FIX 1: Fade effect updated to Pure Black for Dark Mode */
         body.dark-mode {
             --fade-color-top: rgba(0, 0, 0, 0.95);
             --fade-color-bottom: rgba(0, 0, 0, 0.95);
@@ -96,7 +95,7 @@
         .sidebar-top { display: flex; justify-content: space-between; align-items: center; padding: 20px 20px 10px 20px; font-size: 18px; font-weight: 500; color: #333; flex-shrink: 0; }
         .settings-group { display: flex; align-items: center; gap: 12px; }
         .settings-group i.fa-cog { cursor: pointer; background: transparent; color: #333; width: 38px; height: 38px; border: 1.5px solid #555; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; transition: 0.2s; }
-        .close-sidebar-btn { cursor: pointer; color: #555; font-size: 20px; }
+        .close-sidebar-btn { cursor: pointer; color: #000; font-size: 20px; }
 
         .sidebar-header { padding: 35px 20px 15px 20px; flex-shrink: 0; background-color: #f9f9f9; z-index: 2; transition: background-color 0.3s; }
         .sidebar h2 { margin: 0 0 10px 0; font-size: 12px; color: #000; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
@@ -126,9 +125,9 @@
         .wrapper { flex: 1; display: flex; flex-direction: column; height: 100%; width: 100%; overflow: hidden; }
         
         header { position: relative; display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; border-bottom: 1px solid #f9f9f9; background: #fff; z-index: 100; flex-shrink: 0; transition: background-color 0.3s, border-color 0.3s; }
-        header::after { content: ''; position: absolute; bottom: -18px; left: 0; width: 100%; height: 18px; background: linear-gradient(to bottom, var(--fade-color-top), transparent); pointer-events: none; z-index: 10; }
+        header::after { content: ''; position: absolute; bottom: -10px; left: 0; width: 100%; height: 10px; background: linear-gradient(to bottom, var(--fade-color-top), transparent); pointer-events: none; z-index: 10; }
         
-        .menu-btn-container { width: 38px; height: 38px; border: 1.5px solid #333; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding-left: 9px; cursor: pointer; gap: 4px; }
+        .menu-btn-container { width: 38px; height: 38px; border: 1.5px solid #333; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding-left: 9px; cursor: pointer; gap: 4px; transition: border-color 0.3s; }
         .menu-line { height: 2px; background: #333; border-radius: 2px; }
         .line-1 { width: 18px; } .line-2 { width: 13px; } .line-3 { width: 8px; }
 
@@ -137,7 +136,14 @@
         .version-pill { font-size: 11.5px; font-weight: 600; background: #f0f0f0; display: inline-block; padding: 4px 14px; border-radius: 14px; color: #000; border: 1px solid #ddd; margin-top: 8px; }
         
         .logo-container img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: none; }
-        .avatar { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: none; flex-shrink: 0; }
+        
+        /* FIX: Avatar and Avatar Spinner CSS */
+        .avatar-container { position: relative; display: flex; justify-content: center; align-items: center; width: 34px; height: 34px; flex-shrink: 0; border-radius: 50%; }
+        .avatar-container img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; position: relative; z-index: 2; }
+        .avatar-spinner { position: absolute; top: -3px; left: -3px; width: 40px; height: 40px; border: 2px solid transparent; border-top-color: #000; border-right-color: #000; border-radius: 50%; animation: avatarSpin 0.8s linear infinite; display: none; z-index: 1; }
+        body.dark-mode .avatar-spinner { border-top-color: #fff; border-right-color: #fff; }
+        .avatar-container.loading .avatar-spinner { display: block; }
+        @keyframes avatarSpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 10px 20px 20px 20px; width: 100%; max-width: 800px; margin: 0 auto; scrollbar-width: none; touch-action: pan-y !important; -webkit-overflow-scrolling: touch !important; overscroll-behavior-y: contain !important; }
         
@@ -170,7 +176,7 @@
         @keyframes typingBounce { 0%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-6px); } }
 
         .bottom-container { width: 100%; background: #ffffff; padding: 10px 20px 10px 20px; display: flex; justify-content: center; z-index: 100; flex-shrink: 0; touch-action: none; position: relative; transition: background-color 0.3s; }
-        .bottom-container::before { content: ''; position: absolute; top: -18px; left: 0; width: 100%; height: 18px; background: linear-gradient(to top, var(--fade-color-bottom), transparent); pointer-events: none; z-index: 10; }
+        .bottom-container::before { content: ''; position: absolute; top: -10px; left: 0; width: 100%; height: 10px; background: linear-gradient(to top, var(--fade-color-bottom), transparent); pointer-events: none; z-index: 10; }
 
         .scroll-bottom-btn { position: absolute; top: -55px; right: 20px; width: 38px; height: 38px; background: #ffffff; color: #000000; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.2); cursor: pointer; border: 1px solid #eee; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; transform: translateY(10px); font-size: 16px; }
         .scroll-bottom-btn.active { opacity: 1; pointer-events: auto; transform: translateY(0); }
@@ -246,7 +252,7 @@
         .attachment-menu { position: fixed; bottom: -350px; left: 0; width: 100%; background: #fff; border-top-left-radius: 20px; border-top-right-radius: 20px; box-shadow: 0 -5px 25px rgba(0,0,0,0.15); padding: 0 0 40px 0; transition: bottom 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); z-index: 2000; }
         .attachment-menu.active { bottom: 0; }
         .attachment-menu-header { display: flex; justify-content: flex-start; align-items: center; padding: 15px 20px 10px 20px; position: relative; }
-        .attachment-menu-header i.fa-times { font-size: 20px; color: #555; cursor: pointer; padding: 5px; }
+        .attachment-menu-header i.fa-times { font-size: 20px; color: #000; cursor: pointer; padding: 5px; }
         .attachment-menu::before { content: ''; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 40px; height: 4px; background: #ddd; border-radius: 4px; }
         .attachment-options-container { display: flex; justify-content: space-around; padding: 0 20px; margin-top: 10px; }
         .attachment-option { display: flex; flex-direction: column; align-items: center; gap: 12px; cursor: pointer; width: 30%; }
@@ -290,7 +296,7 @@
             padding: 20px 25px 15px 25px; border-bottom: 1px solid #eee; 
             font-size: 18px; font-weight: 700; color: #333; background: #fff; z-index: 10; flex-shrink: 0; 
         }
-        .settings-header i, .lang-modal-header i { cursor: pointer; color: #555; padding: 5px; font-size: 20px; }
+        .settings-header i, .lang-modal-header i { cursor: pointer; color: #000; padding: 5px; font-size: 20px; }
         
         .settings-body, .lang-list { 
             flex: 1 1 auto; 
@@ -321,20 +327,25 @@
         .select-arrow { position: absolute; right: 25px; top: 50%; transform: translateY(-70%) rotate(45deg); width: 8px; height: 8px; border-right: 2.5px solid #000; border-bottom: 2.5px solid #000; pointer-events: none; }
 
         /* --- DARK MODE LOGIC --- */
-        /* FIX 1 & 2: Pure Black AMOLED Theme Background and Border removal */
         body.dark-mode { background-color: #000000; color: #e0e0e0; }
         body.dark-mode #splash-screen { background-color: #000000; }
         body.dark-mode .sidebar { background: #1a1a1a; border-color: #333; }
         body.dark-mode .sidebar-header, body.dark-mode .sidebar-top { background: #1a1a1a; color: #e0e0e0; }
-        body.dark-mode .sidebar h2 { color: #888; }
-        body.dark-mode .chat-item { border-color: #444; color: #ccc; }
+        body.dark-mode .sidebar h2 { color: #ffffff; }
+        body.dark-mode .chat-item { border-color: #ffffff; color: #ffffff; }
         body.dark-mode .chat-item:hover { background: #2c2c2c; }
-        body.dark-mode .chat-item.selected-active { background: #333 !important; border-color: #777 !important; color: #fff !important; }
+        body.dark-mode .chat-item.selected-active { background: #333 !important; border-color: #ffffff !important; color: #fff !important; }
+        body.dark-mode .close-sidebar-btn { color: #ffffff; }
+        body.dark-mode .attachment-menu-header i.fa-times { color: #ffffff; }
         body.dark-mode .profile-icon span { color: #e0e0e0; }
         body.dark-mode .profile-icon i { color: #aaa; }
         body.dark-mode .settings-group i.fa-cog { background: transparent; color: #e0e0e0; border-color: #aaa; }
         body.dark-mode header { background: #000000; border-color: #000000; }
         body.dark-mode header::after { background: linear-gradient(to bottom, rgba(0,0,0,0.95), transparent); }
+        
+        /* FIX 1: Menu button circle slightly more visible in dark mode */
+        body.dark-mode .menu-btn-container { border-color: #666; }
+        
         body.dark-mode .model-name { color: #e0e0e0; }
         body.dark-mode .menu-line { background: #ccc; }
         body.dark-mode .version-pill { background: #333; border-color: #444; color: #fff; }
@@ -350,32 +361,32 @@
         body.dark-mode .action-btn { color: #888; }
         body.dark-mode .action-btn:hover { color: #fff; }
         body.dark-mode .btn-black-icon { color: #fff !important; }
-
+        body.dark-mode .tts-btn { color: #ffffff !important; }
+        body.dark-mode .new-chat-btn { background: #ffffff; color: #000000; }
+        body.dark-mode .new-chat-btn:hover { background: #e0e0e0; }
         body.dark-mode .msg-menu { background: #2c2c2c; border-color: #444; }
         body.dark-mode .msg-menu button { color: #e0e0e0; border-color: #444; }
         body.dark-mode .attachment-menu { background: #1a1a1a; }
         body.dark-mode .attachment-option .icon-box { background: #2c2c2c; border-color: #444; color: #ccc; }
         body.dark-mode .attachment-option span { color: #ccc; }
-        
         body.dark-mode .settings-modal, body.dark-mode .lang-modal { background: #1a1a1a; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         body.dark-mode .settings-header, body.dark-mode .lang-modal-header { color: #fff; background: #1a1a1a; border-color:#333; }
-        body.dark-mode .settings-header i, body.dark-mode .lang-modal-header i { color: #aaa; }
+        body.dark-mode .settings-header i, body.dark-mode .lang-modal-header i { color: #ffffff; }
         body.dark-mode .setting-section-title { color: #fff; }
         body.dark-mode .setting-section-title svg { color: #bbb; } 
         body.dark-mode .radio-option { color: #e0e0e0; }
         body.dark-mode .custom-radio { border-color: #666; }
         body.dark-mode .radio-label input:checked + .custom-radio { border-color: #fff; }
         body.dark-mode .radio-label input:checked + .custom-radio::after { background: #fff; }
-        
         body.dark-mode .custom-select-btn { background: #2c2c2c; color: #fff; border-color: #444; }
         body.dark-mode .select-arrow { border-color: #fff; }
-        
         body.dark-mode pre { background: #000; border-color: #444; }
         body.dark-mode .user-expand-btn { background: #1e1e1e; color: #e0e0e0; box-shadow: 0 1px 4px rgba(0,0,0,0.4); }
     </style>
 </head>
 <body>
     <script>
+        // Extremely safe early theme initialization to prevent flashes
         if(localStorage.getItem('datex_theme') === 'dark') {
             document.body.classList.add('dark-mode');
             const fav = document.getElementById('dynamic-favicon');
@@ -1320,11 +1331,12 @@
         userScrolledUp = false; container.scrollTop = container.scrollHeight;
     }
 
+    /* FIX: Added .loading to avatar-container for the new thinking spinner */
     function addAiMessageToUI(text, isNew, msgIdx, isStoppedStatus = false) {
         const container = document.getElementById('chat-container');
         const row = document.createElement('div'); row.className = 'message-row ai-row'; row.setAttribute('data-index', msgIdx); 
         
-        row.innerHTML = `<div class="avatar-container"><img src="light.logo.jpg" class="avatar logo-light-theme"><img src="dark.logo.jpg" class="avatar logo-dark-theme"></div><div class="bubble-container"><div class="bubble ai-bubble"></div></div>`;
+        row.innerHTML = `<div class="avatar-container ${isNew ? 'loading' : ''}"><div class="avatar-spinner"></div><img src="light.logo.jpg" class="avatar logo-light-theme"><img src="dark.logo.jpg" class="avatar logo-dark-theme"></div><div class="bubble-container"><div class="bubble ai-bubble"></div></div>`;
         
         const bubble = row.querySelector('.ai-bubble'); container.appendChild(row); userScrolledUp = false; 
         
@@ -1340,7 +1352,7 @@
             
             html += `<button class="action-btn btn-black-icon" onclick="openMenu(event, this)"><i class="fas fa-ellipsis-v"></i></button>`;
             if (isStopped) { html += `<button class="action-btn btn-black-icon" onclick="regenerateMessage(this)"><i class="fas fa-redo"></i></button>`; }
-            html += `<button class="action-btn tts-btn" onclick="speakText(this)" style="background: #000; color: #fff; width: 30px; height: 30px; border-radius: 50%; padding: 0;"><i class="fas fa-volume-up" style="font-size: 13px;"></i></button></div>`;
+            html += `<button class="action-btn tts-btn" onclick="speakText(this)" style="background: transparent; width: 30px; height: 30px; padding: 0; display: flex; align-items: center; justify-content: center;"><i class="fas fa-volume-up" style="font-size: 13px;"></i></button></div>`;
             
             container.insertAdjacentHTML('beforeend', html);
         }
@@ -1467,6 +1479,9 @@
                     element.innerHTML = "You stopped this response";
                     resetSendButton(); addAiActions(rowElement, true); 
                 }
+                /* FIX: Remove spinning loading ring when stopped */
+                const avatarCont = rowElement.querySelector('.avatar-container');
+                if(avatarCont) avatarCont.classList.remove('loading');
                 return;
             }
 
@@ -1489,6 +1504,11 @@
                 if (activeChatIndex === boundChatIndex && !userScrolledUp) container.scrollTop = container.scrollHeight;
             } else {
                 renderStoredContent(element, text); 
+                
+                /* FIX: Remove spinning loading ring when generation completes */
+                const avatarCont = rowElement.querySelector('.avatar-container');
+                if(avatarCont) avatarCont.classList.remove('loading');
+                
                 if (activeChatIndex === boundChatIndex) { resetSendButton(); addAiActions(rowElement, false); if (!userScrolledUp) container.scrollTop = container.scrollHeight; }
             }
         }
@@ -1540,7 +1560,8 @@
         const container = document.getElementById('chat-container'); const aiRow = document.createElement('div'); aiRow.className = 'message-row ai-row';
         const typingHTML = `<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
         
-        aiRow.innerHTML = `<div class="avatar-container"><img src="light.logo.jpg" class="avatar logo-light-theme"><img src="dark.logo.jpg" class="avatar logo-dark-theme"></div><div class="bubble-container"><div class="bubble ai-bubble">${typingHTML}</div></div>`; 
+        /* FIX: Added `.loading` logic to the AI avatar structure when generating begins */
+        aiRow.innerHTML = `<div class="avatar-container loading"><div class="avatar-spinner"></div><img src="light.logo.jpg" class="avatar logo-light-theme"><img src="dark.logo.jpg" class="avatar logo-dark-theme"></div><div class="bubble-container"><div class="bubble ai-bubble">${typingHTML}</div></div>`; 
         
         container.appendChild(aiRow); const bubble = aiRow.querySelector('.ai-bubble'); currentAiRow = aiRow;
 
@@ -1551,7 +1572,14 @@
                 const wRes = await fetch("https://api.groq.com/openai/v1/audio/transcriptions", { method: 'POST', headers: { 'Authorization': `Bearer ${GROQ_API_KEY}` }, body: fd }); const wData = await wRes.json();
                 if (wData.text) { message = wData.text; chatHistory[requestChatIndex].messages[chatHistory[requestChatIndex].messages.length - 1].content = message; try { localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); } catch(e) {} } 
                 else { throw new Error("Empty audio"); }
-            } catch(err) { bubble.innerText = "Error: Could not transcribe voice note. Please check your API key or connection."; resetSendButton(); addAiActions(currentAiRow, true); return; }
+            } catch(err) { 
+                bubble.innerText = "Error: Could not transcribe voice note. Please check your API key or connection."; 
+                resetSendButton(); 
+                addAiActions(currentAiRow, true); 
+                const avatarCont = currentAiRow.querySelector('.avatar-container');
+                if(avatarCont) avatarCont.classList.remove('loading');
+                return; 
+            }
             bubble.innerHTML = typingHTML;
         }
 
@@ -1645,7 +1673,16 @@ CRITICAL INSTRUCTIONS:
             let errText = (e.name === 'AbortError') ? "You stopped this response" : "Server Error: " + e.message; 
             chatHistory[requestChatIndex].messages.push({ role: "assistant", content: errText });
             try { localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); } catch(err) {}
-            if (activeChatIndex === requestChatIndex) { if (bubble) bubble.innerText = errText; resetSendButton(); if (currentAiRow) addAiActions(currentAiRow, true); }
+            if (activeChatIndex === requestChatIndex) { 
+                if (bubble) bubble.innerText = errText; 
+                resetSendButton(); 
+                if (currentAiRow) {
+                    addAiActions(currentAiRow, true);
+                    /* FIX: Ensure spinner stops on API failure */
+                    const avatarCont = currentAiRow.querySelector('.avatar-container');
+                    if(avatarCont) avatarCont.classList.remove('loading');
+                }
+            }
         }
     }
 
