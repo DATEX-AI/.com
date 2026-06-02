@@ -36,7 +36,6 @@
             left: 0;
         }
 
-        /* FIX: Made theme transitions snappy (0.15s) to eliminate jank */
         body { 
             background-color: #ffffff; 
             color: #333; 
@@ -70,9 +69,10 @@
             z-index: 99999;
             transition: opacity 0.15s ease-out, visibility 0.15s ease-out;
         }
+        /* FIX 2: Intro splash screen logo size slightly increased */
         #splash-screen img {
-            width: 180px; 
-            height: 180px; 
+            width: 200px; 
+            height: 200px; 
             border-radius: 50%;
             object-fit: cover;
             animation: splashPop 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
@@ -93,9 +93,9 @@
         .sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: #f9f9f9; border-right: 1px solid #eee; transition: 0.3s; z-index: 1001; display: flex; flex-direction: column; }
         .sidebar.active { left: 0; }
 
-        .sidebar-top { display: flex; justify-content: space-between; align-items: center; padding: 20px 20px 10px 20px; font-size: 18px; font-weight: 500; color: #333; flex-shrink: 0; }
+        .sidebar-top { display: flex; justify-content: space-between; align-items: center; padding: 20px 20px 10px 20px; font-size: 18px; font-weight: 500; color: #000; flex-shrink: 0; }
         .settings-group { display: flex; align-items: center; gap: 12px; }
-        .settings-group i.fa-cog { cursor: pointer; background: transparent; color: #333; width: 38px; height: 38px; border: 1.5px solid #555; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; transition: 0.2s; }
+        .settings-group i.fa-cog { cursor: pointer; background: transparent; color: #000; width: 38px; height: 38px; border: 1.5px solid #000; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; transition: 0.2s; }
         .close-sidebar-btn { cursor: pointer; color: #000; font-size: 20px; }
 
         .sidebar-header { padding: 35px 20px 15px 20px; flex-shrink: 0; background-color: #f9f9f9; z-index: 2; transition: background-color 0.15s; }
@@ -112,8 +112,8 @@
         .delete-chat-btn:hover { color: #cc0000; }
 
         .sidebar-footer { padding: 15px 20px 20px 20px; display: flex; justify-content: space-between; align-items: center; background: transparent; flex-shrink: 0; }
-        .profile-icon { font-size: 34px; color: #555; cursor: pointer; display: flex; align-items: center; gap: 8px; }
-        .profile-icon span { font-size: 15px; font-weight: 600; color: #333; }
+        .profile-icon { font-size: 34px; color: #000; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .profile-icon span { font-size: 15px; font-weight: 600; color: #000; }
         .new-chat-btn { padding: 12px 18px; background: #000; color: #fff; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 15px; transition: 0.2s; margin-left: 15px; display: flex; justify-content: center; align-items: center; width: 110px; flex-shrink: 0; }
         .new-chat-btn:hover { background: #333; }
 
@@ -125,7 +125,6 @@
 
         .wrapper { flex: 1; display: flex; flex-direction: column; height: 100%; width: 100%; overflow: hidden; }
         
-        /* FIX: Quicker transition for jank-free rendering */
         header { position: relative; display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; border-bottom: 1px solid #f9f9f9; background: #fff; z-index: 100; flex-shrink: 0; transition: background-color 0.15s, border-color 0.15s; }
         header::after { content: ''; position: absolute; bottom: -10px; left: 0; width: 100%; height: 10px; background: linear-gradient(to bottom, var(--fade-color-top), transparent); pointer-events: none; z-index: 10; transition: background 0.15s; }
         
@@ -134,11 +133,12 @@
         .line-1 { width: 20px; } .line-2 { width: 15px; } .line-3 { width: 10px; }
 
         .header-center { flex: 1; text-align: center; }
-        .model-name { font-weight: 600; font-size: 18px; color: #1a1a1a; margin-top: 6px; }
+        .model-name { font-weight: 600; font-size: 18px; color: #000; margin-top: 6px; }
         .version-pill { font-size: 11.5px; font-weight: 600; background: #f0f0f0; display: inline-block; padding: 4px 14px; border-radius: 14px; color: #000; border: 1px solid #ddd; margin-top: 8px; transition: background-color 0.15s, border-color 0.15s, color 0.15s; }
         
         .logo-container { margin-right: 5px; display: flex; align-items: center; }
-        .logo-container img { width: 46px; height: 46px; border-radius: 50%; object-fit: cover; border: none; }
+        /* FIX 1: Header logo size slightly increased */
+        .logo-container img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: none; }
         
         .avatar { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: none; flex-shrink: 0; }
 
@@ -272,7 +272,7 @@
         .attachment-overlay.active { display: block; }
         .hidden-input { display: none; }
 
-        .settings-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); z-index: 2000; display: none; cursor: pointer; }
+        .settings-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: none; cursor: pointer; }
         .settings-overlay.active { display: block; }
         
         .settings-modal { 
@@ -284,7 +284,7 @@
             display: flex; flex-direction: column; overflow: hidden;
         }
         
-        .lang-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); z-index: 2002; display: none; }
+        .lang-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2002; display: none; }
         .lang-modal-overlay.active { display: block; }
         
         .lang-modal { 
@@ -306,15 +306,13 @@
         }
         .settings-header i, .lang-modal-header i { cursor: pointer; color: #000; padding: 5px; font-size: 20px; transition: color 0.15s;}
         
-        /* FIX 1: GPU acceleration for smooth scrolling inside modals */
         .settings-body, .lang-list { 
             flex: 1 1 auto; 
             overflow-y: auto !important; 
             -webkit-overflow-scrolling: touch !important; 
             touch-action: pan-y !important; 
+            overscroll-behavior-y: contain !important;
             scrollbar-width: none; 
-            transform: translateZ(0);
-            -webkit-transform: translateZ(0);
         } 
         .settings-body::-webkit-scrollbar, .lang-list::-webkit-scrollbar { display: none; }
         
@@ -590,7 +588,7 @@
                     <div class="menu-line line-3"></div>
                 </div>
             </div>
-            <div class="header-center"><div class="model-name"><span style="font-family: inherit;">DATEX AI</span>&nbsp;<span data-i18n="Model">Model</span></div><div class="version-pill">Kyro 2.5</div></div>
+            <div class="header-center"><div class="model-name"><span style="font-family: inherit;">DATEX AI</span> <span data-i18n="Model">Model</span></div><div class="version-pill">Kyro 2.5</div></div>
             <div class="header-right">
                 <div class="logo-container">
                     <img src="light.logo.jpg" alt="Logo" class="logo-light-theme">
@@ -1088,7 +1086,6 @@
         else { globalAudioPlayer.pause(); icon.className = 'fas fa-play play-btn-icon'; }
     }
 
-    /* FIX 3: Fully Refined Male TTS Fetching Logic */
     function playNextTtsSegment() {
         if (!isTtsPlaying || currentSegmentIdx >= ttsSegments.length || !currentTtsBtn) {
             if (currentSegmentIdx >= ttsSegments.length) stopTTS();
@@ -1103,7 +1100,6 @@
         let prefType = currentTtsVoicePref; 
         let isMale = (prefType === 'male');
         
-        // Forced Male Voice Targeting Words
         let maleKeywords = ['male', 'david', 'daniel', 'mark', 'george', 'alex', 'brian', 'james', 'guy', 'variant 2', 'variant 4', 'voice ii', 'voice 2'];
         let femaleKeywords = ['female', 'samantha', 'zira', 'victoria', 'tessa', 'karen', 'hazel', 'susan', 'variant 1', 'variant 3', 'voice i', 'voice 1'];
 
@@ -1121,7 +1117,7 @@
                     if (isMale) {
                         selectedVoice = langVoices.find(v => v.name.toLowerCase().includes('male')) || 
                                         langVoices.find(v => v.name.includes('2') || v.name.includes('II')) || 
-                                        langVoices[langVoices.length - 1]; // Often the last voice is the alternative male
+                                        langVoices[langVoices.length - 1];
                     } else {
                         selectedVoice = langVoices.find(v => v.name.toLowerCase().includes('female')) || 
                                         langVoices.find(v => v.name.includes('1') || v.name.includes('I')) || 
