@@ -104,7 +104,7 @@
         .sidebar-content { padding: 0 20px 20px 20px; flex: 1; overflow-y: auto; touch-action: pan-y !important; -webkit-overflow-scrolling: touch !important; overscroll-behavior-y: contain !important; }
         .chat-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
         .chat-item-wrapper { display: flex; align-items: center; gap: 12px; }
-        .chat-item { flex: 1; padding: 10px 15px; cursor: pointer; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background: transparent; border: 1.5px solid #888; border-radius: 20px; text-align: left; color: #333; transition: 0.2s; }
+        .chat-item { flex: 1; padding: 10px 15px; cursor: pointer; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background: transparent; border: 1.5px solid #000; border-radius: 20px; text-align: left; color: #333; transition: 0.2s; }
         .chat-item:hover { background: #eee; }
         
         .chat-item.selected-active { background: #e5e7eb !important; border-color: #555 !important; font-weight: 600 !important; }
@@ -134,7 +134,7 @@
 
         .header-center { flex: 1; text-align: center; }
         .model-name { font-weight: 600; font-size: 18px; color: #000; margin-top: 6px; }
-        .version-pill { font-size: 11.5px; font-weight: 600; background: #f0f0f0; display: inline-block; padding: 4px 14px; border-radius: 14px; color: #000; border: 1px solid #ddd; margin-top: 8px; transition: background-color 0.15s, border-color 0.15s, color 0.15s; }
+        .version-pill { font-size: 11.5px; font-weight: 600; background: #f0f0f0; display: inline-block; padding: 4px 14px; border-radius: 14px; color: #000; border: 1.5px solid #000; margin-top: 8px; transition: background-color 0.15s, border-color 0.15s, color 0.15s; }
         
         .logo-container { margin-right: 5px; display: flex; align-items: center; }
         /* FIX 1: Header logo size slightly increased */
@@ -161,7 +161,7 @@
         .bubble-container { position: relative; max-width: 88%; display: flex; flex-direction: column; overflow: hidden; }
         .bubble { padding: 14px 20px; border-radius: 22px; font-size: 16px; line-height: 1.6; word-wrap: break-word; min-height: 48px; position: relative; transition: padding-bottom 0.2s, background-color 0.15s, border-color 0.15s, color 0.15s; }
         .user-bubble { background-color: #f3f4f6; color: #000; border-bottom-right-radius: 4px; white-space: pre-wrap; }
-        .ai-bubble { background-color: #fff; border: 1px solid #e5e7eb; border-bottom-left-radius: 4px; width: 100%; margin-top: 6px; }
+        .ai-bubble { background-color: #fff; border: 1.5px solid #000; border-bottom-left-radius: 4px; width: 100%; margin-top: 6px; }
 
         .user-msg-text { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; padding-bottom: 0px; transition: padding-bottom 0.2s; }
         .user-msg-text.expanded { -webkit-line-clamp: unset; padding-bottom: 24px; }
@@ -194,7 +194,7 @@
         .drag-lock-ui .dot:nth-child(4) { width: 4px; height: 4px; }
 
         .input-bar-wrapper { width: 100%; max-width: 720px; display: flex; flex-direction: column; position: relative; }
-        .chat-input-container { flex: 1; background: #f3f4f6; border: 1.2px solid #e5e7eb; border-radius: 34px; display: flex; flex-direction: column; width: 100%; overflow: hidden; position: relative; transition: background-color 0.15s, border-color 0.15s; }
+        .chat-input-container { flex: 1; background: #f3f4f6; border: 1.5px solid #000; border-radius: 34px; display: flex; flex-direction: column; width: 100%; overflow: hidden; position: relative; transition: background-color 0.15s, border-color 0.15s; }
 
         .attachment-preview { display: none; position: relative; margin: 12px 0 0 20px; width: 72px; height: 72px; border-radius: 12px; background: #e5e7eb; border: 1px solid #ddd; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
         .attachment-preview img { width: 100%; height: 100%; object-fit: cover; border-radius: 11px; }
@@ -357,16 +357,16 @@
         body.dark-mode .menu-line { background: #fff; }
         
         body.dark-mode .model-name { color: #ffffff; }
-        body.dark-mode .version-pill { background: #333; border-color: #444; color: #fff; }
+        body.dark-mode .version-pill { background: #333; border-color: #ffffff; color: #fff; }
         body.dark-mode .welcome-screen { color: #ccc; }
         body.dark-mode .welcome-screen span { color: #fff; }
         body.dark-mode .bottom-container { background: #000000; }
         body.dark-mode .bottom-container::before { background: linear-gradient(to top, rgba(0,0,0,0.95), transparent); }
-        body.dark-mode .chat-input-container { background: #1e1e1e; border-color: #333; }
+        body.dark-mode .chat-input-container { background: #1e1e1e; border-color: #ffffff; }
         body.dark-mode .input-bar textarea { color: #e0e0e0; }
         body.dark-mode #mike-btn { color: #fff !important; }
         body.dark-mode .user-bubble { background-color: #2c2c2c; color: #e0e0e0; }
-        body.dark-mode .ai-bubble { background-color: #1a1a1a; border-color: #444; color: #e0e0e0; }
+        body.dark-mode .ai-bubble { background-color: #1a1a1a; border-color: #ffffff; color: #e0e0e0; }
         body.dark-mode .action-btn { color: #888; }
         body.dark-mode .action-btn:hover { color: #fff; }
         body.dark-mode .btn-black-icon { color: #fff !important; }
@@ -1322,7 +1322,7 @@
             else if (attachment.type === 'file') { attachmentHTML = `<div style="display: flex; align-items: center; gap: 10px; background: #e5e7eb; padding: 10px 14px; border-radius: 12px; margin-bottom: 8px;"><i class="fas fa-file-pdf" style="color: #333; font-size: 24px;"></i><span style="font-size: 13px; font-weight: 500; color: #333; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${attachment.name}</span></div>`; } 
             else if (attachment.type === 'audio') {
                 let dur = attachment.duration || "0:02";
-                attachmentHTML = `<div style="background: #f0f0f0; padding: 6px 12px; border-radius: 22px; display: flex; align-items: center; gap: 10px; width: 200px; margin-bottom: 6px; border: 1px solid #ddd;"><div onclick="playAudioBubble(this, '${attachment.url}')" style="width: 32px; height: 32px; border-radius: 50%; background: #333; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0;"><i class="fas fa-play play-btn-icon" style="color: #fff; margin-left: 2px; font-size: 13px;"></i></div><div style="flex: 1; height: 2px; background: #bbb; position: relative;"><div style="position: absolute; left: 0; top: -3px; width: 8px; height: 8px; border-radius: 50%; background: #333; transition: left 0.1s linear;"></div></div><span class="audio-timer" data-duration="${dur}" style="font-size: 12px; color: #333; font-weight: 500; min-width: 30px; text-align: right;">${dur}</span></div>`;
+                attachmentHTML = `<div style="background: #f0f0f0; padding: 6px 12px; border-radius: 22px; display: flex; align-items: center; gap: 10px; width: 200px; margin-bottom: 6px; border: 1.5px solid #000;"><div onclick="playAudioBubble(this, '${attachment.url}')" style="width: 32px; height: 32px; border-radius: 50%; background: #333; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0;"><i class="fas fa-play play-btn-icon" style="color: #fff; margin-left: 2px; font-size: 13px;"></i></div><div style="flex: 1; height: 2px; background: #bbb; position: relative;"><div style="position: absolute; left: 0; top: -3px; width: 8px; height: 8px; border-radius: 50%; background: #333; transition: left 0.1s linear;"></div></div><span class="audio-timer" data-duration="${dur}" style="font-size: 12px; color: #333; font-weight: 500; min-width: 30px; text-align: right;">${dur}</span></div>`;
             }
         }
         
