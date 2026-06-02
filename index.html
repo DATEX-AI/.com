@@ -346,16 +346,17 @@
         body.dark-mode .chat-item.selected-active { background: #333 !important; border-color: #ffffff !important; color: #fff !important; }
         body.dark-mode .close-sidebar-btn { color: #ffffff; }
         body.dark-mode .attachment-menu-header i.fa-times { color: #ffffff; }
-        body.dark-mode .profile-icon span { color: #e0e0e0; }
-        body.dark-mode .profile-icon i { color: #aaa; }
-        body.dark-mode .settings-group i.fa-cog { background: transparent; color: #e0e0e0; border-color: #aaa; }
+        body.dark-mode .profile-icon span { color: #ffffff; }
+        body.dark-mode .profile-icon i { color: #ffffff; }
+        body.dark-mode .settings-group span { color: #ffffff; }
+        body.dark-mode .settings-group i.fa-cog { background: transparent; color: #ffffff; border-color: #ffffff; }
         body.dark-mode header { background: #000000; border-color: #000000; }
         body.dark-mode header::after { background: linear-gradient(to bottom, rgba(0,0,0,0.95), transparent); }
         
         body.dark-mode .menu-btn-container { border-color: #fff; }
         body.dark-mode .menu-line { background: #fff; }
         
-        body.dark-mode .model-name { color: #e0e0e0; }
+        body.dark-mode .model-name { color: #ffffff; }
         body.dark-mode .version-pill { background: #333; border-color: #444; color: #fff; }
         body.dark-mode .welcome-screen { color: #ccc; }
         body.dark-mode .welcome-screen span { color: #fff; }
@@ -1616,7 +1617,7 @@
         let dynamicSystemPrompt = `You are DATEX AI. Your name is strictly 'DATEX AI'. You must never identify as Llama, Meta, or OpenAI. 
 CURRENT REAL-TIME DATA: Today is ${dateStr} and the current time is ${timeStr}.
 CRITICAL INSTRUCTIONS:
-1. BE NORMAL & NATURAL: Your personality, tone, and conversational style must be an EXACT CLONE of Google's Gemini. Be conversational, empathetic, friendly, and highly intelligent. Use emojis occasionally and naturally to make your responses expressive, but do not overdo it.
+1. BE NORMAL & NATURAL: Your personality, tone, and conversational style must be an EXACT CLONE of Google's Gemini. Be conversational, empathetic, friendly, and highly intelligent. EMOJI RULE: You have full access to emojis, but use them naturally and strictly at your own discretion. DO NOT force or spam emojis for simple greetings like "Hyy", "Hey", or "Hii".
 2. NO BRAGGING OR UNSOLICITED INFO: NEVER volunteer information about your capabilities. Keep your answers directly focused on the user's prompt.
 3. ${langInstruction}
 4. NO URDU SCRIPT: You are FORBIDDEN from using Urdu script (Arabic/Persian characters like اردو) under any circumstances.
