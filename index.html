@@ -195,8 +195,8 @@
 
         .input-bar-wrapper { width: 100%; max-width: 720px; display: flex; flex-direction: column; position: relative; }
         
-        /* Updated .chat-input-container for a softer, faded look */
-        .chat-input-container { flex: 1; background: #f3f4f6; border: 1px solid #c8c8c8; box-shadow: 0 2px 12px rgba(0,0,0,0.08); border-radius: 34px; display: flex; flex-direction: column; width: 100%; overflow: hidden; position: relative; transition: background-color 0.15s, border-color 0.15s, box-shadow 0.15s; }
+        /* Updated .chat-input-container for ditto Gemini faded look */
+        .chat-input-container { flex: 1; background: #f0f4f9; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.04); border-radius: 34px; display: flex; flex-direction: column; width: 100%; overflow: hidden; position: relative; transition: background-color 0.15s, box-shadow 0.15s; }
 
         .attachment-preview { display: none; position: relative; margin: 12px 0 0 20px; width: 72px; height: 72px; border-radius: 12px; background: #e5e7eb; border: 1px solid #ddd; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
         .attachment-preview img { width: 100%; height: 100%; object-fit: cover; border-radius: 11px; }
@@ -366,7 +366,7 @@
         body.dark-mode .bottom-container::before { background: linear-gradient(to top, rgba(0,0,0,0.95), transparent); }
         
         /* Updated dark mode for input container to match soft faded look */
-        body.dark-mode .chat-input-container { background: #1e1e1e; border-color: #444; box-shadow: 0 2px 12px rgba(0,0,0,0.25); }
+        body.dark-mode .chat-input-container { background: #1e1f22; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         
         body.dark-mode .input-bar textarea { color: #e0e0e0; }
         body.dark-mode #mike-btn { color: #fff !important; }
