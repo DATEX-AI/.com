@@ -137,8 +137,7 @@
         .version-pill { font-size: 11.5px; font-weight: 600; background: #f0f0f0; display: inline-block; padding: 4px 14px; border-radius: 14px; color: #000; border: 1.5px solid #000; margin-top: 8px; transition: background-color 0.15s, border-color 0.15s, color 0.15s; }
         
         .logo-container { margin-right: 5px; display: flex; align-items: center; }
-        /* FIX 1: Header logo size slightly increased */
-        .logo-container img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: none; }
+        .logo-container img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: none; }
         
         .avatar { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: none; flex-shrink: 0; }
 
@@ -195,8 +194,8 @@
 
         .input-bar-wrapper { width: 100%; max-width: 720px; display: flex; flex-direction: column; position: relative; }
         
-        /* Updated .chat-input-container for ditto Gemini faded look with pure white background */
-        .chat-input-container { flex: 1; background: #ffffff; border: none; box-shadow: 0 2px 12px rgba(0,0,0,0.08); border-radius: 34px; display: flex; flex-direction: column; width: 100%; overflow: hidden; position: relative; transition: background-color 0.15s, box-shadow 0.15s; }
+        /* THE FIX: Pure white background, zero box-shadow, transparent faded border for Gemini-like edge */
+        .chat-input-container { flex: 1; background: #ffffff; border: 1px solid rgba(0, 0, 0, 0.08); box-shadow: none; border-radius: 34px; display: flex; flex-direction: column; width: 100%; overflow: hidden; position: relative; transition: background-color 0.15s, border-color 0.15s; }
 
         .attachment-preview { display: none; position: relative; margin: 12px 0 0 20px; width: 72px; height: 72px; border-radius: 12px; background: #e5e7eb; border: 1px solid #ddd; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
         .attachment-preview img { width: 100%; height: 100%; object-fit: cover; border-radius: 11px; }
@@ -365,8 +364,8 @@
         body.dark-mode .bottom-container { background: #000000; }
         body.dark-mode .bottom-container::before { background: linear-gradient(to top, rgba(0,0,0,0.95), transparent); }
         
-        /* Updated dark mode for input container to match soft faded look */
-        body.dark-mode .chat-input-container { background: #1e1e1e; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.25); }
+        /* Updated dark mode for input container - Faded edge, no shadow */
+        body.dark-mode .chat-input-container { background: #1e1e1e; border: 1px solid rgba(255, 255, 255, 0.12); box-shadow: none; }
         
         body.dark-mode .input-bar textarea { color: #e0e0e0; }
         body.dark-mode #mike-btn { color: #fff !important; }
