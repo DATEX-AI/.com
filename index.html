@@ -137,6 +137,7 @@
         .version-pill { font-size: 11.5px; font-weight: 600; background: #f0f0f0; display: inline-block; padding: 4px 14px; border-radius: 14px; color: #000; border: 1.5px solid #000; margin-top: 8px; transition: background-color 0.15s, border-color 0.15s, color 0.15s; }
         
         .logo-container { margin-right: 5px; display: flex; align-items: center; }
+        /* FIX 1: Header logo size slightly increased */
         .logo-container img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: none; }
         
         .avatar { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: none; flex-shrink: 0; }
@@ -161,6 +162,18 @@
         .bubble { padding: 14px 20px; border-radius: 22px; font-size: 16px; line-height: 1.6; word-wrap: break-word; min-height: 48px; position: relative; transition: padding-bottom 0.2s, background-color 0.15s, border-color 0.15s, color 0.15s; }
         .user-bubble { background-color: #f3f4f6; color: #000; border-bottom-right-radius: 4px; white-space: pre-wrap; }
         .ai-bubble { background-color: #fff; border: 1px solid #e5e7eb; border-bottom-left-radius: 4px; width: 100%; margin-top: 6px; }
+
+        /* NEW CSS: Image Generator Transparent Bubble */
+        .img-gen-bubble { background: transparent !important; border: none !important; padding: 0 !important; }
+        
+        /* NEW CSS: Image Generator Loading Box */
+        .img-loading-box { width: 100%; max-width: 350px; aspect-ratio: 1/1; background: #f0f4f9; border-radius: 16px; animation: pulsePlaceholder 1.5s infinite ease-in-out; }
+        body.dark-mode .img-loading-box { background: #2c2c2c; }
+        @keyframes pulsePlaceholder { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+
+        /* NEW CSS: Horizontal Image Scroll Gallery for Users */
+        .user-image-gallery { display: flex; gap: 8px; overflow-x: auto; max-width: 100%; justify-content: flex-end; scrollbar-width: none; -ms-overflow-style: none; }
+        .user-image-gallery::-webkit-scrollbar { display: none; }
 
         .user-msg-text { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; padding-bottom: 0px; transition: padding-bottom 0.2s; }
         .user-msg-text.expanded { -webkit-line-clamp: unset; padding-bottom: 24px; }
@@ -194,8 +207,8 @@
 
         .input-bar-wrapper { width: 100%; max-width: 720px; display: flex; flex-direction: column; position: relative; }
         
-        /* THE FIX: Pure white background, zero box-shadow, transparent faded border for Gemini-like edge */
-        .chat-input-container { flex: 1; background: #ffffff; border: 1px solid rgba(0, 0, 0, 0.08); box-shadow: none; border-radius: 34px; display: flex; flex-direction: column; width: 100%; overflow: hidden; position: relative; transition: background-color 0.15s, border-color 0.15s; }
+        /* Updated .chat-input-container for ditto Gemini faded look with pure white background */
+        .chat-input-container { flex: 1; background: #ffffff; border: none; box-shadow: 0 2px 12px rgba(0,0,0,0.15); border-radius: 34px; display: flex; flex-direction: column; width: 100%; overflow: hidden; position: relative; transition: background-color 0.15s, box-shadow 0.15s; }
 
         .attachment-preview { display: none; position: relative; margin: 12px 0 0 20px; width: 72px; height: 72px; border-radius: 12px; background: #e5e7eb; border: 1px solid #ddd; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
         .attachment-preview img { width: 100%; height: 100%; object-fit: cover; border-radius: 11px; }
@@ -364,8 +377,8 @@
         body.dark-mode .bottom-container { background: #000000; }
         body.dark-mode .bottom-container::before { background: linear-gradient(to top, rgba(0,0,0,0.95), transparent); }
         
-        /* Updated dark mode for input container - Faded edge, no shadow */
-        body.dark-mode .chat-input-container { background: #1e1e1e; border: 1px solid rgba(255, 255, 255, 0.12); box-shadow: none; }
+        /* Updated dark mode for input container to match soft faded look */
+        body.dark-mode .chat-input-container { background: #1e1e1e; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.35); }
         
         body.dark-mode .input-bar textarea { color: #e0e0e0; }
         body.dark-mode #mike-btn { color: #fff !important; }
@@ -531,26 +544,23 @@
              <i class="fas fa-times" onclick="toggleAttachmentMenu(event)"></i>
         </div>
         <div class="attachment-options-container">
-            <div class="attachment-option" style="cursor: default;">
-                <div class="icon-box" style="position: relative; background: #f0f0f0;">
-                    <i class="fas fa-camera" style="opacity: 0.2;"></i>
-                    <i class="fas fa-lock" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 28px; color: #555;"></i>
+            <div class="attachment-option" onclick="document.getElementById('camera-input').click(); toggleAttachmentMenu();">
+                <div class="icon-box">
+                    <i class="fas fa-camera"></i>
                 </div>
-                <span style="color: #999;" data-i18n="Camera">Camera</span>
+                <span data-i18n="Camera">Camera</span>
             </div>
-            <div class="attachment-option" style="cursor: default;">
-                <div class="icon-box" style="position: relative; background: #f0f0f0;">
-                    <i class="fas fa-image" style="opacity: 0.2;"></i>
-                    <i class="fas fa-lock" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 28px; color: #555;"></i>
+            <div class="attachment-option" onclick="document.getElementById('gallery-input').click(); toggleAttachmentMenu();">
+                <div class="icon-box">
+                    <i class="fas fa-image"></i>
                 </div>
-                <span style="color: #999;" data-i18n="Photos">Photos</span>
+                <span data-i18n="Photos">Photos</span>
             </div>
-            <div class="attachment-option" style="cursor: default;">
-                <div class="icon-box" style="position: relative; background: #f0f0f0;">
-                    <i class="fas fa-file-alt" style="opacity: 0.2;"></i>
-                    <i class="fas fa-lock" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 28px; color: #555;"></i>
+            <div class="attachment-option" onclick="document.getElementById('file-input').click(); toggleAttachmentMenu();">
+                <div class="icon-box">
+                    <i class="fas fa-file-alt"></i>
                 </div>
-                <span style="color: #999;" data-i18n="Files">Files</span>
+                <span data-i18n="Files">Files</span>
             </div>
         </div>
     </div>
@@ -1321,16 +1331,31 @@
         const row = document.createElement('div'); row.className = 'message-row user-row'; row.setAttribute('data-index', msgIdx); 
 
         let attachmentHTML = '';
+        let imageGalleryHTML = '';
+        let isImage = attachment && attachment.type === 'image';
+
         if (attachment) {
-            if (attachment.type === 'image') { attachmentHTML = `<img src="${attachment.data}" style="width: 100%; max-width: 250px; border-radius: 12px; margin-bottom: 8px; object-fit: cover;">`; } 
-            else if (attachment.type === 'file') { attachmentHTML = `<div style="display: flex; align-items: center; gap: 10px; background: #e5e7eb; padding: 10px 14px; border-radius: 12px; margin-bottom: 8px;"><i class="fas fa-file-pdf" style="color: #333; font-size: 24px;"></i><span style="font-size: 13px; font-weight: 500; color: #333; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${attachment.name}</span></div>`; } 
-            else if (attachment.type === 'audio') {
+            if (isImage) {
+                imageGalleryHTML = `<div class="user-image-gallery" style="margin-bottom: ${text ? '8px' : '0'};"><img src="${attachment.data}" style="width: 120px; height: 120px; border-radius: 16px; object-fit: cover; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"></div>`;
+            } else if (attachment.type === 'file') {
+                attachmentHTML = `<div style="display: flex; align-items: center; gap: 10px; background: #e5e7eb; padding: 10px 14px; border-radius: 12px; margin-bottom: 8px;"><i class="fas fa-file-pdf" style="color: #333; font-size: 24px;"></i><span style="font-size: 13px; font-weight: 500; color: #333; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${attachment.name}</span></div>`;
+            } else if (attachment.type === 'audio') {
                 let dur = attachment.duration || "0:02";
                 attachmentHTML = `<div style="background: #f0f0f0; padding: 6px 12px; border-radius: 22px; display: flex; align-items: center; gap: 10px; width: 200px; margin-bottom: 6px; border: 1.5px solid #000;"><div onclick="playAudioBubble(this, '${attachment.url}')" style="width: 32px; height: 32px; border-radius: 50%; background: #333; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0;"><i class="fas fa-play play-btn-icon" style="color: #fff; margin-left: 2px; font-size: 13px;"></i></div><div style="flex: 1; height: 2px; background: #bbb; position: relative;"><div style="position: absolute; left: 0; top: -3px; width: 8px; height: 8px; border-radius: 50%; background: #333; transition: left 0.1s linear;"></div></div><span class="audio-timer" data-duration="${dur}" style="font-size: 12px; color: #333; font-weight: 500; min-width: 30px; text-align: right;">${dur}</span></div>`;
             }
         }
         
-        row.innerHTML = `<div class="bubble-container"><div class="bubble user-bubble" style="display: flex; flex-direction: column;">${attachmentHTML}<div class="user-msg-text" style="${(attachment && attachment.type === 'audio') ? 'display:none !important;' : ''}">${text ? text : ''}</div></div><div class="action-bar user-action-bar"><button class="action-btn btn-black-icon" onclick="openMenu(event, this)"><i class="fas fa-ellipsis-v"></i></button></div></div>`;
+        let bubbleStyle = (text || (!isImage && attachment)) ? 'display: flex; flex-direction: column;' : 'display: none;';
+
+        row.innerHTML = `<div class="bubble-container" style="align-items: flex-end;">
+            ${isImage ? imageGalleryHTML : ''}
+            <div class="bubble user-bubble" style="${bubbleStyle}">
+                ${!isImage ? attachmentHTML : ''}
+                <div class="user-msg-text" style="${(attachment && attachment.type === 'audio') ? 'display:none !important;' : ''}">${text ? text : ''}</div>
+            </div>
+            <div class="action-bar user-action-bar"><button class="action-btn btn-black-icon" onclick="openMenu(event, this)"><i class="fas fa-ellipsis-v"></i></button></div>
+        </div>`;
+        
         container.appendChild(row);
         
         setTimeout(() => {
@@ -1466,14 +1491,26 @@
     function formatLinksAndStyles(text) {
         let formatted = text;
         formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-        formatted = formatted.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" class="ai-link">$1</a>');
+        
+        let tempImages = [];
+        formatted = formatted.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, function(match, alt, url) {
+            tempImages.push(`<img src="${url}" alt="${alt}" style="width: 100%; max-width: 350px; aspect-ratio: 1/1; border-radius: 16px; margin: 10px 0; display: block; object-fit: cover; box-shadow: 0 4px 15px rgba(0,0,0,0.1); background: #f0f0f0;" onload="this.style.background='transparent'">`);
+            return `___IMG_TAG_${tempImages.length - 1}___`;
+        });
+
         let tempLinks = [];
-        formatted = formatted.replace(/<a[\s\S]*?<\/a>/g, function(match) { tempLinks.push(match); return `___A_TAG_${tempLinks.length - 1}___`; });
+        formatted = formatted.replace(/\[([^\]]+)\]\(([^)]+)\)/g, function(match, text, url) {
+            tempLinks.push(`<a href="${url}" target="_blank" class="ai-link">${text}</a>`);
+            return `___A_TAG_${tempLinks.length - 1}___`;
+        });
+        
         formatted = formatted.replace(/(^|\s)(https?:\/\/[^\s<()]+|www\.[^\s<()]+)/g, function(match, space, url) {
             let cleanUrl = url.replace(/[.,;!?)]$/, ''); let diff = url.substring(cleanUrl.length); let fullUrl = cleanUrl.startsWith('www.') ? 'https://' + cleanUrl : cleanUrl;
             return space + '<a href="' + fullUrl + '" target="_blank" class="ai-link">' + cleanUrl + '</a>' + diff;
         });
+        
         formatted = formatted.replace(/___A_TAG_(\d+)___/g, function(match, index) { return tempLinks[index]; });
+        formatted = formatted.replace(/___IMG_TAG_(\d+)___/g, function(match, index) { return tempImages[index]; });
         return formatted;
     }
 
@@ -1487,6 +1524,11 @@
             else { let formattedSeg = formatLinksAndStyles(seg); finalHTML += formattedSeg.replace(/\n/g, "<br>"); }
         });
         element.innerHTML = finalHTML;
+        
+        if (!text.includes('![Generated Image]')) {
+             element.classList.remove('img-gen-bubble');
+        }
+        
         if(window.MathJax) { MathJax.typesetPromise([element]).catch((err) => console.log(err)); }
     }
 
@@ -1494,6 +1536,10 @@
         if (boundChatIndex === undefined) boundChatIndex = activeChatIndex;
         let i = 0; let segments = text.split(/(```[\s\S]*?```)/g); let currentSeg = 0; let accumulatedHTML = ""; 
         const rowElement = element.closest('.message-row');
+
+        if (!text.includes('![Generated Image]')) {
+             element.classList.remove('img-gen-bubble');
+        }
 
         function typeNext() {
             if (stopGenerationFlag) {
@@ -1503,6 +1549,7 @@
                     try { localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); } catch(e) {}
                 }
                 if (activeChatIndex === boundChatIndex) {
+                    element.classList.remove('img-gen-bubble');
                     element.innerHTML = "You stopped this response";
                     resetSendButton(); addAiActions(rowElement, true); 
                 }
@@ -1582,14 +1629,27 @@
         const requestChatIndex = activeChatIndex; isGenerating = true; stopGenerationFlag = false;
         const sendBtn = document.querySelector('.send-btn'); sendBtn.innerHTML = '<i class="fas fa-stop" style="font-size: 14px;"></i>';
 
-        const container = document.getElementById('chat-container'); const aiRow = document.createElement('div'); aiRow.className = 'message-row ai-row';
-        const typingHTML = `<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
+        let isImageGenRequest = /make|create|generate|draw|paint/i.test(message) && /(image|photo|picture|pic|logo|art|background|wallpaper|car)/i.test(message);
         
-        aiRow.innerHTML = `<div class="avatar-container loading"><div class="avatar-spinner"></div><img src="light.logo.jpg" class="avatar logo-light-theme"><img src="dark.logo.jpg" class="avatar logo-dark-theme"></div><div class="bubble-container"><div class="bubble ai-bubble">${typingHTML}</div></div>`; 
+        let typingHTML = `<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
+        
+        if (isImageGenRequest) {
+            typingHTML = `
+                <div style="display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 500; margin-bottom: 12px; color: inherit;">
+                    <i class="fas fa-magic" style="animation: pulse 1.5s infinite;"></i> Creating your image...
+                </div>
+                <div class="img-loading-box"></div>
+            `;
+        }
+
+        const container = document.getElementById('chat-container'); const aiRow = document.createElement('div'); aiRow.className = 'message-row ai-row';
+        aiRow.innerHTML = `<div class="avatar-container loading"><div class="avatar-spinner"></div><img src="light.logo.jpg" class="avatar logo-light-theme"><img src="dark.logo.jpg" class="avatar logo-dark-theme"></div><div class="bubble-container"><div class="bubble ai-bubble ${isImageGenRequest ? 'img-gen-bubble' : ''}">${typingHTML}</div></div>`; 
         
         container.appendChild(aiRow); const bubble = aiRow.querySelector('.ai-bubble'); currentAiRow = aiRow;
+        container.scrollTop = container.scrollHeight;
 
         if (attachmentToSave && attachmentToSave.type === 'audio' && !isRegenerate) {
+            bubble.classList.remove('img-gen-bubble');
             bubble.innerText = "Transcribing voice note...";
             try {
                 const fd = new FormData(); fd.append('file', attachmentToSave.data, 'voicenote.webm'); fd.append('model', 'whisper-large-v3'); fd.append('temperature', '0.0'); fd.append('prompt', 'Namaste, kaise ho? Please transcribe strictly in English or Hindi (Devanagari or Latin script). NO URDU SCRIPT.'); 
@@ -1604,7 +1664,20 @@
                 if(avatarCont) avatarCont.classList.remove('loading');
                 return; 
             }
-            bubble.innerHTML = typingHTML;
+            bubble.innerHTML = `<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
+        }
+
+        let genData = JSON.parse(localStorage.getItem('datex_img_gen_quota')) || [];
+        const nowMs = Date.now();
+        const twentyFourHoursMs = 24 * 60 * 60 * 1000;
+        genData = genData.filter(timestamp => nowMs - timestamp < twentyFourHoursMs);
+        localStorage.setItem('datex_img_gen_quota', JSON.stringify(genData));
+        
+        let quotaUsed = genData.length;
+        let nextAvailableTime = "";
+        if (quotaUsed >= 5) {
+            let nextReset = new Date(genData[0] + twentyFourHoursMs);
+            nextAvailableTime = nextReset.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
         }
 
         const now = new Date(); const dateStr = now.toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }); const timeStr = now.toLocaleTimeString('en-IN');
@@ -1635,7 +1708,14 @@ CRITICAL INSTRUCTIONS:
 12. ZERO AI FILLERS: NEVER use filler phrases like 'As an AI', 'Here is the answer', or 'I am programmed to'. Be direct, highly authoritative, and confident. Start your answer immediately.
 13. DYNAMIC EXPERT PERSONA: Automatically adapt your persona to the user's request. If they ask a coding question, act as a Senior Staff Software Engineer. If they ask about science, act as an expert researcher. Deliver highly sophisticated and nuanced insights.
 14. PRO-LEVEL FORMATTING: Always structure your answers for maximum readability. Use Markdown heavily: bold key terms, use bullet points for lists, and create tables when comparing data. Avoid huge walls of text.
-15. CLARITY & PRECISION: If a prompt is extremely ambiguous, briefly ask for clarification instead of guessing. Provide factual, double-checked logic.`;
+15. CLARITY & PRECISION: If a prompt is extremely ambiguous, briefly ask for clarification instead of guessing. Provide factual, double-checked logic.
+16. IMAGE GENERATION (POLLINATIONS API): If the user asks you to generate, draw, or create a picture/image, YOU MUST GENERATE IT. Do not say you are text-based.
+To generate, you must output exactly this markdown format:
+![Generated Image](https://image.pollinations.ai/prompt/{detailed_english_prompt_url_encoded}?width=1024&height=1024&nologo=true)
+Replace {detailed_english_prompt_url_encoded} with a highly detailed, descriptive English prompt based on their request. Use %20 for spaces.
+**QUOTA STATUS**: The user has generated ${quotaUsed} out of 5 allowed images in the last 24 hours.
+**QUOTA RULE**: If QUOTA STATUS is 5 out of 5, YOU MUST STRICTLY REFUSE TO GENERATE THE IMAGE. Instead, reply EXACTLY: "⏳ You have reached your daily limit of 5 image generations. Please try again after ${nextAvailableTime}."
+17. IMAGE EDITING REFUSAL: You CANNOT edit, alter, or remove objects from existing images. If the user asks to modify an uploaded image, politely explain that you can only *analyze* existing images or *generate completely new ones*, but you cannot edit pixels.`;
 
         let mathContext = ""; let hasValidMath = false;
         try {
@@ -1668,6 +1748,7 @@ CRITICAL INSTRUCTIONS:
         let needsSearch = searchKeywords.some(keyword => message.toLowerCase().includes(keyword)); if (isDeepResearchOn) { needsSearch = true; }
 
         if (needsSearch && !useVision) {
+            bubble.classList.remove('img-gen-bubble');
             bubble.innerText = "Searching the web...";
             try {
                 const tavilyRes = await fetch("https://api.tavily.com/search", { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ "api_key": TAVILY_API_KEY, "query": message, "search_depth": "basic", "max_results": 3 }) });
@@ -1678,7 +1759,7 @@ CRITICAL INSTRUCTIONS:
                     apiMessages.push({ "role": "system", "content": internetContext });
                 } else { apiMessages.push({ "role": "system", "content": "[System Note: Live internet search failed. Inform the user gracefully that you cannot fetch real-time data right now.]" }); }
             } catch(e) { apiMessages.push({ "role": "system", "content": "[System Note: Live internet search failed due to API limits. Inform the user gracefully that you cannot fetch real-time data right now.]" }); }
-            bubble.innerHTML = typingHTML;
+            bubble.innerHTML = `<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
         }
 
         abortController = new AbortController();
@@ -1694,6 +1775,12 @@ CRITICAL INSTRUCTIONS:
             
             const aiResponse = data.choices[0].message.content; const aiMsgIdx = chatHistory[requestChatIndex].messages.length;
             
+            if (aiResponse.includes('image.pollinations.ai/prompt/')) {
+                let currentGenData = JSON.parse(localStorage.getItem('datex_img_gen_quota')) || [];
+                currentGenData.push(Date.now());
+                localStorage.setItem('datex_img_gen_quota', JSON.stringify(currentGenData));
+            }
+            
             chatHistory[requestChatIndex].messages.push({ role: "assistant", content: aiResponse }); 
             try { localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); } catch(e) {}
             
@@ -1703,6 +1790,7 @@ CRITICAL INSTRUCTIONS:
             chatHistory[requestChatIndex].messages.push({ role: "assistant", content: errText });
             try { localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); } catch(err) {}
             if (activeChatIndex === requestChatIndex) { 
+                bubble.classList.remove('img-gen-bubble');
                 if (bubble) bubble.innerText = errText; 
                 resetSendButton(); 
                 if (currentAiRow) {
