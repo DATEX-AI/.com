@@ -128,17 +128,20 @@
         header { position: relative; display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; border-bottom: 1px solid #f9f9f9; background: #fff; z-index: 100; flex-shrink: 0; transition: background-color 0.15s, border-color 0.15s; }
         header::after { content: ''; position: absolute; bottom: -10px; left: 0; width: 100%; height: 10px; background: linear-gradient(to bottom, var(--fade-color-top), transparent); pointer-events: none; z-index: 10; transition: background 0.15s; }
         
-        .menu-btn-container { width: 42px; height: 42px; border: 1.5px solid #000; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding-left: 9px; cursor: pointer; gap: 4px; transition: border-color 0.15s; margin-left: 5px; }
+        /* Updated: Width/Height to 40px, removed margin-left to balance perfectly */
+        .menu-btn-container { width: 40px; height: 40px; border: 1.5px solid #000; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding-left: 9px; cursor: pointer; gap: 4px; transition: border-color 0.15s; }
         .menu-line { height: 2px; background: #000; border-radius: 2px; transition: background-color 0.15s; }
         .line-1 { width: 20px; } .line-2 { width: 15px; } .line-3 { width: 10px; }
 
-        .header-center { flex: 1; text-align: center; }
+        /* Updated: Flex column to perfectly center the text and pill */
+        .header-center { position: absolute; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
         .model-name { font-weight: 600; font-size: 18px; color: #000; margin-top: 6px; }
         .version-pill { font-size: 11.5px; font-weight: 600; background: #f0f0f0; display: inline-block; padding: 4px 14px; border-radius: 14px; color: #000; border: 1.5px solid #000; margin-top: 8px; transition: background-color 0.15s, border-color 0.15s, color 0.15s; }
         
-        .logo-container { margin-right: 5px; display: flex; align-items: center; }
-        /* FIX 1: Header logo size slightly increased */
-        .logo-container img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: none; }
+        /* Updated: Removed margin-right to balance perfectly */
+        .logo-container { display: flex; align-items: center; }
+        /* Updated: Logo size to 50px */
+        .logo-container img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: none; }
         
         .avatar { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: none; flex-shrink: 0; }
 
@@ -160,8 +163,10 @@
         
         .bubble-container { position: relative; max-width: 88%; display: flex; flex-direction: column; overflow: hidden; }
         .bubble { padding: 14px 20px; border-radius: 22px; font-size: 16px; line-height: 1.6; word-wrap: break-word; min-height: 48px; position: relative; transition: padding-bottom 0.2s, background-color 0.15s, border-color 0.15s, color 0.15s; }
-        .user-bubble { background-color: #f3f4f6; color: #000; border-bottom-right-radius: 4px; white-space: pre-wrap; }
-        .ai-bubble { background-color: #fff; border: 1px solid #e5e7eb; border-bottom-left-radius: 4px; width: 100%; margin-top: 6px; }
+        
+        /* Updated Pure Black color for Text */
+        .user-bubble { background-color: #f3f4f6; color: #000000; border-bottom-right-radius: 4px; white-space: pre-wrap; }
+        .ai-bubble { background-color: #fff; border: 1px solid #e5e7eb; border-bottom-left-radius: 4px; width: 100%; margin-top: 6px; color: #000000; }
 
         /* NEW CSS: Image Generator Transparent Bubble */
         .img-gen-bubble { background: transparent !important; border: none !important; padding: 0 !important; }
@@ -217,8 +222,16 @@
         .file-name-placeholder { font-size: 10px; color: #555; margin-top: 6px; max-width: 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; text-align: center; }
 
         .input-bar { background: transparent; border: none; display: flex; align-items: flex-end; padding: 8px 12px 8px 20px; width: 100%; }
-        .input-bar textarea { flex: 1; background: transparent; border: none; padding: 10px 12px 10px 0; font-size: 16px; outline: none; min-width: 0; color: #1a1a1a; resize: none; max-height: 150px; overflow-y: auto; line-height: 24px; height: 44px; scrollbar-width: none; -ms-overflow-style: none; touch-action: pan-y; overscroll-behavior: none; }
+        
+        /* Pure Black color for Text Area */
+        .input-bar textarea { flex: 1; background: transparent; border: none; padding: 10px 12px 10px 0; font-size: 16px; outline: none; min-width: 0; color: #000000; resize: none; max-height: 150px; overflow-y: auto; line-height: 24px; height: 44px; scrollbar-width: none; -ms-overflow-style: none; touch-action: pan-y; overscroll-behavior: none; }
         .input-bar textarea::-webkit-scrollbar { display: none; }
+
+        /* NEW CSS: Plus Button Tap Effect & Gap */
+        .plus-btn-wrapper { width: 38px; height: 38px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: background-color 0.15s; margin-right: 16px; margin-bottom: 3px; flex-shrink: 0; }
+        .plus-btn-wrapper:active { background-color: rgba(0, 0, 0, 0.1); }
+        body.dark-mode .plus-btn-wrapper:active { background-color: rgba(255, 255, 255, 0.15); }
+        .plus-icon-btn { pointer-events: none; color: #000; font-size: 20px; transition: color 0.15s; }
 
         .recording-ui { display: none; flex: 1; align-items: center; gap: 0; padding: 0; height: 44px; color: #333; margin-right: 0; }
         .recording-ui.active { display: flex; }
@@ -244,8 +257,6 @@
         .send-btn { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; border: none; flex-shrink: 0; background: #000; color: #fff; margin-left: 12px; font-size: 18px; }
         
         #mike-btn.recording { background-color: #000 !important; color: #fff !important; }
-        
-        .plus-icon-btn { color: #000; cursor: pointer; font-size: 20px; transition: color 0.15s; }
 
         pre { background: #1e1e1e; color: #d4d4d4; padding: 45px 15px 15px 15px; border-radius: 12px; margin: 15px 0; overflow-x: auto; position: relative; font-family: 'Consolas', monospace; font-size: 14px; width: 100%; max-width: 100%; border: 1px solid #333; white-space: pre-wrap; word-break: break-word; }
         code { font-family: 'Consolas', monospace; }
@@ -350,10 +361,10 @@
         .select-arrow { position: absolute; right: 25px; top: 50%; transform: translateY(-70%) rotate(45deg); width: 8px; height: 8px; border-right: 2.5px solid #000; border-bottom: 2.5px solid #000; pointer-events: none; transition: border-color 0.15s; }
 
         /* --- DARK MODE LOGIC --- */
-        body.dark-mode { background-color: #000000; color: #e0e0e0; }
+        body.dark-mode { background-color: #000000; color: #ffffff; }
         body.dark-mode #splash-screen { background-color: #000000; }
         body.dark-mode .sidebar { background: #1a1a1a; border-color: #333; }
-        body.dark-mode .sidebar-header, body.dark-mode .sidebar-top { background: #1a1a1a; color: #e0e0e0; }
+        body.dark-mode .sidebar-header, body.dark-mode .sidebar-top { background: #1a1a1a; color: #ffffff; }
         body.dark-mode .sidebar h2 { color: #ffffff; }
         body.dark-mode .chat-item { border-color: #ffffff; color: #ffffff; }
         body.dark-mode .chat-item:hover { background: #2c2c2c; }
@@ -372,24 +383,28 @@
         
         body.dark-mode .model-name { color: #ffffff; }
         body.dark-mode .version-pill { background: #333; border-color: #fff; color: #fff; }
-        body.dark-mode .welcome-screen { color: #ccc; }
-        body.dark-mode .welcome-screen span { color: #fff; }
+        body.dark-mode .welcome-screen { color: #cccccc; }
+        body.dark-mode .welcome-screen span { color: #ffffff; }
         body.dark-mode .bottom-container { background: #000000; }
         body.dark-mode .bottom-container::before { background: linear-gradient(to top, rgba(0,0,0,0.95), transparent); }
         
         /* Updated dark mode for input container to match soft faded look */
         body.dark-mode .chat-input-container { background: #1e1e1e; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.35); }
         
-        body.dark-mode .input-bar textarea { color: #e0e0e0; }
+        /* Pure White color for Text Area */
+        body.dark-mode .input-bar textarea { color: #ffffff; }
         body.dark-mode #mike-btn { color: #fff !important; }
-        body.dark-mode .user-bubble { background-color: #2c2c2c; color: #e0e0e0; }
-        body.dark-mode .ai-bubble { background-color: #1a1a1a; border-color: #444; color: #e0e0e0; }
+        
+        /* Pure White color for Text */
+        body.dark-mode .user-bubble { background-color: #2c2c2c; color: #ffffff; }
+        body.dark-mode .ai-bubble { background-color: #1a1a1a; border-color: #444; color: #ffffff; }
+        
         body.dark-mode .action-btn { color: #888; }
         body.dark-mode .action-btn:hover { color: #fff; }
         body.dark-mode .btn-black-icon { color: #fff !important; }
 
         body.dark-mode .tts-btn { color: #ffffff !important; }
-        body.dark-mode .plus-icon-btn { color: #fff; }
+        body.dark-mode .plus-icon-btn { color: #ffffff; }
 
         body.dark-mode .new-chat-btn { background: #ffffff; color: #000000; }
         body.dark-mode .new-chat-btn:hover { background: #e0e0e0; }
@@ -403,8 +418,8 @@
         body.dark-mode .settings-modal, body.dark-mode .lang-modal { background: #1a1a1a; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         body.dark-mode .settings-header, body.dark-mode .lang-modal-header { color: #fff; background: #1a1a1a; border-color:#333; }
         body.dark-mode .settings-header i, body.dark-mode .lang-modal-header i { color: #ffffff; }
-        body.dark-mode .setting-section-title { color: #fff; }
-        body.dark-mode .setting-section-title svg { color: #bbb; } 
+        body.dark-mode .setting-section-title { color: #ffffff; }
+        body.dark-mode .setting-section-title svg { color: #bbbbbb; } 
         body.dark-mode .radio-option { color: #e0e0e0; }
         body.dark-mode .custom-radio { border-color: #666; }
         body.dark-mode .radio-label input:checked + .custom-radio { border-color: #fff; }
@@ -643,8 +658,8 @@
                     </div>
 
                     <div class="input-bar">
-                        <div style="height: 44px; display: flex; align-items: center; margin-right: 12px;">
-                            <i class="fas fa-plus plus-icon-btn" onclick="toggleAttachmentMenu(event)"></i>
+                        <div class="plus-btn-wrapper" onclick="toggleAttachmentMenu(event)">
+                            <i class="fas fa-plus plus-icon-btn"></i>
                         </div>
                         
                         <textarea id="user-input" placeholder="Ask Anything" data-i18n-placeholder="Ask Anything" rows="1" oninput="autoGrow(this)"></textarea>
