@@ -69,7 +69,6 @@
             z-index: 99999;
             transition: opacity 0.15s ease-out, visibility 0.15s ease-out;
         }
-        /* FIX 2: Intro splash screen logo size slightly increased */
         #splash-screen img {
             width: 200px; 
             height: 200px; 
@@ -82,12 +81,54 @@
             100% { opacity: 1; }
         }
 
-        textarea, input {
-            -webkit-user-select: auto !important;
-            -moz-user-select: auto !important;
-            -ms-user-select: auto !important;
-            user-select: auto !important;
+        /* --- LOGIN SCREEN CSS (Strictly Black Theme) --- */
+        #login-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #000000;
+            color: #ffffff;
+            z-index: 99998; /* Just below splash */
+            display: none; 
+            flex-direction: column;
+            align-items: center;
+            padding: 50px 25px 20px 25px;
+            transform: translateY(100%);
+            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+            overflow-y: auto;
         }
+        #login-screen.active { transform: translateY(0); }
+        
+        .login-logo { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 15px; }
+        .login-title { font-size: 26px; font-weight: 700; letter-spacing: 2px; margin-bottom: 35px; color: #ffffff; }
+
+        .auth-container { width: 100%; max-width: 380px; background: #0e0e0e; border: 1px solid #222; border-radius: 28px; padding: 30px 20px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        
+        .auth-provider-btn { width: 100%; height: 48px; border-radius: 24px; display: flex; justify-content: center; align-items: center; font-size: 15px; font-weight: 600; cursor: pointer; margin-bottom: 12px; transition: transform 0.1s, opacity 0.15s; border: none; }
+        .auth-provider-btn:active { transform: scale(0.97); }
+        
+        .google-btn { background-color: #ffffff; color: #000000; }
+        .google-btn svg { width: 20px; height: 20px; margin-right: 10px; }
+        
+        .apple-btn { background-color: #000000; color: #ffffff; border: 1.5px solid #333; }
+        .apple-btn i { font-size: 22px; margin-right: 10px; margin-bottom: 3px; }
+
+        .auth-divider { display: flex; align-items: center; width: 100%; margin: 20px 0; color: #666; font-size: 13px; font-weight: 500; }
+        .auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: #333; }
+        .auth-divider span { padding: 0 15px; }
+
+        .auth-input { width: 100%; height: 50px; background: transparent; border: 1.5px solid #333; border-radius: 14px; padding: 0 15px; color: #fff; font-size: 15px; margin-bottom: 12px; outline: none; transition: border-color 0.2s; }
+        .auth-input:focus { border-color: #666; }
+        .auth-input::placeholder { color: #666; }
+
+        .forgot-pwd-container { width: 100%; display: flex; justify-content: flex-end; margin-bottom: 25px; }
+        .forgot-pwd-container span { color: #888; font-size: 12px; cursor: pointer; transition: color 0.15s; }
+        .forgot-pwd-container span:hover { color: #fff; }
+
+        .auth-confirm-btn { width: 100%; height: 50px; background-color: #ffffff; color: #000000; border-radius: 25px; border: none; font-size: 16px; font-weight: 700; cursor: pointer; transition: transform 0.1s; margin-bottom: 20px; }
+        .auth-confirm-btn:active { transform: scale(0.97); }
+
+        .auth-switch { font-size: 13px; color: #888; }
+        .auth-switch b { color: #ffffff; cursor: pointer; margin-left: 5px; }
 
         /* --- UI CHANGES: SIDEBAR CSS ONLY --- */
         .sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: #f9f9f9; border-right: 1px solid #eee; transition: 0.3s; z-index: 1001; display: flex; flex-direction: column; }
@@ -112,7 +153,8 @@
         .delete-chat-btn:hover { color: #cc0000; }
 
         .sidebar-footer { padding: 15px 20px 20px 20px; display: flex; justify-content: space-between; align-items: center; background: transparent; flex-shrink: 0; }
-        .profile-icon { font-size: 34px; color: #000; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .profile-icon { font-size: 28px; color: #000; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: opacity 0.2s; }
+        .profile-icon:active { opacity: 0.6; }
         .profile-icon span { font-size: 15px; font-weight: 600; color: #000; }
         .new-chat-btn { padding: 12px 18px; background: #000; color: #fff; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 15px; transition: 0.2s; margin-left: 15px; display: flex; justify-content: center; align-items: center; width: 110px; flex-shrink: 0; }
         .new-chat-btn:hover { background: #333; }
@@ -123,25 +165,22 @@
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.1); display: none; z-index: 1000; cursor: pointer; }
         .overlay.active { display: block; }
 
-        .wrapper { flex: 1; display: flex; flex-direction: column; height: 100%; width: 100%; overflow: hidden; }
+        /* Wrapper initially hidden until logged in */
+        .wrapper { flex: 1; display: none; flex-direction: column; height: 100%; width: 100%; overflow: hidden; }
         
         header { position: relative; display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; border-bottom: 1px solid #f9f9f9; background: #fff; z-index: 100; flex-shrink: 0; transition: background-color 0.15s, border-color 0.15s; }
         header::after { content: ''; position: absolute; bottom: -10px; left: 0; width: 100%; height: 10px; background: linear-gradient(to bottom, var(--fade-color-top), transparent); pointer-events: none; z-index: 10; transition: background 0.15s; }
         
-        /* Updated: Width/Height to 40px, removed margin-left to balance perfectly */
-        .menu-btn-container { width: 40px; height: 40px; border: 1.5px solid #000; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding-left: 9px; cursor: pointer; gap: 4px; transition: border-color 0.15s; }
+        .menu-btn-container { width: 40px; height: 40px; border: 1.5px solid #000; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding-left: 9px; cursor: pointer; gap: 4px; transition: border-color 0.15s; margin-left: 10px; }
         .menu-line { height: 2px; background: #000; border-radius: 2px; transition: background-color 0.15s; }
         .line-1 { width: 20px; } .line-2 { width: 15px; } .line-3 { width: 10px; }
 
-        /* Updated: Flex column to perfectly center the text and pill */
         .header-center { position: absolute; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
         .model-name { font-weight: 600; font-size: 18px; color: #000; margin-top: 6px; }
         .version-pill { font-size: 11.5px; font-weight: 600; background: #f0f0f0; display: inline-block; padding: 4px 14px; border-radius: 14px; color: #000; border: 1.5px solid #000; margin-top: 8px; transition: background-color 0.15s, border-color 0.15s, color 0.15s; }
         
-        /* Updated: Removed margin-right to balance perfectly */
-        .logo-container { display: flex; align-items: center; }
-        /* Updated: Logo size to 50px */
-        .logo-container img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: none; }
+        .logo-container { display: flex; align-items: center; margin-right: 10px; }
+        .logo-container img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: none; }
         
         .avatar { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: none; flex-shrink: 0; }
 
@@ -162,25 +201,21 @@
         .ai-row { flex-direction: column; gap: 6px; } 
         
         .bubble-container { position: relative; max-width: 88%; display: flex; flex-direction: column; overflow: hidden; }
-        .bubble { padding: 14px 20px; border-radius: 22px; font-size: 16px; line-height: 1.6; word-wrap: break-word; min-height: 48px; position: relative; transition: padding-bottom 0.2s, background-color 0.15s, border-color 0.15s, color 0.15s; }
+        .bubble { padding: 14px 20px; border-radius: 22px; font-size: 16px; line-height: 1.6; word-wrap: break-word; word-break: break-word; overflow-wrap: anywhere; min-height: 48px; position: relative; transition: padding-bottom 0.2s, background-color 0.15s, border-color 0.15s, color 0.15s; }
         
-        /* Updated Pure Black color for Text */
         .user-bubble { background-color: #f3f4f6; color: #000000; border-bottom-right-radius: 4px; white-space: pre-wrap; }
         .ai-bubble { background-color: #fff; border: 1px solid #e5e7eb; border-bottom-left-radius: 4px; width: 100%; margin-top: 6px; color: #000000; }
 
-        /* NEW CSS: Image Generator Transparent Bubble */
         .img-gen-bubble { background: transparent !important; border: none !important; padding: 0 !important; }
         
-        /* NEW CSS: Image Generator Loading Box */
         .img-loading-box { width: 100%; max-width: 350px; aspect-ratio: 1/1; background: #f0f4f9; border-radius: 16px; animation: pulsePlaceholder 1.5s infinite ease-in-out; }
         body.dark-mode .img-loading-box { background: #2c2c2c; }
         @keyframes pulsePlaceholder { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
 
-        /* NEW CSS: Horizontal Image Scroll Gallery for Users */
         .user-image-gallery { display: flex; gap: 8px; overflow-x: auto; max-width: 100%; justify-content: flex-end; scrollbar-width: none; -ms-overflow-style: none; }
         .user-image-gallery::-webkit-scrollbar { display: none; }
 
-        .user-msg-text { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; padding-bottom: 0px; transition: padding-bottom 0.2s; }
+        .user-msg-text { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; padding-bottom: 0px; transition: padding-bottom 0.2s; word-break: break-word; overflow-wrap: anywhere; }
         .user-msg-text.expanded { -webkit-line-clamp: unset; padding-bottom: 24px; }
         
         .expand-btn-wrapper { position: absolute; bottom: 10px; right: 12px; height: 28px; padding-left: 45px; background: linear-gradient(to right, rgba(243,244,246,0) 0%, rgba(243,244,246,1) 45%); display: flex; align-items: center; justify-content: flex-end; pointer-events: none; border-bottom-right-radius: 4px; z-index: 5; }
@@ -212,7 +247,6 @@
 
         .input-bar-wrapper { width: 100%; max-width: 720px; display: flex; flex-direction: column; position: relative; }
         
-        /* Updated .chat-input-container for ditto Gemini faded look with pure white background */
         .chat-input-container { flex: 1; background: #ffffff; border: none; box-shadow: 0 2px 12px rgba(0,0,0,0.15); border-radius: 34px; display: flex; flex-direction: column; width: 100%; overflow: hidden; position: relative; transition: background-color 0.15s, box-shadow 0.15s; }
 
         .attachment-preview { display: none; position: relative; margin: 12px 0 0 20px; width: 72px; height: 72px; border-radius: 12px; background: #e5e7eb; border: 1px solid #ddd; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
@@ -221,14 +255,12 @@
         .file-icon-placeholder { font-size: 28px; color: #333; }
         .file-name-placeholder { font-size: 10px; color: #555; margin-top: 6px; max-width: 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; text-align: center; }
 
-        .input-bar { background: transparent; border: none; display: flex; align-items: flex-end; padding: 8px 12px 8px 20px; width: 100%; }
+        .input-bar { background: transparent; border: none; display: flex; align-items: flex-end; padding: 8px 12px 8px 16px; width: 100%; }
         
-        /* Pure Black color for Text Area */
         .input-bar textarea { flex: 1; background: transparent; border: none; padding: 10px 12px 10px 0; font-size: 16px; outline: none; min-width: 0; color: #000000; resize: none; max-height: 150px; overflow-y: auto; line-height: 24px; height: 44px; scrollbar-width: none; -ms-overflow-style: none; touch-action: pan-y; overscroll-behavior: none; }
         .input-bar textarea::-webkit-scrollbar { display: none; }
 
-        /* NEW CSS: Plus Button Tap Effect & Gap */
-        .plus-btn-wrapper { width: 38px; height: 38px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: background-color 0.15s; margin-right: 16px; margin-bottom: 3px; flex-shrink: 0; }
+        .plus-btn-wrapper { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: background-color 0.15s; margin-right: 8px; margin-bottom: 0px; flex-shrink: 0; }
         .plus-btn-wrapper:active { background-color: rgba(0, 0, 0, 0.1); }
         body.dark-mode .plus-btn-wrapper:active { background-color: rgba(255, 255, 255, 0.15); }
         .plus-icon-btn { pointer-events: none; color: #000; font-size: 20px; transition: color 0.15s; }
@@ -388,14 +420,10 @@
         body.dark-mode .bottom-container { background: #000000; }
         body.dark-mode .bottom-container::before { background: linear-gradient(to top, rgba(0,0,0,0.95), transparent); }
         
-        /* Updated dark mode for input container to match soft faded look */
         body.dark-mode .chat-input-container { background: #1e1e1e; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.35); }
-        
-        /* Pure White color for Text Area */
         body.dark-mode .input-bar textarea { color: #ffffff; }
         body.dark-mode #mike-btn { color: #fff !important; }
         
-        /* Pure White color for Text */
         body.dark-mode .user-bubble { background-color: #2c2c2c; color: #ffffff; }
         body.dark-mode .ai-bubble { background-color: #1a1a1a; border-color: #444; color: #ffffff; }
         
@@ -444,21 +472,124 @@
         <img src="light.logo.jpg" alt="DATEX AI" class="logo-light-theme">
         <img src="dark.logo.jpg" alt="DATEX AI" class="logo-dark-theme">
     </div>
+
+    <div id="login-screen">
+        <img src="dark.logo.jpg" alt="DATEX AI Logo" class="login-logo">
+        <h1 class="login-title">DATEX AI</h1>
+
+        <div class="auth-container">
+            <button class="auth-provider-btn google-btn" onclick="window.loginWithGoogle()">
+                <svg viewBox="0 0 48 48">
+                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
+                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
+                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
+                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
+                    <path fill="none" d="M0 0h48v48H0z"></path>
+                </svg>
+                Sign in with Google
+            </button>
+            <button class="auth-provider-btn apple-btn" onclick="window.loginWithApple()">
+                <i class="fab fa-apple"></i> Sign in with Apple
+            </button>
+
+            <div class="auth-divider">
+                <span>or</span>
+            </div>
+
+            <input type="email" id="auth-email" class="auth-input" placeholder="Enter your email">
+            <input type="password" id="auth-password" class="auth-input" placeholder="Enter your password">
+            
+            <div class="forgot-pwd-container">
+                <span onclick="alert('Password reset link will be sent to your email.')">Forget Password?</span>
+            </div>
+
+            <button class="auth-confirm-btn" id="auth-confirm-btn" onclick="window.handleEmailAuth()">Confirm</button>
+
+            <div class="auth-switch">
+                <span id="auth-switch-text">Don't have any account?<b onclick="window.toggleAuthMode()">SIGN UP</b></span>
+            </div>
+        </div>
+    </div>
     
-    <script>
-        setTimeout(() => {
-            const spl = document.getElementById('splash-screen');
-            if(spl) {
-                spl.style.pointerEvents = 'none'; 
-                spl.style.opacity = '0';
-                setTimeout(() => {
-                    if (spl && spl.parentNode) {
-                        spl.parentNode.removeChild(spl);
-                    }
-                }, 350);
-            }
-        }, 1500); 
-    </script>
+    <div class="wrapper" id="main-app-wrapper">
+        <header>
+            <div class="header-left">
+                <div class="menu-btn-container" onclick="toggleSidebar()">
+                    <div class="menu-line line-1"></div>
+                    <div class="menu-line line-2"></div>
+                    <div class="menu-line line-3"></div>
+                </div>
+            </div>
+            <div class="header-center"><div class="model-name"><span style="font-family: inherit;">DATEX AI</span> <span data-i18n="Model">Model</span></div><div class="version-pill">Kyro 2.5</div></div>
+            <div class="header-right">
+                <div class="logo-container">
+                    <img src="light.logo.jpg" alt="Logo" class="logo-light-theme">
+                    <img src="dark.logo.jpg" alt="Logo" class="logo-dark-theme">
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content" id="chat-container">
+            <div class="welcome-screen" id="welcome-screen"><span data-i18n="Welcome To" style="font-size:24px; font-weight:500; display:block; letter-spacing:0px;">Welcome To</span><br><span>DATEX AI</span></div>
+        </main>
+
+        <div class="bottom-container">
+            
+            <div id="scroll-bottom-btn" class="scroll-bottom-btn" onclick="scrollToBottomFunc()">
+                <i class="fas fa-angle-double-down"></i>
+            </div>
+
+            <div id="drag-lock-ui" class="drag-lock-ui">
+                <div class="lock-circle"><i class="fas fa-lock"></i></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+
+            <div class="input-bar-wrapper">
+                <div class="chat-input-container">
+                    
+                    <div id="attachment-preview" class="attachment-preview">
+                        <img id="attachment-img-preview" src="">
+                        <div id="attachment-file-preview" style="display: none; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%;">
+                            <i id="attachment-icon" class="fas fa-file-alt file-icon-placeholder"></i>
+                            <span id="attachment-name" class="file-name-placeholder"></span>
+                        </div>
+                        <div class="remove-btn" onclick="removeAttachment()"><i class="fas fa-times"></i></div>
+                    </div>
+
+                    <div class="input-bar">
+                        <div class="plus-btn-wrapper" onclick="toggleAttachmentMenu(event)">
+                            <i class="fas fa-plus plus-icon-btn"></i>
+                        </div>
+                        
+                        <textarea id="user-input" placeholder="Ask Anything" data-i18n-placeholder="Ask Anything" rows="1" oninput="autoGrow(this)"></textarea>
+                        
+                        <div id="recording-ui" class="recording-ui">
+                            <div class="recording-pill">
+                                <i class="fas fa-trash-alt" onclick="cancelVoiceNoteRecord()" style="color: #ff4d4d; cursor: pointer; font-size: 16px;"></i>
+                                <div class="wave-animation" id="rec-wave">
+                                    <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+                                </div>
+                                <span id="recording-timer" style="font-size: 14px; font-weight: 600; color: #333; min-width: 35px; text-align: right;">0:00</span>
+                            </div>
+                            <div id="rec-stop-btn" class="rec-stop-btn" onclick="stopVoiceNoteMidway()">
+                                <i class="fas fa-stop" style="color: #fff; font-size: 14px;"></i>
+                            </div>
+                        </div>
+
+                        <div id="mike-btn-container">
+                            <div id="mike-btn"><i class="fas fa-microphone"></i></div>
+                        </div>
+
+                        <div class="send-btn-container">
+                            <button class="send-btn" onclick="handleSendClick()"><i class="fas fa-arrow-up"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="settings-overlay" id="settings-overlay" onclick="toggleSettings()"></div>
     <div class="settings-modal" id="settings-modal">
@@ -602,94 +733,90 @@
         
         <div class="sidebar-footer">
             <div class="profile-icon">
-                <i class="far fa-user-circle"></i>
-                <span data-i18n="User">User</span>
+                <i class="fas fa-sign-out-alt" style="color: #ff4d4d; font-size: 22px;"></i>
+                <span data-i18n="Logout" style="color: #ff4d4d;" onclick="window.logout()">Logout</span>
             </div>
             <button class="new-chat-btn" onclick="createNewChat()" data-i18n="Chat +">Chat +</button>
         </div>
     </div>
 
-    <div class="wrapper" onclick="hideMsgMenu()">
-        <header>
-            <div class="header-left">
-                <div class="menu-btn-container" onclick="toggleSidebar()">
-                    <div class="menu-line line-1"></div>
-                    <div class="menu-line line-2"></div>
-                    <div class="menu-line line-3"></div>
-                </div>
-            </div>
-            <div class="header-center"><div class="model-name"><span style="font-family: inherit;">DATEX AI</span> <span data-i18n="Model">Model</span></div><div class="version-pill">Kyro 2.5</div></div>
-            <div class="header-right">
-                <div class="logo-container">
-                    <img src="light.logo.jpg" alt="Logo" class="logo-light-theme">
-                    <img src="dark.logo.jpg" alt="Logo" class="logo-dark-theme">
-                </div>
-            </div>
-        </header>
+    <script type="module">
+        // Using exactly version 10.8.1 to ensure pure compatibility and prevent 404 crashes from non-existent 12.x branch
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, OAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+      
+        const firebaseConfig = {
+          apiKey: "AIzaSyA_MGhFODUj1LCaaZm1TJ6jBIhB_d5bYxw",
+          authDomain: "datex-ai-sujal.firebaseapp.com",
+          projectId: "datex-ai-sujal",
+          storageBucket: "datex-ai-sujal.firebasestorage.app",
+          messagingSenderId: "700853866793",
+          appId: "1:700853866793:web:acf4d2774de02c8d40a738",
+          measurementId: "G-F4P3VQVLH3"
+        };
+      
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const googleProvider = new GoogleAuthProvider();
+        const appleProvider = new OAuthProvider('apple.com');
 
-        <main class="main-content" id="chat-container">
-            <div class="welcome-screen" id="welcome-screen"><span data-i18n="Welcome To" style="font-size:24px; font-weight:500; display:block; letter-spacing:0px;">Welcome To</span><br><span>DATEX AI</span></div>
-        </main>
+        let isLoginMode = true;
 
-        <div class="bottom-container">
+        window.toggleAuthMode = () => {
+            isLoginMode = !isLoginMode;
+            document.getElementById('auth-confirm-btn').innerText = isLoginMode ? "Confirm" : "Sign Up";
+            document.getElementById('auth-switch-text').innerHTML = isLoginMode 
+                ? `Don't have any account?<b onclick="window.toggleAuthMode()">SIGN UP</b>` 
+                : `Already have an account?<b onclick="window.toggleAuthMode()">LOG IN</b>`;
+        };
+
+        window.handleEmailAuth = () => {
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+            if(!email || !password) { alert("Please enter email and password"); return; }
             
-            <div id="scroll-bottom-btn" class="scroll-bottom-btn" onclick="scrollToBottomFunc()">
-                <i class="fas fa-angle-double-down"></i>
-            </div>
+            if(isLoginMode) {
+                signInWithEmailAndPassword(auth, email, password).catch(err => alert("Login Error: " + err.message));
+            } else {
+                createUserWithEmailAndPassword(auth, email, password).catch(err => alert("Signup Error: " + err.message));
+            }
+        };
 
-            <div id="drag-lock-ui" class="drag-lock-ui">
-                <div class="lock-circle"><i class="fas fa-lock"></i></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-            </div>
+        window.loginWithGoogle = () => { signInWithPopup(auth, googleProvider).catch(err => console.error(err)); };
+        window.loginWithApple = () => { signInWithPopup(auth, appleProvider).catch(err => alert("Apple Sign-In requires developer config: " + err.message)); };
+        window.logout = () => { signOut(auth); document.getElementById('sidebar').classList.remove('active'); document.getElementById('overlay').classList.remove('active'); };
 
-            <div class="input-bar-wrapper">
-                
-                <div class="chat-input-container">
-                    
-                    <div id="attachment-preview" class="attachment-preview">
-                        <img id="attachment-img-preview" src="">
-                        <div id="attachment-file-preview" style="display: none; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%;">
-                            <i id="attachment-icon" class="fas fa-file-alt file-icon-placeholder"></i>
-                            <span id="attachment-name" class="file-name-placeholder"></span>
-                        </div>
-                        <div class="remove-btn" onclick="removeAttachment()"><i class="fas fa-times"></i></div>
-                    </div>
+        // Handle splash to login/app flow
+        let isAuthResolved = false;
+        let isSplashDone = false;
 
-                    <div class="input-bar">
-                        <div class="plus-btn-wrapper" onclick="toggleAttachmentMenu(event)">
-                            <i class="fas fa-plus plus-icon-btn"></i>
-                        </div>
-                        
-                        <textarea id="user-input" placeholder="Ask Anything" data-i18n-placeholder="Ask Anything" rows="1" oninput="autoGrow(this)"></textarea>
-                        
-                        <div id="recording-ui" class="recording-ui">
-                            <div class="recording-pill">
-                                <i class="fas fa-trash-alt" onclick="cancelVoiceNoteRecord()" style="color: #ff4d4d; cursor: pointer; font-size: 16px;"></i>
-                                <div class="wave-animation" id="rec-wave">
-                                    <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
-                                </div>
-                                <span id="recording-timer" style="font-size: 14px; font-weight: 600; color: #333; min-width: 35px; text-align: right;">0:00</span>
-                            </div>
-                            <div id="rec-stop-btn" class="rec-stop-btn" onclick="stopVoiceNoteMidway()">
-                                <i class="fas fa-stop" style="color: #fff; font-size: 14px;"></i>
-                            </div>
-                        </div>
+        setTimeout(() => {
+            isSplashDone = true;
+            checkAndShowUI();
+            const spl = document.getElementById('splash-screen');
+            if(spl) { spl.style.pointerEvents = 'none'; spl.style.opacity = '0'; setTimeout(() => spl.remove(), 350); }
+        }, 1500);
 
-                        <div id="mike-btn-container">
-                            <div id="mike-btn"><i class="fas fa-microphone"></i></div>
-                        </div>
+        onAuthStateChanged(auth, (user) => {
+            isAuthResolved = true;
+            window.currentUser = user;
+            checkAndShowUI();
+        });
 
-                        <div class="send-btn-container">
-                            <button class="send-btn" onclick="handleSendClick()"><i class="fas fa-arrow-up"></i></button>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
+        function checkAndShowUI() {
+            if(isSplashDone && isAuthResolved) {
+                if(window.currentUser) {
+                    document.getElementById('login-screen').style.display = 'none';
+                    document.getElementById('main-app-wrapper').style.display = 'flex';
+                } else {
+                    document.getElementById('main-app-wrapper').style.display = 'none';
+                    const loginScreen = document.getElementById('login-screen');
+                    loginScreen.style.display = 'flex';
+                    setTimeout(() => loginScreen.classList.add('active'), 50);
+                }
+            }
+        }
+    </script>
 
     <script>
     let userScrolledUp = false; 
@@ -728,7 +855,7 @@
         {val: 'swedish', label: 'Swedish'}, {val: 'tajik', label: 'Tajik'}, {val: 'tamil', label: 'Tamil'},
         {val: 'tatar', label: 'Tatar'}, {val: 'telugu', label: 'Telugu'}, {val: 'thai', label: 'Thai'},
         {val: 'turkish', label: 'Turkish'}, {val: 'turkmen', label: 'Turkmen'}, {val: 'ukrainian', label: 'Ukrainian'},
-        {val: 'urdu', label: 'Urdu'}, {val: 'urdu', label: 'Urdu'}, {val: 'uyghur', label: 'Uyghur'}, {val: 'uzbek', label: 'Uzbek'},
+        {val: 'urdu', label: 'Urdu'}, {val: 'urdu', label: 'Urdu'}, {val: 'uyghur', label: 'Urdu'}, {val: 'uzbek', label: 'Uzbek'},
         {val: 'vietnamese', label: 'Vietnamese'}, {val: 'welsh', label: 'Welsh'}, {val: 'xhosa', label: 'Xhosa'},
         {val: 'yiddish', label: 'Yiddish'}, {val: 'yoruba', label: 'Yoruba'}, {val: 'zulu', label: 'Zulu'}
     ];
@@ -1501,6 +1628,9 @@
         }); 
     }
 
+    /* URL encode prompt helper function to avoid bad character crashes */
+    function fixedEncodeURIComponent(str) { return encodeURIComponent(str).replace(/[!'()*]/g, function(c) { return '%' + c.charCodeAt(0).toString(16); }); }
+
     function escapeHTML(str) { return str.replace(/[&<>"']/g, function(m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; }); }
 
     function formatLinksAndStyles(text) {
@@ -1726,8 +1856,8 @@ CRITICAL INSTRUCTIONS:
 15. CLARITY & PRECISION: If a prompt is extremely ambiguous, briefly ask for clarification instead of guessing. Provide factual, double-checked logic.
 16. IMAGE GENERATION (POLLINATIONS API): If the user asks you to generate, draw, or create a picture/image, YOU MUST GENERATE IT. Do not say you are text-based.
 To generate, you must output exactly this markdown format:
-![Generated Image](https://image.pollinations.ai/prompt/{detailed_english_prompt_url_encoded}?width=1024&height=1024&nologo=true)
-Replace {detailed_english_prompt_url_encoded} with a highly detailed, descriptive English prompt based on their request. Use %20 for spaces.
+![Generated Image](https://image.pollinations.ai/prompt/{fixedEncodeURIComponent(detailed_english_prompt)}?width=1024&height=1024&nologo=true)
+Replace {fixedEncodeURIComponent(detailed_english_prompt)} with a highly detailed, descriptive English prompt based on their request, fully URL encoded.
 **QUOTA STATUS**: The user has generated ${quotaUsed} out of 5 allowed images in the last 24 hours.
 **QUOTA RULE**: If QUOTA STATUS is 5 out of 5, YOU MUST STRICTLY REFUSE TO GENERATE THE IMAGE. Instead, reply EXACTLY: "⏳ You have reached your daily limit of 5 image generations. Please try again after ${nextAvailableTime}."
 17. IMAGE EDITING REFUSAL: You CANNOT edit, alter, or remove objects from existing images. If the user asks to modify an uploaded image, politely explain that you can only *analyze* existing images or *generate completely new ones*, but you cannot edit pixels.`;
