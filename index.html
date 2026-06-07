@@ -180,24 +180,32 @@
         .delete-chat-btn { color: #ff4d4d; cursor: pointer; font-size: 18px; transition: 0.2s; padding: 5px; flex-shrink: 0; }
         .delete-chat-btn:hover { color: #cc0000; }
 
-        .sidebar-footer { padding: 15px 20px 20px 20px; display: flex; flex-direction: column; gap: 15px; background: transparent; flex-shrink: 0; }
+        .sidebar-footer { padding: 15px 20px 20px 20px; display: flex; justify-content: space-between; align-items: center; background: transparent; flex-shrink: 0; }
+        .profile-icon { display: flex; align-items: center; gap: 10px; cursor: pointer; transition: opacity 0.2s; padding: 5px; border-radius: 12px; }
+        .profile-icon:active { opacity: 0.6; background: rgba(0,0,0,0.05); }
+        .profile-icon span { font-size: 15px; font-weight: 700; color: #000; max-width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        #sidebar-user-pfp { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 1.5px solid #000; }
         
-        .new-chat-btn { padding: 12px 18px; background: #000; color: #fff; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 15px; transition: 0.2s; width: 100%; display: flex; justify-content: center; align-items: center; flex-shrink: 0; }
+        .new-chat-btn { padding: 12px 18px; background: #000; color: #fff; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 15px; transition: 0.2s; margin-left: 10px; display: flex; justify-content: center; align-items: center; width: 110px; flex-shrink: 0; }
         .new-chat-btn:hover { background: #333; }
 
-        /* NEW PROFILE CARD DESIGN */
-        .profile-card { width: 100%; border: 1.5px solid #000; border-radius: 14px; padding: 12px; display: flex; flex-direction: column; gap: 12px; background: transparent; transition: border-color 0.15s; }
-        .profile-card-top { display: flex; align-items: center; gap: 12px; }
-        #sidebar-user-pfp { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 1.5px solid #eee; flex-shrink: 0; }
-        .profile-card-details { display: flex; flex-direction: column; gap: 5px; overflow: hidden; }
-        #sidebar-user-name { font-size: 15px; font-weight: 700; color: #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color 0.15s; }
-        .profile-email-pill { display: flex; align-items: center; gap: 6px; border: 1px solid #ddd; border-radius: 12px; padding: 3px 8px; width: fit-content; background: transparent; transition: border-color 0.15s; }
-        .profile-email-pill svg { width: 14px; height: 14px; flex-shrink: 0; }
-        #sidebar-user-email { font-size: 11px; font-weight: 500; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; transition: color 0.15s; }
+        /* --- NEW PROFILE MODAL POPUP --- */
+        .profile-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; z-index: 3000; cursor: pointer; opacity: 0; transition: opacity 0.2s; }
+        .profile-overlay.active { display: block; opacity: 1; }
         
-        .profile-logout-btn { display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%; height: 38px; border: 1.5px solid #000; border-radius: 10px; background: transparent; color: #000; font-size: 14px; font-weight: 600; cursor: pointer; transition: background-color 0.15s, color 0.15s, border-color 0.15s; }
-        .profile-logout-btn:active { background: #f0f0f0; }
-        .profile-logout-btn i { font-size: 16px; }
+        .profile-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 85%; max-width: 340px; background: #fff; border: 1.5px solid #000; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 3001; opacity: 0; visibility: hidden; transition: 0.2s cubic-bezier(0.25, 1, 0.5, 1); padding: 25px 20px; display: flex; flex-direction: column; align-items: center; }
+        .profile-modal.active { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
+        
+        .profile-modal-top { display: flex; align-items: center; gap: 18px; width: 100%; margin-bottom: 25px; }
+        #modal-user-pfp { width: 75px; height: 75px; border-radius: 50%; border: 1.5px solid #000; object-fit: cover; flex-shrink: 0; }
+        .profile-modal-details { display: flex; flex-direction: column; gap: 6px; overflow: hidden; align-items: flex-start; }
+        #modal-user-name { font-size: 22px; font-weight: 700; color: #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+        
+        .profile-email-pill { display: flex; align-items: center; gap: 8px; border: 1.5px solid #000; border-radius: 15px; padding: 5px 10px; }
+        #modal-user-email { font-size: 13px; font-weight: 600; color: #000; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        
+        .profile-logout-btn { display: flex; justify-content: center; align-items: center; gap: 10px; width: 100%; height: 50px; border: 1.5px solid #000; border-radius: 14px; background: transparent; color: #000; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.15s; }
+        .profile-logout-btn:active { background: #f0f0f0; transform: scale(0.97); }
 
         .delete-msg-animation { animation: smoothFadeOut 0.15s ease-out forwards; }
         @keyframes smoothFadeOut { 0% { opacity: 1; } 100% { opacity: 0; } }
@@ -205,7 +213,6 @@
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.1); display: none; z-index: 1000; cursor: pointer; }
         .overlay.active { display: block; }
 
-        /* Wrapper initially hidden until logged in */
         .wrapper { flex: 1; display: none; flex-direction: column; height: 100%; width: 100%; overflow: hidden; }
         
         header { position: relative; display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; border-bottom: 1px solid #f9f9f9; background: #fff; z-index: 100; flex-shrink: 0; transition: background-color 0.15s, border-color 0.15s; }
@@ -443,15 +450,9 @@
         body.dark-mode .chat-item.selected-active { background: #333 !important; border-color: #ffffff !important; color: #fff !important; }
         body.dark-mode .close-sidebar-btn { color: #ffffff; }
         body.dark-mode .attachment-menu-header i.fa-times { color: #ffffff; }
-        
-        /* DARK MODE: NEW PROFILE CARD */
-        body.dark-mode .profile-card { border-color: #444; }
-        body.dark-mode #sidebar-user-pfp { border-color: #444; }
-        body.dark-mode #sidebar-user-name { color: #fff; }
-        body.dark-mode .profile-email-pill { border-color: #444; }
-        body.dark-mode #sidebar-user-email { color: #ccc; }
-        body.dark-mode .profile-logout-btn { border-color: #fff; color: #fff; }
-        body.dark-mode .profile-logout-btn:active { background: #333; }
+        body.dark-mode .profile-icon span { color: #ffffff; }
+        body.dark-mode .profile-icon:active { background: rgba(255,255,255,0.1); }
+        body.dark-mode #sidebar-user-pfp { border-color: #fff; }
 
         body.dark-mode .settings-group span { color: #ffffff; }
         body.dark-mode .settings-group i.fa-cog { background: transparent; color: #ffffff; border-color: #ffffff; }
@@ -504,6 +505,15 @@
         body.dark-mode .select-arrow { border-color: #fff; }
         body.dark-mode pre { background: #000; border-color: #444; }
         body.dark-mode .user-expand-btn { background: #1e1e1e; color: #e0e0e0; box-shadow: 0 1px 4px rgba(0,0,0,0.4); }
+
+        /* DARK MODE: PROFILE MODAL */
+        body.dark-mode .profile-modal { background: #1a1a1a; border-color: #fff; }
+        body.dark-mode #modal-user-pfp { border-color: #fff; }
+        body.dark-mode #modal-user-name { color: #fff; }
+        body.dark-mode .profile-email-pill { border-color: #fff; }
+        body.dark-mode #modal-user-email { color: #fff; }
+        body.dark-mode .profile-logout-btn { border-color: #fff; color: #fff; background: transparent; }
+        body.dark-mode .profile-logout-btn:active { background: #333; }
     </style>
 </head>
 <body>
@@ -584,7 +594,12 @@
         </header>
 
         <main class="main-content" id="chat-container">
-            <div class="welcome-screen" id="welcome-screen"><span data-i18n="Hello," style="font-size:24px; font-weight:500; display:block; letter-spacing:0px;">Hello,</span><br><span>User</span></div>
+            <div class="welcome-screen" id="welcome-screen">
+                <div style="display:flex; flex-direction:row; align-items:center; gap:8px;">
+                    <span data-i18n="Hello," style="display:inline; font-size:36px; font-weight:700; letter-spacing:1px; margin:0;">Hello,</span>
+                    <span style="display:inline; font-size:36px; font-weight:700; letter-spacing:1px; margin:0;">User</span>
+                </div>
+            </div>
         </main>
 
         <div class="bottom-container">
@@ -643,6 +658,29 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="profile-overlay" id="profile-overlay" onclick="toggleProfileModal()"></div>
+    <div class="profile-modal" id="profile-modal">
+        <div class="profile-modal-top">
+            <img id="modal-user-pfp" src="light.logo.jpg" alt="User">
+            <div class="profile-modal-details">
+                <span id="modal-user-name">User Name</span>
+                <div class="profile-email-pill" id="modal-email-pill">
+                    <svg viewBox="0 0 48 48" width="14" height="14">
+                        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
+                        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
+                        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
+                        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
+                        <path fill="none" d="M0 0h48v48H0z"></path>
+                    </svg>
+                    <span id="modal-user-email">email@example.com</span>
+                </div>
+            </div>
+        </div>
+        <button class="profile-logout-btn" onclick="if(confirm('Are you sure you want to logout?')) window.logout()">
+            <i class="fas fa-sign-out-alt"></i> Log out
+        </button>
     </div>
 
     <div class="settings-overlay" id="settings-overlay" onclick="toggleSettings()"></div>
@@ -786,29 +824,11 @@
         </div>
         
         <div class="sidebar-footer">
-            <button class="new-chat-btn" onclick="createNewChat()" data-i18n="Chat +">Chat +</button>
-            
-            <div class="profile-card">
-                <div class="profile-card-top">
-                    <img id="sidebar-user-pfp" src="light.logo.jpg" alt="User" style="display: none;">
-                    <div class="profile-card-details">
-                        <span id="sidebar-user-name">User</span>
-                        <div class="profile-email-pill" id="sidebar-email-pill" style="display: none;">
-                            <svg viewBox="0 0 48 48">
-                                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
-                                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
-                                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
-                                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
-                                <path fill="none" d="M0 0h48v48H0z"></path>
-                            </svg>
-                            <span id="sidebar-user-email">email</span>
-                        </div>
-                    </div>
-                </div>
-                <button class="profile-logout-btn" onclick="if(confirm('Are you sure you want to logout?')) window.logout()">
-                    <i class="fas fa-sign-out-alt"></i> Log out
-                </button>
+            <div class="profile-icon" onclick="window.toggleProfileModal()" title="View Profile">
+                <img id="sidebar-user-pfp" src="light.logo.jpg" alt="User" style="display: none;">
+                <span id="sidebar-user-name">User</span>
             </div>
+            <button class="new-chat-btn" onclick="createNewChat()" data-i18n="Chat +">Chat +</button>
         </div>
     </div>
 
@@ -832,27 +852,17 @@
         const googleProvider = new GoogleAuthProvider();
         const appleProvider = new OAuthProvider('apple.com');
 
-        let isLoginMode = false; // Changed to default to Sign Up
+        let isLoginMode = false; // Default to Sign Up
 
-        const errorMsg = document.getElementById('auth-error-msg');
-        
-        window.showAuthError = (msg) => {
-            const emailErr = document.getElementById('email-error-msg');
-            emailErr.innerText = msg;
-            emailErr.classList.add('show');
+        window.toggleProfileModal = () => {
+            document.getElementById('profile-modal').classList.toggle('active');
+            document.getElementById('profile-overlay').classList.toggle('active');
         };
-
-        window.hideAuthError = () => {
-            document.getElementById('email-error-msg').classList.remove('show');
-            document.getElementById('password-error-msg').classList.remove('show');
-        };
-
-        document.getElementById('auth-email').addEventListener('input', window.hideAuthError);
-        document.getElementById('auth-password').addEventListener('input', window.hideAuthError);
 
         window.toggleAuthMode = () => {
             isLoginMode = !isLoginMode;
-            window.hideAuthError();
+            document.getElementById('email-error-msg').classList.remove('show');
+            document.getElementById('password-error-msg').classList.remove('show');
             document.getElementById('auth-confirm-btn').innerText = isLoginMode ? "Log In" : "Sign Up";
             document.getElementById('auth-switch-text').innerHTML = isLoginMode 
                 ? `Don't have any account?<b onclick="window.toggleAuthMode()">SIGN UP</b>` 
@@ -936,14 +946,26 @@
         };
 
         window.loginWithGoogle = () => { 
-            window.hideAuthError();
+            document.getElementById('email-error-msg').classList.remove('show');
+            document.getElementById('password-error-msg').classList.remove('show');
             signInWithPopup(auth, googleProvider).catch(err => {
                 console.error("Google Auth Error:", err);
             }); 
         };
         
-        window.loginWithApple = () => { window.hideAuthError(); signInWithPopup(auth, appleProvider).catch(err => window.showAuthError("Apple Sign-In requires developer config")); };
-        window.logout = () => { signOut(auth); document.getElementById('sidebar').classList.remove('active'); document.getElementById('overlay').classList.remove('active'); };
+        window.loginWithApple = () => { 
+            document.getElementById('email-error-msg').classList.remove('show');
+            document.getElementById('password-error-msg').classList.remove('show');
+            signInWithPopup(auth, appleProvider).catch(err => alert("Apple Sign-In requires developer config: " + err.message)); 
+        };
+        
+        window.logout = () => { 
+            signOut(auth); 
+            document.getElementById('sidebar').classList.remove('active'); 
+            document.getElementById('overlay').classList.remove('active'); 
+            document.getElementById('profile-modal').classList.remove('active'); 
+            document.getElementById('profile-overlay').classList.remove('active'); 
+        };
 
         // Handle splash to login/app flow
         let isAuthResolved = false;
@@ -961,34 +983,39 @@
             window.currentUser = user;
             
             if (user) {
-                // Set sidebar info
                 const nameEl = document.getElementById('sidebar-user-name');
                 const pfpEl = document.getElementById('sidebar-user-pfp');
-                const emailEl = document.getElementById('sidebar-user-email');
-                const emailPill = document.getElementById('sidebar-email-pill');
+                const modalNameEl = document.getElementById('modal-user-name');
+                const modalPfpEl = document.getElementById('modal-user-pfp');
+                const modalEmailEl = document.getElementById('modal-user-email');
+                const modalEmailPill = document.getElementById('modal-email-pill');
                 
                 let firstName = "User";
+                let fullName = "User";
                 if(user.displayName) {
+                    fullName = user.displayName;
                     firstName = user.displayName.split(' ')[0];
-                    if(nameEl) nameEl.innerText = user.displayName;
                 } else if(user.email) {
-                    firstName = user.email.split('@')[0];
-                    if(nameEl) nameEl.innerText = firstName;
+                    fullName = user.email.split('@')[0];
+                    firstName = fullName;
                 }
                 
-                if(emailEl && user.email) {
-                    emailEl.innerText = user.email;
-                    if(emailPill) emailPill.style.display = 'flex';
+                if(nameEl) nameEl.innerText = fullName;
+                if(modalNameEl) modalNameEl.innerText = fullName;
+                
+                if(modalEmailEl && user.email) {
+                    modalEmailEl.innerText = user.email;
+                    if(modalEmailPill) modalEmailPill.style.display = 'flex';
                 }
-                if(pfpEl) {
-                    pfpEl.src = user.photoURL || `https://ui-avatars.com/api/?name=${firstName}&background=random`;
-                    pfpEl.style.display = 'block';
-                }
+                
+                const profileImgUrl = user.photoURL || `https://ui-avatars.com/api/?name=${firstName}&background=random`;
+                if(pfpEl) { pfpEl.src = profileImgUrl; pfpEl.style.display = 'block'; }
+                if(modalPfpEl) { modalPfpEl.src = profileImgUrl; }
 
-                // Update welcome screen if new chat is active
+                // Update welcome screen dynamically
                 const welcomeContainer = document.getElementById('welcome-screen');
                 if (welcomeContainer) {
-                    welcomeContainer.innerHTML = `<span data-i18n="Hello," style="font-size:24px; font-weight:500; display:block; letter-spacing:0px;">Hello,</span><br><span>${firstName}</span>`;
+                    welcomeContainer.innerHTML = `<div style="display:flex; flex-direction:row; align-items:center; gap:8px;"><span data-i18n="Hello," style="display:inline; font-size:36px; font-weight:700; letter-spacing:1px; margin:0;">Hello,</span> <span style="display:inline; font-size:36px; font-weight:700; letter-spacing:1px; margin:0;">${firstName}</span></div>`;
                 }
             }
             checkAndShowUI();
@@ -1655,7 +1682,7 @@
         if (window.currentUser) {
             let name = window.currentUser.displayName || window.currentUser.email.split('@')[0];
             name = name.split(' ')[0];
-            welcomeHtml = `<span data-i18n="Hello," style="font-size:24px; font-weight:500; display:block; letter-spacing:0px;">Hello,</span><br><span>${name}</span>`;
+            welcomeHtml = `<div style="display:flex; flex-direction:row; align-items:center; gap:8px;"><span data-i18n="Hello," style="display:inline; font-size:36px; font-weight:700; letter-spacing:1px; margin:0;">Hello,</span> <span style="display:inline; font-size:36px; font-weight:700; letter-spacing:1px; margin:0;">${name}</span></div>`;
         }
         
         document.getElementById('chat-container').innerHTML = `<div class="welcome-screen" id="welcome-screen">${welcomeHtml}</div>`;
