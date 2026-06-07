@@ -180,14 +180,13 @@
         .delete-chat-btn { color: #ff4d4d; cursor: pointer; font-size: 18px; transition: 0.2s; padding: 5px; flex-shrink: 0; }
         .delete-chat-btn:hover { color: #cc0000; }
 
-        /* MODIFIED SIDEBAR FOOTER FOR PERFECT ALIGNMENT */
-        .sidebar-footer { padding: 15px 20px 20px 20px; display: flex; justify-content: space-between; align-items: center; gap: 8px; background: transparent; flex-shrink: 0; }
+        .sidebar-footer { padding: 15px 20px 20px 20px; display: flex; justify-content: space-between; align-items: center; background: transparent; flex-shrink: 0; }
         .profile-icon { display: flex; align-items: center; gap: 10px; cursor: pointer; transition: opacity 0.2s; padding: 5px; border-radius: 12px; flex: 1; min-width: 0; }
         .profile-icon:active { opacity: 0.6; background: rgba(0,0,0,0.05); }
         .profile-icon span { font-size: 15px; font-weight: 700; color: #000; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         #sidebar-user-pfp { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 1.5px solid #000; flex-shrink: 0; }
         
-        .new-chat-btn { padding: 12px 15px; background: #000; color: #fff; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 15px; transition: 0.2s; display: flex; justify-content: center; align-items: center; flex-shrink: 0; }
+        .new-chat-btn { padding: 12px 18px; background: #000; color: #fff; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 15px; transition: 0.2s; margin-left: 15px; display: flex; justify-content: center; align-items: center; width: 110px; flex-shrink: 0; }
         .new-chat-btn:hover { background: #333; }
 
         /* --- MODIFIED PROFILE MODAL POPUP --- */
@@ -197,13 +196,13 @@
         .profile-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 90%; max-width: 380px; background: #fff; border: none; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 3001; opacity: 0; visibility: hidden; transition: 0.2s cubic-bezier(0.25, 1, 0.5, 1); padding: 25px 20px; display: flex; flex-direction: column; align-items: center; }
         .profile-modal.active { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
         
-        .profile-modal-top { display: flex; align-items: center; gap: 18px; width: 100%; margin-bottom: 25px; }
-        #modal-user-pfp { width: 75px; height: 75px; border-radius: 50%; border: 1.5px solid #000; object-fit: cover; flex-shrink: 0; }
-        .profile-modal-details { display: flex; flex-direction: column; gap: 6px; overflow: hidden; align-items: flex-start; flex: 1; }
-        #modal-user-name { font-size: 22px; font-weight: 700; color: #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; display: block; }
+        .profile-modal-top { display: flex; align-items: center; justify-content: center; gap: 15px; width: 100%; margin-bottom: 15px; }
+        #modal-user-pfp { width: 70px; height: 70px; border-radius: 50%; border: 1.5px solid #000; object-fit: cover; flex-shrink: 0; }
+        #modal-user-name { font-size: 22px; font-weight: 700; color: #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; display: block; }
         
-        .profile-email-pill { display: flex; align-items: center; gap: 8px; border: 1.5px solid #000; border-radius: 15px; padding: 5px 10px; max-width: 100%; }
-        #modal-user-email { font-size: 13px; font-weight: 600; color: #000; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .profile-email-pill { display: flex; align-items: center; justify-content: center; gap: 8px; border: 1.5px solid #000; border-radius: 15px; padding: 6px 12px; max-width: 100%; margin-bottom: 25px; }
+        #modal-user-email { font-size: 13.5px; font-weight: 600; color: #000; max-width: 100%; overflow-x: auto; white-space: nowrap; scrollbar-width: none; display: block; }
+        #modal-user-email::-webkit-scrollbar { display: none; }
         
         .profile-logout-btn { display: flex; justify-content: center; align-items: center; gap: 10px; width: 100%; height: 50px; border: 1.5px solid #000; border-radius: 14px; background: transparent; color: #000; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.15s; }
         .profile-logout-btn:active { background: #f0f0f0; transform: scale(0.97); }
@@ -508,7 +507,7 @@
         body.dark-mode .user-expand-btn { background: #1e1e1e; color: #e0e0e0; box-shadow: 0 1px 4px rgba(0,0,0,0.4); }
 
         /* DARK MODE: PROFILE MODAL */
-        body.dark-mode .profile-modal { background: #1a1a1a; }
+        body.dark-mode .profile-modal { background: #1a1a1a; border-color: #fff; }
         body.dark-mode #modal-user-pfp { border-color: #fff; }
         body.dark-mode #modal-user-name { color: #fff; }
         body.dark-mode .profile-email-pill { border-color: #fff; }
@@ -665,19 +664,17 @@
     <div class="profile-modal" id="profile-modal">
         <div class="profile-modal-top">
             <img id="modal-user-pfp" src="light.logo.jpg" alt="User">
-            <div class="profile-modal-details">
-                <span id="modal-user-name">User Name</span>
-                <div class="profile-email-pill" id="modal-email-pill">
-                    <svg viewBox="0 0 48 48" width="14" height="14">
-                        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
-                        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
-                        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
-                        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
-                        <path fill="none" d="M0 0h48v48H0z"></path>
-                    </svg>
-                    <span id="modal-user-email">email@example.com</span>
-                </div>
-            </div>
+            <span id="modal-user-name">User Name</span>
+        </div>
+        <div class="profile-email-pill" id="modal-email-pill">
+            <svg viewBox="0 0 48 48" width="16" height="16" style="flex-shrink:0;">
+                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
+                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
+                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
+                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
+                <path fill="none" d="M0 0h48v48H0z"></path>
+            </svg>
+            <span id="modal-user-email">email@example.com</span>
         </div>
         <button class="profile-logout-btn" onclick="if(confirm('Are you sure you want to logout?')) window.logout()">
             <i class="fas fa-sign-out-alt"></i> Log out
