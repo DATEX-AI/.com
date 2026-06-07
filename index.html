@@ -556,23 +556,23 @@
                     <span>or</span>
                 </div>
 
-                <div class="name-wrapper" id="name-input-container">
-                    <input type="text" id="auth-name" class="auth-input" placeholder="Enter your full name" autocomplete="name">
+                <div class="name-wrapper" id="name-input-container" style="display: none;">
+                    <input type="text" id="auth-name" class="auth-input" placeholder="Enter your full name" autocomplete="name" maxlength="30">
                     <div id="name-error-msg" class="auth-inline-error">Please enter your name</div>
                 </div>
 
-                <div class="email-wrapper">
+                <div class="email-wrapper" id="email-input-container">
                     <input type="email" id="auth-email" class="auth-input" placeholder="Enter your email" autocomplete="email">
                     <div id="email-error-msg" class="auth-inline-error">Invalid email</div>
                 </div>
                 
-                <div class="password-wrapper">
+                <div class="password-wrapper" id="password-input-container">
                     <input type="password" id="auth-password" class="auth-input" placeholder="Enter your password" autocomplete="current-password">
                     <i class="fas fa-eye toggle-password" id="togglePassword" onclick="window.togglePasswordVisibility()"></i>
                     <div id="password-error-msg" class="auth-inline-error">Invalid password</div>
                 </div>
 
-                <button class="auth-confirm-btn" id="auth-confirm-btn" onclick="window.handleEmailAuth()">Sign Up</button>
+                <button class="auth-confirm-btn" id="auth-confirm-btn" onclick="window.handleEmailAuth()">Next</button>
 
                 <div class="auth-switch">
                     <span id="auth-switch-text">Already have an account?<b onclick="window.toggleAuthMode()">LOG IN</b></span>
@@ -670,17 +670,19 @@
     <div class="profile-modal" id="profile-modal">
         <div class="profile-modal-top">
             <img id="modal-user-pfp" src="light.logo.jpg" alt="User">
-            <span id="modal-user-name">User Name</span>
-        </div>
-        <div class="profile-email-pill" id="modal-email-pill">
-            <svg viewBox="0 0 48 48" width="16" height="16" style="flex-shrink:0;">
-                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
-                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
-                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
-                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
-                <path fill="none" d="M0 0h48v48H0z"></path>
-            </svg>
-            <span id="modal-user-email">email@example.com</span>
+            <div class="profile-modal-details">
+                <span id="modal-user-name">User Name</span>
+                <div class="profile-email-pill" id="modal-email-pill">
+                    <svg viewBox="0 0 48 48" width="14" height="14">
+                        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
+                        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
+                        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
+                        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
+                        <path fill="none" d="M0 0h48v48H0z"></path>
+                    </svg>
+                    <span id="modal-user-email">email@example.com</span>
+                </div>
+            </div>
         </div>
         <button class="profile-logout-btn" onclick="if(confirm('Are you sure you want to logout?')) window.logout()">
             <i class="fas fa-sign-out-alt"></i> Log out
@@ -856,6 +858,7 @@
         const appleProvider = new OAuthProvider('apple.com');
 
         let isLoginMode = false; // Default to Sign Up
+        let signUpPhase = 1; // 1 = Email/Pass, 2 = Name
 
         window.toggleProfileModal = () => {
             document.getElementById('profile-modal').classList.toggle('active');
@@ -864,26 +867,36 @@
 
         window.toggleAuthMode = () => {
             isLoginMode = !isLoginMode;
+            signUpPhase = 1; // Reset phase
+            
             document.getElementById('email-error-msg').classList.remove('show');
             document.getElementById('password-error-msg').classList.remove('show');
             document.getElementById('name-error-msg').classList.remove('show');
 
             const nameContainer = document.getElementById('name-input-container');
+            const emailContainer = document.getElementById('email-input-container');
+            const pwdContainer = document.getElementById('password-input-container');
+            const btn = document.getElementById('auth-confirm-btn');
+
             if(isLoginMode) {
                 nameContainer.style.display = 'none';
-                document.getElementById('auth-confirm-btn').innerText = "Log In";
+                emailContainer.style.display = 'block';
+                pwdContainer.style.display = 'block';
+                btn.innerText = "Log In";
                 document.getElementById('auth-switch-text').innerHTML = `Don't have any account?<b onclick="window.toggleAuthMode()">SIGN UP</b>`;
             } else {
-                nameContainer.style.display = 'block';
-                document.getElementById('auth-confirm-btn').innerText = "Sign Up";
+                nameContainer.style.display = 'none';
+                emailContainer.style.display = 'block';
+                pwdContainer.style.display = 'block';
+                btn.innerText = "Next";
                 document.getElementById('auth-switch-text').innerHTML = `Already have an account?<b onclick="window.toggleAuthMode()">LOG IN</b>`;
             }
         };
 
         window.handleEmailAuth = () => {
-            const name = document.getElementById('auth-name').value.trim();
-            const email = document.getElementById('auth-email').value;
-            const password = document.getElementById('auth-password').value;
+            const nameInput = document.getElementById('auth-name');
+            const emailInput = document.getElementById('auth-email');
+            const passwordInput = document.getElementById('auth-password');
             
             const nameErr = document.getElementById('name-error-msg');
             const emailErr = document.getElementById('email-error-msg');
@@ -893,29 +906,23 @@
             emailErr.classList.remove('show');
             pwdErr.classList.remove('show');
 
-            let hasError = false;
-            
-            if(!isLoginMode && !name) {
-                nameErr.innerText = "Please enter your full name";
-                nameErr.classList.add('show');
-                hasError = true;
-            }
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+            const name = nameInput.value.trim();
 
+            let hasError = false;
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if(!email || !emailRegex.test(email)) {
-                emailErr.innerText = "Invalid email";
-                emailErr.classList.add('show');
-                hasError = true;
-            }
-            if(!password) {
-                pwdErr.innerText = "Invalid password";
-                pwdErr.classList.add('show');
-                hasError = true;
-            }
-            
-            if(hasError) return;
-            
+
             const handleError = (err) => {
+                // Return to Phase 1 if backend validation fails
+                if (signUpPhase === 2 && (err.code === 'auth/email-already-in-use' || err.code === 'auth/invalid-email' || err.code === 'auth/weak-password')) {
+                    signUpPhase = 1;
+                    document.getElementById('name-input-container').style.display = 'none';
+                    document.getElementById('email-input-container').style.display = 'block';
+                    document.getElementById('password-input-container').style.display = 'block';
+                    document.getElementById('auth-confirm-btn').innerText = "Next";
+                }
+
                 if(err.code === 'auth/invalid-email' || err.code === 'auth/user-not-found') {
                     emailErr.innerText = "Invalid email";
                     emailErr.classList.add('show');
@@ -937,18 +944,38 @@
             };
 
             if(isLoginMode) {
+                if(!email || !emailRegex.test(email)) { emailErr.innerText = "Invalid email"; emailErr.classList.add('show'); hasError = true; }
+                if(!password) { pwdErr.innerText = "Invalid password"; pwdErr.classList.add('show'); hasError = true; }
+                if(hasError) return;
+                
                 signInWithEmailAndPassword(auth, email, password).catch(handleError);
             } else {
-                createUserWithEmailAndPassword(auth, email, password)
-                    .then((userCredential) => {
-                        return updateProfile(userCredential.user, {
-                            displayName: name
-                        }).then(() => {
-                            window.currentUser = auth.currentUser;
-                            updateUserUI(auth.currentUser);
-                        });
-                    })
-                    .catch(handleError);
+                if(signUpPhase === 1) {
+                    if(!email || !emailRegex.test(email)) { emailErr.innerText = "Invalid email"; emailErr.classList.add('show'); hasError = true; }
+                    if(!password || password.length < 6) { pwdErr.innerText = "Password must be at least 6 chars"; pwdErr.classList.add('show'); hasError = true; }
+                    if(hasError) return;
+
+                    signUpPhase = 2;
+                    document.getElementById('email-input-container').style.display = 'none';
+                    document.getElementById('password-input-container').style.display = 'none';
+                    document.getElementById('name-input-container').style.display = 'block';
+                    document.getElementById('auth-confirm-btn').innerText = "Sign Up";
+                    
+                } else if(signUpPhase === 2) {
+                    if(!name) { nameErr.innerText = "Please enter your full name"; nameErr.classList.add('show'); hasError = true; }
+                    if(hasError) return;
+
+                    createUserWithEmailAndPassword(auth, email, password)
+                        .then((userCredential) => {
+                            return updateProfile(userCredential.user, {
+                                displayName: name
+                            }).then(() => {
+                                window.currentUser = auth.currentUser;
+                                updateUserUI(auth.currentUser);
+                            });
+                        })
+                        .catch(handleError);
+                }
             }
         };
 
@@ -999,6 +1026,18 @@
             document.getElementById('overlay').classList.remove('active'); 
             document.getElementById('profile-modal').classList.remove('active'); 
             document.getElementById('profile-overlay').classList.remove('active'); 
+            
+            // Reset to default signup phase 1 UI state on logout
+            isLoginMode = false;
+            signUpPhase = 1;
+            document.getElementById('auth-email').value = "";
+            document.getElementById('auth-password').value = "";
+            document.getElementById('auth-name').value = "";
+            document.getElementById('name-input-container').style.display = 'none';
+            document.getElementById('email-input-container').style.display = 'block';
+            document.getElementById('password-input-container').style.display = 'block';
+            document.getElementById('auth-confirm-btn').innerText = "Next";
+            document.getElementById('auth-switch-text').innerHTML = `Already have an account?<b onclick="window.toggleAuthMode()">LOG IN</b>`;
         };
 
         // Handle splash to login/app flow
@@ -1023,12 +1062,12 @@
             
             let firstName = "User";
             let fullName = "User";
-            if(user.displayName) {
+            if(user.displayName && user.displayName.trim() !== '') {
                 fullName = user.displayName;
                 firstName = user.displayName.split(' ')[0];
             } else if(user.email) {
                 fullName = user.email.split('@')[0];
-                firstName = fullName;
+                firstName = fullName.split('.')[0]; 
             }
             
             if(nameEl) nameEl.innerText = fullName;
