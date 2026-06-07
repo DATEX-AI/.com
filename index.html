@@ -69,7 +69,6 @@
             z-index: 99999;
             transition: opacity 0.15s ease-out, visibility 0.15s ease-out;
         }
-        /* FIX 2: Intro splash screen logo size slightly increased */
         #splash-screen img {
             width: 200px; 
             height: 200px; 
@@ -93,13 +92,13 @@
             flex-direction: column;
             align-items: center;
             padding: 15px 0 0 0; 
-            transform: translateY(100%);
-            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+            opacity: 0;
+            transition: opacity 0.4s ease;
             overflow: hidden; 
             scrollbar-width: none;
         }
         #login-screen::-webkit-scrollbar { display: none; }
-        #login-screen.active { transform: translateY(0); }
+        #login-screen.active { opacity: 1; }
         
         .login-logo { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; }
         .login-title { font-size: 24px; font-weight: 700; letter-spacing: 2px; margin-bottom: 25px; color: #ffffff; } 
@@ -125,35 +124,27 @@
         .auth-provider-btn { width: 100%; height: 54px; border-radius: 27px; display: flex; justify-content: center; align-items: center; font-size: 15px; font-weight: 600; cursor: pointer; margin-bottom: 12px; transition: transform 0.1s, opacity 0.15s; border: none; }
         .auth-provider-btn:active { transform: scale(0.97); }
         
-        /* Google Btn */
         .google-btn { background-color: #ffffff; color: #000000; border: 1.5px solid #000000; margin-bottom: 12px; } 
         .google-btn svg { width: 20px; height: 20px; margin-right: 10px; }
         
-        /* Apple Btn */
         .apple-btn { background-color: #000000; color: #ffffff; border: 1.5px solid #000000; margin-bottom: 0; } 
         .apple-btn i { font-size: 22px; margin-right: 10px; margin-bottom: 3px; }
 
-        /* "or" divider perfectly centered */
         .auth-divider { display: flex; align-items: center; width: 100%; margin: 26px 0; color: #000000; font-size: 13px; font-weight: 500; }
         .auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: #000000; }
         .auth-divider span { padding: 0 15px; }
 
-        /* Auth Inputs and Wrappers */
         .auth-input { width: 100%; height: 50px; background: transparent; border: 1.5px solid #000000; border-radius: 14px; padding: 0 15px; color: #000000; font-size: 15px; outline: none; transition: border-color 0.2s; margin-bottom: 0; }
         .auth-input:focus { border-color: #000000; }
         .auth-input::placeholder { color: #888; } 
 
-        /* Email Wrapper - Creates the exact physical gap, error text floats inside it */
         .email-wrapper { position: relative; width: 100%; margin-bottom: 18px; }
         
-        /* Password Wrapper */
         .password-wrapper { position: relative; width: 100%; margin-bottom: 15px; }
         .password-wrapper .auth-input { padding-right: 45px; }
         
-        /* Eye icon */
         .toggle-password { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #000000; font-size: 18px; padding: 10px; z-index: 10; -webkit-tap-highlight-color: transparent; }
 
-        /* ABSOLUTE Error Message: Takes 0 layout space, stops buttons from shifting down! */
         .auth-inline-error { position: absolute; top: 100%; left: 5px; color: #ff3333; font-size: 12px; font-weight: 600; text-align: left; margin-top: 4px; opacity: 0; visibility: hidden; transition: opacity 0.2s ease; z-index: 5; }
         .auth-inline-error.show { opacity: 1; visibility: visible; }
 
@@ -161,11 +152,9 @@
         .forgot-pwd-container span { color: #000000; font-weight: 600; font-size: 12px; cursor: pointer; transition: opacity 0.15s; }
         .forgot-pwd-container span:hover { opacity: 0.7; }
 
-        /* Login Button - shifted UP nicely */
         .auth-confirm-btn { width: 100%; height: 50px; background-color: #000000; color: #ffffff; border-radius: 25px; border: none; font-size: 16px; font-weight: 700; cursor: pointer; transition: transform 0.1s; margin-top: 5px; margin-bottom: 25px; } 
         .auth-confirm-btn:active { transform: scale(0.97); }
 
-        /* Sign Up Text - shifted UP */
         .auth-switch { font-size: 13px; color: #000000; font-weight: 500; text-align: center; width: 100%; }
         .auth-switch b { color: #000000; cursor: pointer; margin-left: 5px; font-weight: 800; }
 
@@ -191,12 +180,24 @@
         .delete-chat-btn { color: #ff4d4d; cursor: pointer; font-size: 18px; transition: 0.2s; padding: 5px; flex-shrink: 0; }
         .delete-chat-btn:hover { color: #cc0000; }
 
-        .sidebar-footer { padding: 15px 20px 20px 20px; display: flex; justify-content: space-between; align-items: center; background: transparent; flex-shrink: 0; }
-        .profile-icon { font-size: 28px; color: #000; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: opacity 0.2s; }
-        .profile-icon:active { opacity: 0.6; }
-        .profile-icon span { font-size: 15px; font-weight: 600; color: #000; max-width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .new-chat-btn { padding: 12px 18px; background: #000; color: #fff; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 15px; transition: 0.2s; margin-left: 15px; display: flex; justify-content: center; align-items: center; width: 110px; flex-shrink: 0; }
+        .sidebar-footer { padding: 15px 20px 20px 20px; display: flex; flex-direction: column; gap: 15px; background: transparent; flex-shrink: 0; }
+        
+        .new-chat-btn { padding: 12px 18px; background: #000; color: #fff; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 15px; transition: 0.2s; width: 100%; display: flex; justify-content: center; align-items: center; flex-shrink: 0; }
         .new-chat-btn:hover { background: #333; }
+
+        /* NEW PROFILE CARD DESIGN */
+        .profile-card { width: 100%; border: 1.5px solid #000; border-radius: 14px; padding: 12px; display: flex; flex-direction: column; gap: 12px; background: transparent; transition: border-color 0.15s; }
+        .profile-card-top { display: flex; align-items: center; gap: 12px; }
+        #sidebar-user-pfp { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 1.5px solid #eee; flex-shrink: 0; }
+        .profile-card-details { display: flex; flex-direction: column; gap: 5px; overflow: hidden; }
+        #sidebar-user-name { font-size: 15px; font-weight: 700; color: #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color 0.15s; }
+        .profile-email-pill { display: flex; align-items: center; gap: 6px; border: 1px solid #ddd; border-radius: 12px; padding: 3px 8px; width: fit-content; background: transparent; transition: border-color 0.15s; }
+        .profile-email-pill svg { width: 14px; height: 14px; flex-shrink: 0; }
+        #sidebar-user-email { font-size: 11px; font-weight: 500; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; transition: color 0.15s; }
+        
+        .profile-logout-btn { display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%; height: 38px; border: 1.5px solid #000; border-radius: 10px; background: transparent; color: #000; font-size: 14px; font-weight: 600; cursor: pointer; transition: background-color 0.15s, color 0.15s, border-color 0.15s; }
+        .profile-logout-btn:active { background: #f0f0f0; }
+        .profile-logout-btn i { font-size: 16px; }
 
         .delete-msg-animation { animation: smoothFadeOut 0.15s ease-out forwards; }
         @keyframes smoothFadeOut { 0% { opacity: 1; } 100% { opacity: 0; } }
@@ -442,7 +443,16 @@
         body.dark-mode .chat-item.selected-active { background: #333 !important; border-color: #ffffff !important; color: #fff !important; }
         body.dark-mode .close-sidebar-btn { color: #ffffff; }
         body.dark-mode .attachment-menu-header i.fa-times { color: #ffffff; }
-        body.dark-mode .profile-icon span { color: #ffffff; }
+        
+        /* DARK MODE: NEW PROFILE CARD */
+        body.dark-mode .profile-card { border-color: #444; }
+        body.dark-mode #sidebar-user-pfp { border-color: #444; }
+        body.dark-mode #sidebar-user-name { color: #fff; }
+        body.dark-mode .profile-email-pill { border-color: #444; }
+        body.dark-mode #sidebar-user-email { color: #ccc; }
+        body.dark-mode .profile-logout-btn { border-color: #fff; color: #fff; }
+        body.dark-mode .profile-logout-btn:active { background: #333; }
+
         body.dark-mode .settings-group span { color: #ffffff; }
         body.dark-mode .settings-group i.fa-cog { background: transparent; color: #ffffff; border-color: #ffffff; }
         body.dark-mode header { background: #000000; border-color: #000000; }
@@ -536,12 +546,12 @@
                 </div>
 
                 <div class="email-wrapper">
-                    <input type="email" id="auth-email" class="auth-input" placeholder="Enter your email">
+                    <input type="email" id="auth-email" class="auth-input" placeholder="Enter your email" autocomplete="email">
                     <div id="email-error-msg" class="auth-inline-error">Invalid email</div>
                 </div>
                 
                 <div class="password-wrapper">
-                    <input type="password" id="auth-password" class="auth-input" placeholder="Enter your password">
+                    <input type="password" id="auth-password" class="auth-input" placeholder="Enter your password" autocomplete="current-password">
                     <i class="fas fa-eye toggle-password" id="togglePassword" onclick="window.togglePasswordVisibility()"></i>
                     <div id="password-error-msg" class="auth-inline-error">Invalid password</div>
                 </div>
@@ -574,7 +584,7 @@
         </header>
 
         <main class="main-content" id="chat-container">
-            <div class="welcome-screen" id="welcome-screen"><span data-i18n="Welcome To" style="font-size:24px; font-weight:500; display:block; letter-spacing:0px;">Welcome To</span><br><span>DATEX AI</span></div>
+            <div class="welcome-screen" id="welcome-screen"><span data-i18n="Hello," style="font-size:24px; font-weight:500; display:block; letter-spacing:0px;">Hello,</span><br><span>User</span></div>
         </main>
 
         <div class="bottom-container">
@@ -776,11 +786,29 @@
         </div>
         
         <div class="sidebar-footer">
-            <div class="profile-icon" onclick="if(confirm('Are you sure you want to logout?')) window.logout()" title="Click to Logout">
-                <img id="sidebar-user-pfp" src="light.logo.jpg" alt="User" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; display: none;">
-                <span id="sidebar-user-name" style="font-size: 15px; font-weight: 600; color: #000; overflow: hidden; text-overflow: ellipsis; max-width: 100px; white-space: nowrap;">User</span>
-            </div>
             <button class="new-chat-btn" onclick="createNewChat()" data-i18n="Chat +">Chat +</button>
+            
+            <div class="profile-card">
+                <div class="profile-card-top">
+                    <img id="sidebar-user-pfp" src="light.logo.jpg" alt="User" style="display: none;">
+                    <div class="profile-card-details">
+                        <span id="sidebar-user-name">User</span>
+                        <div class="profile-email-pill" id="sidebar-email-pill" style="display: none;">
+                            <svg viewBox="0 0 48 48">
+                                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
+                                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
+                                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
+                                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
+                                <path fill="none" d="M0 0h48v48H0z"></path>
+                            </svg>
+                            <span id="sidebar-user-email">email</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="profile-logout-btn" onclick="if(confirm('Are you sure you want to logout?')) window.logout()">
+                    <i class="fas fa-sign-out-alt"></i> Log out
+                </button>
+            </div>
         </div>
     </div>
 
@@ -884,6 +912,15 @@
             }
         };
 
+        document.getElementById('auth-email').addEventListener('input', () => {
+            const el = document.getElementById('email-error-msg');
+            if(el.classList.contains('show')) el.classList.remove('show');
+        });
+        document.getElementById('auth-password').addEventListener('input', () => {
+            const el = document.getElementById('password-error-msg');
+            if(el.classList.contains('show')) el.classList.remove('show');
+        });
+
         window.togglePasswordVisibility = () => {
             const pwdInput = document.getElementById('auth-password');
             const icon = document.getElementById('togglePassword');
@@ -902,7 +939,6 @@
             window.hideAuthError();
             signInWithPopup(auth, googleProvider).catch(err => {
                 console.error("Google Auth Error:", err);
-                window.showAuthError("Google Sign-In failed. Please try again.");
             }); 
         };
         
@@ -923,13 +959,36 @@
         onAuthStateChanged(auth, (user) => {
             isAuthResolved = true;
             window.currentUser = user;
+            
             if (user) {
+                // Set sidebar info
                 const nameEl = document.getElementById('sidebar-user-name');
                 const pfpEl = document.getElementById('sidebar-user-pfp');
-                if(nameEl) nameEl.innerText = user.displayName || user.email.split('@')[0];
+                const emailEl = document.getElementById('sidebar-user-email');
+                const emailPill = document.getElementById('sidebar-email-pill');
+                
+                let firstName = "User";
+                if(user.displayName) {
+                    firstName = user.displayName.split(' ')[0];
+                    if(nameEl) nameEl.innerText = user.displayName;
+                } else if(user.email) {
+                    firstName = user.email.split('@')[0];
+                    if(nameEl) nameEl.innerText = firstName;
+                }
+                
+                if(emailEl && user.email) {
+                    emailEl.innerText = user.email;
+                    if(emailPill) emailPill.style.display = 'flex';
+                }
                 if(pfpEl) {
-                    pfpEl.src = user.photoURL || `https://ui-avatars.com/api/?name=${user.displayName || user.email || 'U'}&background=random`;
+                    pfpEl.src = user.photoURL || `https://ui-avatars.com/api/?name=${firstName}&background=random`;
                     pfpEl.style.display = 'block';
+                }
+
+                // Update welcome screen if new chat is active
+                const welcomeContainer = document.getElementById('welcome-screen');
+                if (welcomeContainer) {
+                    welcomeContainer.innerHTML = `<span data-i18n="Hello," style="font-size:24px; font-weight:500; display:block; letter-spacing:0px;">Hello,</span><br><span>${firstName}</span>`;
                 }
             }
             checkAndShowUI();
@@ -1206,11 +1265,15 @@
         }
     });
 
+    let resizeTimeout;
     if (window.visualViewport) {
         const resizeHandler = () => {
-            document.documentElement.style.height = window.visualViewport.height + 'px';
-            document.body.style.height = window.visualViewport.height + 'px';
-            window.scrollTo(0, 0);
+            if(resizeTimeout) cancelAnimationFrame(resizeTimeout);
+            resizeTimeout = requestAnimationFrame(() => {
+                document.documentElement.style.height = window.visualViewport.height + 'px';
+                document.body.style.height = window.visualViewport.height + 'px';
+                window.scrollTo(0, 0);
+            });
         };
         window.visualViewport.addEventListener('resize', resizeHandler);
         window.visualViewport.addEventListener('scroll', resizeHandler);
@@ -1587,7 +1650,15 @@
     function createNewChat(keepSidebarOpen = false) {
         if (isGenerating) stopGeneration(); stopTTS(); 
         isNewSession = true; activeChatIndex = -1; editingMsgIdx = -1; 
-        document.getElementById('chat-container').innerHTML = `<div class="welcome-screen" id="welcome-screen"><span data-i18n="Welcome To" style="font-size:24px; font-weight:500; display:block; letter-spacing:0px;">Welcome To</span><br><span>DATEX AI</span></div>`;
+        
+        let welcomeHtml = `<span data-i18n="Welcome To" style="font-size:24px; font-weight:500; display:block; letter-spacing:0px;">Welcome To</span><br><span>DATEX AI</span>`;
+        if (window.currentUser) {
+            let name = window.currentUser.displayName || window.currentUser.email.split('@')[0];
+            name = name.split(' ')[0];
+            welcomeHtml = `<span data-i18n="Hello," style="font-size:24px; font-weight:500; display:block; letter-spacing:0px;">Hello,</span><br><span>${name}</span>`;
+        }
+        
+        document.getElementById('chat-container').innerHTML = `<div class="welcome-screen" id="welcome-screen">${welcomeHtml}</div>`;
         const input = document.getElementById('user-input'); input.value = ""; autoGrow(input);
         renderChatList(); 
         
