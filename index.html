@@ -138,6 +138,7 @@
         .auth-input:focus { border-color: #000000; }
         .auth-input::placeholder { color: #888; } 
 
+        .name-wrapper { position: relative; width: 100%; margin-bottom: 18px; }
         .email-wrapper { position: relative; width: 100%; margin-bottom: 18px; }
         
         .password-wrapper { position: relative; width: 100%; margin-bottom: 15px; }
@@ -180,13 +181,13 @@
         .delete-chat-btn { color: #ff4d4d; cursor: pointer; font-size: 18px; transition: 0.2s; padding: 5px; flex-shrink: 0; }
         .delete-chat-btn:hover { color: #cc0000; }
 
-        .sidebar-footer { padding: 15px 20px 20px 20px; display: flex; justify-content: space-between; align-items: center; background: transparent; flex-shrink: 0; }
+        .sidebar-footer { padding: 15px 20px 20px 20px; display: flex; justify-content: space-between; align-items: center; gap: 8px; background: transparent; flex-shrink: 0; }
         .profile-icon { display: flex; align-items: center; gap: 10px; cursor: pointer; transition: opacity 0.2s; padding: 5px; border-radius: 12px; flex: 1; min-width: 0; }
         .profile-icon:active { opacity: 0.6; background: rgba(0,0,0,0.05); }
         .profile-icon span { font-size: 15px; font-weight: 700; color: #000; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         #sidebar-user-pfp { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 1.5px solid #000; flex-shrink: 0; }
         
-        .new-chat-btn { padding: 12px 18px; background: #000; color: #fff; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 15px; transition: 0.2s; margin-left: 15px; display: flex; justify-content: center; align-items: center; width: 110px; flex-shrink: 0; }
+        .new-chat-btn { padding: 12px 15px; background: #000; color: #fff; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 15px; transition: 0.2s; display: flex; justify-content: center; align-items: center; flex-shrink: 0; width: 110px; }
         .new-chat-btn:hover { background: #333; }
 
         /* --- MODIFIED PROFILE MODAL POPUP --- */
@@ -196,7 +197,7 @@
         .profile-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 90%; max-width: 380px; background: #fff; border: none; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 3001; opacity: 0; visibility: hidden; transition: 0.2s cubic-bezier(0.25, 1, 0.5, 1); padding: 25px 20px; display: flex; flex-direction: column; align-items: center; }
         .profile-modal.active { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
         
-        .profile-modal-top { display: flex; align-items: center; justify-content: center; gap: 15px; width: 100%; margin-bottom: 15px; }
+        .profile-modal-top { display: flex; align-items: center; justify-content: center; gap: 15px; width: 100%; margin-bottom: 10px; }
         #modal-user-pfp { width: 70px; height: 70px; border-radius: 50%; border: 1.5px solid #000; object-fit: cover; flex-shrink: 0; }
         #modal-user-name { font-size: 22px; font-weight: 700; color: #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; display: block; }
         
@@ -507,7 +508,7 @@
         body.dark-mode .user-expand-btn { background: #1e1e1e; color: #e0e0e0; box-shadow: 0 1px 4px rgba(0,0,0,0.4); }
 
         /* DARK MODE: PROFILE MODAL */
-        body.dark-mode .profile-modal { background: #1a1a1a; border-color: #fff; }
+        body.dark-mode .profile-modal { background: #1a1a1a; }
         body.dark-mode #modal-user-pfp { border-color: #fff; }
         body.dark-mode #modal-user-name { color: #fff; }
         body.dark-mode .profile-email-pill { border-color: #fff; }
@@ -553,6 +554,11 @@
 
                 <div class="auth-divider">
                     <span>or</span>
+                </div>
+
+                <div class="name-wrapper" id="name-input-container">
+                    <input type="text" id="auth-name" class="auth-input" placeholder="Enter your full name" autocomplete="name">
+                    <div id="name-error-msg" class="auth-inline-error">Please enter your name</div>
                 </div>
 
                 <div class="email-wrapper">
@@ -831,9 +837,8 @@
     </div>
 
     <script type="module">
-        // Using exactly version 10.8.1 to ensure pure compatibility and prevent 404 crashes from non-existent 12.x branch
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, OAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, OAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
       
         const firebaseConfig = {
           apiKey: "AIzaSyA_MGhFODUj1LCaaZm1TJ6jBIhB_d5bYxw",
@@ -861,24 +866,42 @@
             isLoginMode = !isLoginMode;
             document.getElementById('email-error-msg').classList.remove('show');
             document.getElementById('password-error-msg').classList.remove('show');
-            document.getElementById('auth-confirm-btn').innerText = isLoginMode ? "Log In" : "Sign Up";
-            document.getElementById('auth-switch-text').innerHTML = isLoginMode 
-                ? `Don't have any account?<b onclick="window.toggleAuthMode()">SIGN UP</b>` 
-                : `Already have an account?<b onclick="window.toggleAuthMode()">LOG IN</b>`;
+            document.getElementById('name-error-msg').classList.remove('show');
+
+            const nameContainer = document.getElementById('name-input-container');
+            if(isLoginMode) {
+                nameContainer.style.display = 'none';
+                document.getElementById('auth-confirm-btn').innerText = "Log In";
+                document.getElementById('auth-switch-text').innerHTML = `Don't have any account?<b onclick="window.toggleAuthMode()">SIGN UP</b>`;
+            } else {
+                nameContainer.style.display = 'block';
+                document.getElementById('auth-confirm-btn').innerText = "Sign Up";
+                document.getElementById('auth-switch-text').innerHTML = `Already have an account?<b onclick="window.toggleAuthMode()">LOG IN</b>`;
+            }
         };
 
         window.handleEmailAuth = () => {
+            const name = document.getElementById('auth-name').value.trim();
             const email = document.getElementById('auth-email').value;
             const password = document.getElementById('auth-password').value;
+            
+            const nameErr = document.getElementById('name-error-msg');
             const emailErr = document.getElementById('email-error-msg');
             const pwdErr = document.getElementById('password-error-msg');
 
+            nameErr.classList.remove('show');
             emailErr.classList.remove('show');
             pwdErr.classList.remove('show');
 
             let hasError = false;
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            if(!isLoginMode && !name) {
+                nameErr.innerText = "Please enter your full name";
+                nameErr.classList.add('show');
+                hasError = true;
+            }
 
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if(!email || !emailRegex.test(email)) {
                 emailErr.innerText = "Invalid email";
                 emailErr.classList.add('show');
@@ -916,10 +939,23 @@
             if(isLoginMode) {
                 signInWithEmailAndPassword(auth, email, password).catch(handleError);
             } else {
-                createUserWithEmailAndPassword(auth, email, password).catch(handleError);
+                createUserWithEmailAndPassword(auth, email, password)
+                    .then((userCredential) => {
+                        return updateProfile(userCredential.user, {
+                            displayName: name
+                        }).then(() => {
+                            window.currentUser = auth.currentUser;
+                            updateUserUI(auth.currentUser);
+                        });
+                    })
+                    .catch(handleError);
             }
         };
 
+        document.getElementById('auth-name').addEventListener('input', () => {
+            const el = document.getElementById('name-error-msg');
+            if(el.classList.contains('show')) el.classList.remove('show');
+        });
         document.getElementById('auth-email').addEventListener('input', () => {
             const el = document.getElementById('email-error-msg');
             if(el.classList.contains('show')) el.classList.remove('show');
@@ -976,46 +1012,47 @@
             if(spl) { spl.style.pointerEvents = 'none'; spl.style.opacity = '0'; setTimeout(() => spl.remove(), 350); }
         }, 1500);
 
+        function updateUserUI(user) {
+            if (!user) return;
+            const nameEl = document.getElementById('sidebar-user-name');
+            const pfpEl = document.getElementById('sidebar-user-pfp');
+            const modalNameEl = document.getElementById('modal-user-name');
+            const modalPfpEl = document.getElementById('modal-user-pfp');
+            const modalEmailEl = document.getElementById('modal-user-email');
+            const modalEmailPill = document.getElementById('modal-email-pill');
+            
+            let firstName = "User";
+            let fullName = "User";
+            if(user.displayName) {
+                fullName = user.displayName;
+                firstName = user.displayName.split(' ')[0];
+            } else if(user.email) {
+                fullName = user.email.split('@')[0];
+                firstName = fullName;
+            }
+            
+            if(nameEl) nameEl.innerText = fullName;
+            if(modalNameEl) modalNameEl.innerText = fullName;
+            
+            if(modalEmailEl && user.email) {
+                modalEmailEl.innerText = user.email;
+                if(modalEmailPill) modalEmailPill.style.display = 'flex';
+            }
+            
+            const profileImgUrl = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName)}&background=random`;
+            if(pfpEl) { pfpEl.src = profileImgUrl; pfpEl.style.display = 'block'; }
+            if(modalPfpEl) { modalPfpEl.src = profileImgUrl; }
+
+            const welcomeContainer = document.getElementById('welcome-screen');
+            if (welcomeContainer) {
+                welcomeContainer.innerHTML = `<div style="display:flex; flex-direction:row; align-items:center; gap:8px;"><span data-i18n="Hello," style="display:inline; font-size:36px; font-weight:700; letter-spacing:1px; margin:0;">Hello,</span> <span style="display:inline; font-size:36px; font-weight:700; letter-spacing:1px; margin:0;">${firstName}</span></div>`;
+            }
+        }
+
         onAuthStateChanged(auth, (user) => {
             isAuthResolved = true;
             window.currentUser = user;
-            
-            if (user) {
-                const nameEl = document.getElementById('sidebar-user-name');
-                const pfpEl = document.getElementById('sidebar-user-pfp');
-                const modalNameEl = document.getElementById('modal-user-name');
-                const modalPfpEl = document.getElementById('modal-user-pfp');
-                const modalEmailEl = document.getElementById('modal-user-email');
-                const modalEmailPill = document.getElementById('modal-email-pill');
-                
-                let firstName = "User";
-                let fullName = "User";
-                if(user.displayName) {
-                    fullName = user.displayName;
-                    firstName = user.displayName.split(' ')[0];
-                } else if(user.email) {
-                    fullName = user.email.split('@')[0];
-                    firstName = fullName;
-                }
-                
-                if(nameEl) nameEl.innerText = fullName;
-                if(modalNameEl) modalNameEl.innerText = fullName;
-                
-                if(modalEmailEl && user.email) {
-                    modalEmailEl.innerText = user.email;
-                    if(modalEmailPill) modalEmailPill.style.display = 'flex';
-                }
-                
-                const profileImgUrl = user.photoURL || `https://ui-avatars.com/api/?name=${firstName}&background=random`;
-                if(pfpEl) { pfpEl.src = profileImgUrl; pfpEl.style.display = 'block'; }
-                if(modalPfpEl) { modalPfpEl.src = profileImgUrl; }
-
-                // Update welcome screen dynamically
-                const welcomeContainer = document.getElementById('welcome-screen');
-                if (welcomeContainer) {
-                    welcomeContainer.innerHTML = `<div style="display:flex; flex-direction:row; align-items:center; gap:8px;"><span data-i18n="Hello," style="display:inline; font-size:36px; font-weight:700; letter-spacing:1px; margin:0;">Hello,</span> <span style="display:inline; font-size:36px; font-weight:700; letter-spacing:1px; margin:0;">${firstName}</span></div>`;
-                }
-            }
+            updateUserUI(user);
             checkAndShowUI();
         });
 
