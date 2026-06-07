@@ -148,6 +148,9 @@
 
         .auth-inline-error { position: absolute; top: 100%; left: 5px; color: #ff3333; font-size: 12px; font-weight: 600; text-align: left; margin-top: 4px; opacity: 0; visibility: hidden; transition: opacity 0.2s ease; z-index: 5; }
         .auth-inline-error.show { opacity: 1; visibility: visible; }
+        
+        /* NEW: Professional character limit text */
+        .char-limit-text { position: absolute; right: 5px; top: 100%; margin-top: 4px; font-size: 11px; color: #888; font-weight: 500; }
 
         .forgot-pwd-container { width: 100%; display: flex; justify-content: flex-end; margin-bottom: 20px; }
         .forgot-pwd-container span { color: #000000; font-weight: 600; font-size: 12px; cursor: pointer; transition: opacity 0.15s; }
@@ -199,7 +202,8 @@
         
         .profile-modal-top { display: flex; align-items: center; justify-content: center; gap: 15px; width: 100%; margin-bottom: 10px; }
         #modal-user-pfp { width: 70px; height: 70px; border-radius: 50%; border: 1.5px solid #000; object-fit: cover; flex-shrink: 0; }
-        #modal-user-name { font-size: 22px; font-weight: 700; color: #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; display: block; }
+        .profile-modal-details { display: flex; flex-direction: column; gap: 6px; overflow: hidden; align-items: flex-start; flex: 1; width: 100%; min-width: 0; }
+        #modal-user-name { font-size: 22px; font-weight: 700; color: #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; display: block; line-height: 1.2; }
         
         .profile-email-pill { display: flex; align-items: center; justify-content: center; gap: 8px; border: 1.5px solid #000; border-radius: 15px; padding: 6px 12px; max-width: 100%; margin-bottom: 25px; }
         #modal-user-email { font-size: 13.5px; font-weight: 600; color: #000; max-width: 100%; overflow-x: auto; white-space: nowrap; scrollbar-width: none; display: block; }
@@ -506,9 +510,10 @@
         body.dark-mode .select-arrow { border-color: #fff; }
         body.dark-mode pre { background: #000; border-color: #444; }
         body.dark-mode .user-expand-btn { background: #1e1e1e; color: #e0e0e0; box-shadow: 0 1px 4px rgba(0,0,0,0.4); }
+        body.dark-mode .char-limit-text { color: #aaa; }
 
         /* DARK MODE: PROFILE MODAL */
-        body.dark-mode .profile-modal { background: #1a1a1a; }
+        body.dark-mode .profile-modal { background: #1a1a1a; border-color: #fff; }
         body.dark-mode #modal-user-pfp { border-color: #fff; }
         body.dark-mode #modal-user-name { color: #fff; }
         body.dark-mode .profile-email-pill { border-color: #fff; }
@@ -557,7 +562,8 @@
                 </div>
 
                 <div class="name-wrapper" id="name-input-container" style="display: none;">
-                    <input type="text" id="auth-name" class="auth-input" placeholder="Enter your full name" autocomplete="name" maxlength="30">
+                    <input type="text" id="auth-name" class="auth-input" placeholder="Enter your full name" autocomplete="name" maxlength="20">
+                    <span class="char-limit-text">Max 20 characters</span>
                     <div id="name-error-msg" class="auth-inline-error">Please enter your name</div>
                 </div>
 
@@ -572,7 +578,7 @@
                     <div id="password-error-msg" class="auth-inline-error">Invalid password</div>
                 </div>
 
-                <button class="auth-confirm-btn" id="auth-confirm-btn" onclick="window.handleEmailAuth()">Next</button>
+                <button class="auth-confirm-btn" id="auth-confirm-btn" onclick="window.handleEmailAuth()">Sign Up</button>
 
                 <div class="auth-switch">
                     <span id="auth-switch-text">Already have an account?<b onclick="window.toggleAuthMode()">LOG IN</b></span>
@@ -601,9 +607,9 @@
 
         <main class="main-content" id="chat-container">
             <div class="welcome-screen" id="welcome-screen">
-                <div style="display:flex; flex-direction:row; align-items:center; gap:8px;">
-                    <span data-i18n="Hello," style="display:inline; font-size:36px; font-weight:700; letter-spacing:1px; margin:0;">Hello,</span>
-                    <span style="display:inline; font-size:36px; font-weight:700; letter-spacing:1px; margin:0;">User</span>
+                <div style="display:flex; flex-direction:row; align-items:center; justify-content:center; max-width:100%; padding: 0 10px; width: 100%; box-sizing: border-box;">
+                    <span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin-right:8px; flex-shrink: 0;">Hello,</span>
+                    <span style="font-size:36px; font-weight:700; letter-spacing:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width: 0;">User</span>
                 </div>
             </div>
         </main>
@@ -1084,7 +1090,7 @@
 
             const welcomeContainer = document.getElementById('welcome-screen');
             if (welcomeContainer) {
-                welcomeContainer.innerHTML = `<div style="display:flex; flex-direction:row; align-items:center; gap:8px;"><span data-i18n="Hello," style="display:inline; font-size:36px; font-weight:700; letter-spacing:1px; margin:0;">Hello,</span> <span style="display:inline; font-size:36px; font-weight:700; letter-spacing:1px; margin:0;">${firstName}</span></div>`;
+                welcomeContainer.innerHTML = `<div style="display:flex; flex-direction:row; align-items:center; justify-content:center; max-width:100%; padding: 0 10px; width: 100%; box-sizing: border-box;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin-right:8px; flex-shrink: 0;">Hello,</span> <span style="font-size:36px; font-weight:700; letter-spacing:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width: 0;">${firstName}</span></div>`;
             }
         }
 
@@ -1756,7 +1762,7 @@
         if (window.currentUser) {
             let name = window.currentUser.displayName || window.currentUser.email.split('@')[0];
             name = name.split(' ')[0];
-            welcomeHtml = `<div style="display:flex; flex-direction:row; align-items:center; gap:8px;"><span data-i18n="Hello," style="display:inline; font-size:36px; font-weight:700; letter-spacing:1px; margin:0;">Hello,</span> <span style="display:inline; font-size:36px; font-weight:700; letter-spacing:1px; margin:0;">${name}</span></div>`;
+            welcomeHtml = `<div style="display:flex; flex-direction:row; align-items:center; justify-content:center; max-width:100%; padding: 0 10px; width: 100%; box-sizing: border-box;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin-right:8px; flex-shrink: 0;">Hello,</span> <span style="font-size:36px; font-weight:700; letter-spacing:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width: 0;">${name}</span></div>`;
         }
         
         document.getElementById('chat-container').innerHTML = `<div class="welcome-screen" id="welcome-screen">${welcomeHtml}</div>`;
