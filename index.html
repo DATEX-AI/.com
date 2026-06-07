@@ -149,17 +149,16 @@
         .auth-inline-error { position: absolute; top: 100%; left: 5px; color: #ff3333; font-size: 12px; font-weight: 600; text-align: left; margin-top: 4px; opacity: 0; visibility: hidden; transition: opacity 0.2s ease; z-index: 5; }
         .auth-inline-error.show { opacity: 1; visibility: visible; }
         
-        /* NEW: Professional character limit text */
         .char-limit-text { position: absolute; right: 5px; top: 100%; margin-top: 4px; font-size: 11px; color: #888; font-weight: 500; }
 
         .forgot-pwd-container { width: 100%; display: flex; justify-content: flex-end; margin-bottom: 20px; }
         .forgot-pwd-container span { color: #000000; font-weight: 600; font-size: 12px; cursor: pointer; transition: opacity 0.15s; }
         .forgot-pwd-container span:hover { opacity: 0.7; }
 
-        .auth-confirm-btn { width: 100%; height: 50px; background-color: #000000; color: #ffffff; border-radius: 25px; border: none; font-size: 16px; font-weight: 700; cursor: pointer; transition: transform 0.1s; margin-top: 5px; margin-bottom: 25px; } 
+        .auth-confirm-btn { width: 100%; height: 50px; background-color: #000000; color: #ffffff; border-radius: 25px; border: none; font-size: 16px; font-weight: 700; cursor: pointer; transition: transform 0.1s, margin-top 0.3s ease; margin-top: 5px; margin-bottom: 25px; } 
         .auth-confirm-btn:active { transform: scale(0.97); }
 
-        .auth-switch { font-size: 13px; color: #000000; font-weight: 500; text-align: center; width: 100%; }
+        .auth-switch { font-size: 13px; color: #000000; font-weight: 500; text-align: center; width: 100%; transition: margin-top 0.3s ease; }
         .auth-switch b { color: #000000; cursor: pointer; margin-left: 5px; font-weight: 800; }
 
         /* --- UI CHANGES: SIDEBAR CSS ONLY --- */
@@ -200,12 +199,12 @@
         .profile-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 90%; max-width: 380px; background: #fff; border: none; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 3001; opacity: 0; visibility: hidden; transition: 0.2s cubic-bezier(0.25, 1, 0.5, 1); padding: 25px 20px; display: flex; flex-direction: column; align-items: center; }
         .profile-modal.active { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
         
-        .profile-modal-top { display: flex; align-items: center; justify-content: center; gap: 15px; width: 100%; margin-bottom: 10px; }
-        #modal-user-pfp { width: 70px; height: 70px; border-radius: 50%; border: 1.5px solid #000; object-fit: cover; flex-shrink: 0; }
-        .profile-modal-details { display: flex; flex-direction: column; gap: 6px; overflow: hidden; align-items: flex-start; flex: 1; width: 100%; min-width: 0; }
-        #modal-user-name { font-size: 22px; font-weight: 700; color: #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; display: block; line-height: 1.2; }
+        .profile-modal-top { display: flex; flex-direction: row; align-items: center; justify-content: flex-start; gap: 15px; width: 100%; margin-bottom: 25px; }
+        #modal-user-pfp { width: 70px; height: 70px; border-radius: 50%; border: 1.5px solid #000; object-fit: cover; flex-shrink: 0; min-width: 70px; }
+        .profile-modal-details { display: flex; flex-direction: column; gap: 8px; overflow: hidden; align-items: flex-start; flex: 1; min-width: 0; }
+        #modal-user-name { font-size: 22px; font-weight: 700; color: #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; display: block; line-height: 1.2; margin: 0; }
         
-        .profile-email-pill { display: flex; align-items: center; justify-content: center; gap: 8px; border: 1.5px solid #000; border-radius: 15px; padding: 6px 12px; max-width: 100%; margin-bottom: 25px; }
+        .profile-email-pill { display: flex; align-items: center; justify-content: flex-start; gap: 8px; border: 1.5px solid #000; border-radius: 15px; padding: 6px 12px; max-width: 100%; margin: 0; }
         #modal-user-email { font-size: 13.5px; font-weight: 600; color: #000; max-width: 100%; overflow-x: auto; white-space: nowrap; scrollbar-width: none; display: block; }
         #modal-user-email::-webkit-scrollbar { display: none; }
         
@@ -513,7 +512,7 @@
         body.dark-mode .char-limit-text { color: #aaa; }
 
         /* DARK MODE: PROFILE MODAL */
-        body.dark-mode .profile-modal { background: #1a1a1a; border-color: #fff; }
+        body.dark-mode .profile-modal { background: #1a1a1a; border-color: transparent; }
         body.dark-mode #modal-user-pfp { border-color: #fff; }
         body.dark-mode #modal-user-name { color: #fff; }
         body.dark-mode .profile-email-pill { border-color: #fff; }
@@ -562,8 +561,8 @@
                 </div>
 
                 <div class="name-wrapper" id="name-input-container" style="display: none;">
-                    <input type="text" id="auth-name" class="auth-input" placeholder="Enter your full name" autocomplete="name" maxlength="20">
-                    <span class="char-limit-text">Max 20 characters</span>
+                    <input type="text" id="auth-name" class="auth-input" placeholder="Enter your name" autocomplete="name" maxlength="8">
+                    <span class="char-limit-text">Max 8 characters</span>
                     <div id="name-error-msg" class="auth-inline-error">Please enter your name</div>
                 </div>
 
@@ -580,7 +579,7 @@
 
                 <button class="auth-confirm-btn" id="auth-confirm-btn" onclick="window.handleEmailAuth()">Sign Up</button>
 
-                <div class="auth-switch">
+                <div class="auth-switch" id="auth-switch-wrapper">
                     <span id="auth-switch-text">Already have an account?<b onclick="window.toggleAuthMode()">LOG IN</b></span>
                 </div>
             </div>
@@ -607,9 +606,9 @@
 
         <main class="main-content" id="chat-container">
             <div class="welcome-screen" id="welcome-screen">
-                <div style="display:flex; flex-direction:row; align-items:center; justify-content:center; max-width:100%; padding: 0 10px; width: 100%; box-sizing: border-box;">
-                    <span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin-right:8px; flex-shrink: 0;">Hello,</span>
-                    <span style="font-size:36px; font-weight:700; letter-spacing:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width: 0;">User</span>
+                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; width: 100%;">
+                    <span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span>
+                    <span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">User</span>
                 </div>
             </div>
         </main>
@@ -866,6 +865,11 @@
         let isLoginMode = false; // Default to Sign Up
         let signUpPhase = 1; // 1 = Email/Pass, 2 = Name
 
+        function truncateText(text, limit) {
+            if (!text) return "";
+            return text.length > limit ? text.substring(0, limit) + "..." : text;
+        }
+
         window.toggleProfileModal = () => {
             document.getElementById('profile-modal').classList.toggle('active');
             document.getElementById('profile-overlay').classList.toggle('active');
@@ -889,12 +893,14 @@
                 emailContainer.style.display = 'block';
                 pwdContainer.style.display = 'block';
                 btn.innerText = "Log In";
+                btn.style.marginTop = "5px";
                 document.getElementById('auth-switch-text').innerHTML = `Don't have any account?<b onclick="window.toggleAuthMode()">SIGN UP</b>`;
             } else {
                 nameContainer.style.display = 'none';
                 emailContainer.style.display = 'block';
                 pwdContainer.style.display = 'block';
                 btn.innerText = "Next";
+                btn.style.marginTop = "5px";
                 document.getElementById('auth-switch-text').innerHTML = `Already have an account?<b onclick="window.toggleAuthMode()">LOG IN</b>`;
             }
         };
@@ -903,6 +909,7 @@
             const nameInput = document.getElementById('auth-name');
             const emailInput = document.getElementById('auth-email');
             const passwordInput = document.getElementById('auth-password');
+            const btn = document.getElementById('auth-confirm-btn');
             
             const nameErr = document.getElementById('name-error-msg');
             const emailErr = document.getElementById('email-error-msg');
@@ -926,7 +933,8 @@
                     document.getElementById('name-input-container').style.display = 'none';
                     document.getElementById('email-input-container').style.display = 'block';
                     document.getElementById('password-input-container').style.display = 'block';
-                    document.getElementById('auth-confirm-btn').innerText = "Next";
+                    btn.innerText = "Next";
+                    btn.style.marginTop = "5px";
                 }
 
                 if(err.code === 'auth/invalid-email' || err.code === 'auth/user-not-found') {
@@ -965,10 +973,11 @@
                     document.getElementById('email-input-container').style.display = 'none';
                     document.getElementById('password-input-container').style.display = 'none';
                     document.getElementById('name-input-container').style.display = 'block';
-                    document.getElementById('auth-confirm-btn').innerText = "Sign Up";
+                    btn.innerText = "Sign Up";
+                    btn.style.marginTop = "40px"; // Shifted down
                     
                 } else if(signUpPhase === 2) {
-                    if(!name) { nameErr.innerText = "Please enter your full name"; nameErr.classList.add('show'); hasError = true; }
+                    if(!name) { nameErr.innerText = "Please enter your name"; nameErr.classList.add('show'); hasError = true; }
                     if(hasError) return;
 
                     createUserWithEmailAndPassword(auth, email, password)
@@ -1042,7 +1051,9 @@
             document.getElementById('name-input-container').style.display = 'none';
             document.getElementById('email-input-container').style.display = 'block';
             document.getElementById('password-input-container').style.display = 'block';
-            document.getElementById('auth-confirm-btn').innerText = "Next";
+            const btn = document.getElementById('auth-confirm-btn');
+            btn.innerText = "Next";
+            btn.style.marginTop = "5px";
             document.getElementById('auth-switch-text').innerHTML = `Already have an account?<b onclick="window.toggleAuthMode()">LOG IN</b>`;
         };
 
@@ -1075,9 +1086,15 @@
                 fullName = user.email.split('@')[0];
                 firstName = fullName.split('.')[0]; 
             }
-            
+
+            // CSS handles sidebar truncation normally, so just pass full name
             if(nameEl) nameEl.innerText = fullName;
-            if(modalNameEl) modalNameEl.innerText = fullName;
+            
+            // Strict 12-char logic for Popup and Welcome screen
+            const displayFullNameModal = truncateText(fullName, 12);
+            const displayFirstNameWelcome = truncateText(firstName, 12);
+            
+            if(modalNameEl) modalNameEl.innerText = displayFullNameModal;
             
             if(modalEmailEl && user.email) {
                 modalEmailEl.innerText = user.email;
@@ -1090,7 +1107,7 @@
 
             const welcomeContainer = document.getElementById('welcome-screen');
             if (welcomeContainer) {
-                welcomeContainer.innerHTML = `<div style="display:flex; flex-direction:row; align-items:center; justify-content:center; max-width:100%; padding: 0 10px; width: 100%; box-sizing: border-box;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin-right:8px; flex-shrink: 0;">Hello,</span> <span style="font-size:36px; font-weight:700; letter-spacing:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width: 0;">${firstName}</span></div>`;
+                welcomeContainer.innerHTML = `<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${displayFirstNameWelcome}</span></div>`;
             }
         }
 
@@ -1758,11 +1775,12 @@
         if (isGenerating) stopGeneration(); stopTTS(); 
         isNewSession = true; activeChatIndex = -1; editingMsgIdx = -1; 
         
-        let welcomeHtml = `<span data-i18n="Welcome To" style="font-size:24px; font-weight:500; display:block; letter-spacing:0px;">Welcome To</span><br><span>DATEX AI</span>`;
+        let welcomeHtml = `<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Welcome To" style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Welcome To</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">DATEX AI</span></div>`;
+        
         if (window.currentUser) {
             let name = window.currentUser.displayName || window.currentUser.email.split('@')[0];
-            name = name.split(' ')[0];
-            welcomeHtml = `<div style="display:flex; flex-direction:row; align-items:center; justify-content:center; max-width:100%; padding: 0 10px; width: 100%; box-sizing: border-box;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin-right:8px; flex-shrink: 0;">Hello,</span> <span style="font-size:36px; font-weight:700; letter-spacing:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width: 0;">${name}</span></div>`;
+            let firstName = truncateText(name.split(' ')[0], 12);
+            welcomeHtml = `<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${firstName}</span></div>`;
         }
         
         document.getElementById('chat-container').innerHTML = `<div class="welcome-screen" id="welcome-screen">${welcomeHtml}</div>`;
