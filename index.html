@@ -204,7 +204,7 @@
         .profile-modal-details { display: flex; flex-direction: column; gap: 8px; overflow: hidden; align-items: flex-start; flex: 1; min-width: 0; }
         #modal-user-name { font-size: 22px; font-weight: 700; color: #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; display: block; line-height: 1.2; margin: 0; }
         
-        .profile-email-pill { display: flex; align-items: center; justify-content: flex-start; gap: 8px; border: 1.5px solid #000; border-radius: 15px; padding: 6px 12px; max-width: 100%; margin: 0; }
+        .profile-email-pill { display: flex; align-items: center; justify-content: flex-start; gap: 8px; border: 1.5px solid #000; border-radius: 15px; padding: 6px 12px; max-width: 100%; margin: 4px 0 0 -4px; }
         #modal-user-email { font-size: 13.5px; font-weight: 600; color: #000; max-width: 100%; overflow-x: auto; white-space: nowrap; scrollbar-width: none; display: block; }
         #modal-user-email::-webkit-scrollbar { display: none; }
         
@@ -606,7 +606,7 @@
 
         <main class="main-content" id="chat-container">
             <div class="welcome-screen" id="welcome-screen">
-                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; width: 100%;">
+                <div style="display:flex; flex-direction:row; gap:10px; align-items:center; justify-content:center; width: 100%;">
                     <span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span>
                     <span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">User</span>
                 </div>
@@ -892,7 +892,7 @@
                 nameContainer.style.display = 'none';
                 emailContainer.style.display = 'block';
                 pwdContainer.style.display = 'block';
-                btn.innerText = "Log In";
+                btn.innerText = "Next"; // Changed from "Log In" for Phase 1
                 btn.style.marginTop = "5px";
                 document.getElementById('auth-switch-text').innerHTML = `Don't have any account?<b onclick="window.toggleAuthMode()">SIGN UP</b>`;
             } else {
@@ -928,7 +928,7 @@
 
             const handleError = (err) => {
                 // Return to Phase 1 if backend validation fails
-                if (signUpPhase === 2 && (err.code === 'auth/email-already-in-use' || err.code === 'auth/invalid-email' || err.code === 'auth/weak-password')) {
+                if (signUpPhase === 2 && (err.code === 'auth/email-already-in-use' || err.code === 'auth/invalid-email' || err.code === 'auth/weak-password' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found')) {
                     signUpPhase = 1;
                     document.getElementById('name-input-container').style.display = 'none';
                     document.getElementById('email-input-container').style.display = 'block';
@@ -958,11 +958,32 @@
             };
 
             if(isLoginMode) {
-                if(!email || !emailRegex.test(email)) { emailErr.innerText = "Invalid email"; emailErr.classList.add('show'); hasError = true; }
-                if(!password) { pwdErr.innerText = "Invalid password"; pwdErr.classList.add('show'); hasError = true; }
-                if(hasError) return;
-                
-                signInWithEmailAndPassword(auth, email, password).catch(handleError);
+                if(signUpPhase === 1) {
+                    if(!email || !emailRegex.test(email)) { emailErr.innerText = "Invalid email"; emailErr.classList.add('show'); hasError = true; }
+                    if(!password) { pwdErr.innerText = "Invalid password"; pwdErr.classList.add('show'); hasError = true; }
+                    if(hasError) return;
+                    
+                    signUpPhase = 2;
+                    document.getElementById('email-input-container').style.display = 'none';
+                    document.getElementById('password-input-container').style.display = 'none';
+                    document.getElementById('name-input-container').style.display = 'block';
+                    btn.innerText = "Log In";
+                    btn.style.marginTop = "40px";
+                } else if(signUpPhase === 2) {
+                    if(!name) { nameErr.innerText = "Please enter your name"; nameErr.classList.add('show'); hasError = true; }
+                    if(hasError) return;
+
+                    signInWithEmailAndPassword(auth, email, password)
+                        .then((userCredential) => {
+                            return updateProfile(userCredential.user, {
+                                displayName: name
+                            }).then(() => {
+                                window.currentUser = auth.currentUser;
+                                updateUserUI(auth.currentUser);
+                            });
+                        })
+                        .catch(handleError);
+                }
             } else {
                 if(signUpPhase === 1) {
                     if(!email || !emailRegex.test(email)) { emailErr.innerText = "Invalid email"; emailErr.classList.add('show'); hasError = true; }
@@ -1087,8 +1108,8 @@
                 firstName = fullName.split('.')[0]; 
             }
 
-            // CSS handles sidebar truncation normally, so just pass full name
-            if(nameEl) nameEl.innerText = fullName;
+            const displaySidebarName = truncateText(fullName, 8);
+            if(nameEl) nameEl.innerText = displaySidebarName;
             
             // Strict 12-char logic for Popup and Welcome screen
             const displayFullNameModal = truncateText(fullName, 12);
@@ -1107,7 +1128,7 @@
 
             const welcomeContainer = document.getElementById('welcome-screen');
             if (welcomeContainer) {
-                welcomeContainer.innerHTML = `<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${displayFirstNameWelcome}</span></div>`;
+                welcomeContainer.innerHTML = `<div style="display:flex; flex-direction:row; gap:10px; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${displayFirstNameWelcome}</span></div>`;
             }
         }
 
@@ -1780,7 +1801,7 @@
         if (window.currentUser) {
             let name = window.currentUser.displayName || window.currentUser.email.split('@')[0];
             let firstName = truncateText(name.split(' ')[0], 12);
-            welcomeHtml = `<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${firstName}</span></div>`;
+            welcomeHtml = `<div style="display:flex; flex-direction:row; gap:10px; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${firstName}</span></div>`;
         }
         
         document.getElementById('chat-container').innerHTML = `<div class="welcome-screen" id="welcome-screen">${welcomeHtml}</div>`;
