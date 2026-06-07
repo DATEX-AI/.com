@@ -82,67 +82,92 @@
             100% { opacity: 1; }
         }
 
-        /* --- LOGIN SCREEN CSS (Strictly Black Theme) --- */
+        /* --- LOGIN SCREEN CSS --- */
         #login-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #000000;
-            color: #ffffff;
-            z-index: 99998; /* Just below splash */
+            background-color: #000000; 
+            color: #ffffff; 
+            z-index: 99998; 
             display: none; 
             flex-direction: column;
             align-items: center;
-            padding: 50px 15px 0 15px; /* Removed bottom padding, shifted structure */
+            padding: 15px 0 0 0; 
             transform: translateY(100%);
             transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-            overflow: hidden; /* Locked scrolling */
+            overflow: hidden; 
+            scrollbar-width: none;
         }
+        #login-screen::-webkit-scrollbar { display: none; }
         #login-screen.active { transform: translateY(0); }
         
-        .login-logo { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 15px; }
-        .login-title { font-size: 26px; font-weight: 700; letter-spacing: 2px; margin-bottom: 25px; color: #ffffff; }
+        .login-logo { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; }
+        .login-title { font-size: 24px; font-weight: 700; letter-spacing: 2px; margin-bottom: 25px; color: #ffffff; } 
 
-        /* Fixed Auth Container: No pop-up shadow, full width with top curve */
         .auth-container { 
             width: 100%; 
-            max-width: 500px;
-            flex: 1; /* Stretch to the bottom */
-            background: #000000; 
-            border: 1.5px solid #333; 
-            border-bottom: none; /* No border at the bottom */
-            border-radius: 40px 40px 0 0; /* Curved top exactly like sketch */
-            padding: 40px 20px 20px 20px; 
+            flex: 1; 
+            background: #ffffff; 
+            border-radius: 40px 40px 0 0; 
+            padding: 40px 25px 20px 25px; 
             display: flex; 
             flex-direction: column; 
             align-items: center; 
         }
         
-        .auth-provider-btn { width: 100%; height: 48px; border-radius: 24px; display: flex; justify-content: center; align-items: center; font-size: 15px; font-weight: 600; cursor: pointer; margin-bottom: 12px; transition: transform 0.1s, opacity 0.15s; border: none; }
+        .auth-inner-wrapper {
+            width: 100%;
+            max-width: 400px; 
+            display: flex;
+            flex-direction: column;
+        }
+
+        .auth-provider-btn { width: 100%; height: 54px; border-radius: 27px; display: flex; justify-content: center; align-items: center; font-size: 15px; font-weight: 600; cursor: pointer; margin-bottom: 12px; transition: transform 0.1s, opacity 0.15s; border: none; }
         .auth-provider-btn:active { transform: scale(0.97); }
         
-        .google-btn { background-color: #ffffff; color: #000000; }
+        /* Google Btn */
+        .google-btn { background-color: #ffffff; color: #000000; border: 1.5px solid #000000; margin-bottom: 12px; } 
         .google-btn svg { width: 20px; height: 20px; margin-right: 10px; }
         
-        .apple-btn { background-color: #000000; color: #ffffff; border: 1.5px solid #333; }
+        /* Apple Btn */
+        .apple-btn { background-color: #000000; color: #ffffff; border: 1.5px solid #000000; margin-bottom: 0; } 
         .apple-btn i { font-size: 22px; margin-right: 10px; margin-bottom: 3px; }
 
-        .auth-divider { display: flex; align-items: center; width: 100%; margin: 20px 0; color: #666; font-size: 13px; font-weight: 500; }
-        .auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: #333; }
+        /* "or" divider perfectly centered */
+        .auth-divider { display: flex; align-items: center; width: 100%; margin: 26px 0; color: #000000; font-size: 13px; font-weight: 500; }
+        .auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: #000000; }
         .auth-divider span { padding: 0 15px; }
 
-        .auth-input { width: 100%; height: 50px; background: transparent; border: 1.5px solid #333; border-radius: 14px; padding: 0 15px; color: #fff; font-size: 15px; margin-bottom: 12px; outline: none; transition: border-color 0.2s; }
-        .auth-input:focus { border-color: #666; }
-        .auth-input::placeholder { color: #666; }
+        /* Auth Inputs and Wrappers */
+        .auth-input { width: 100%; height: 50px; background: transparent; border: 1.5px solid #000000; border-radius: 14px; padding: 0 15px; color: #000000; font-size: 15px; outline: none; transition: border-color 0.2s; margin-bottom: 0; }
+        .auth-input:focus { border-color: #000000; }
+        .auth-input::placeholder { color: #888; } 
 
-        .forgot-pwd-container { width: 100%; display: flex; justify-content: flex-end; margin-bottom: 25px; }
-        .forgot-pwd-container span { color: #888; font-size: 12px; cursor: pointer; transition: color 0.15s; }
-        .forgot-pwd-container span:hover { color: #fff; }
+        /* Email Wrapper - Creates the exact physical gap, error text floats inside it */
+        .email-wrapper { position: relative; width: 100%; margin-bottom: 18px; }
+        
+        /* Password Wrapper */
+        .password-wrapper { position: relative; width: 100%; margin-bottom: 15px; }
+        .password-wrapper .auth-input { padding-right: 45px; }
+        
+        /* Eye icon moved slightly left and hit-area made larger for better clickability */
+        .toggle-password { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #000000; font-size: 18px; padding: 10px; z-index: 10; -webkit-tap-highlight-color: transparent; }
 
-        .auth-confirm-btn { width: 100%; height: 50px; background-color: #ffffff; color: #000000; border-radius: 25px; border: none; font-size: 16px; font-weight: 700; cursor: pointer; transition: transform 0.1s; margin-bottom: 20px; }
+        /* ABSOLUTE Error Message: Takes 0 layout space, stops buttons from shifting down! */
+        .auth-inline-error { position: absolute; top: 100%; left: 5px; color: #ff3333; font-size: 12px; font-weight: 600; text-align: left; margin-top: 4px; opacity: 0; visibility: hidden; transition: opacity 0.2s ease; z-index: 5; }
+        .auth-inline-error.show { opacity: 1; visibility: visible; }
+
+        .forgot-pwd-container { width: 100%; display: flex; justify-content: flex-end; margin-bottom: 20px; }
+        .forgot-pwd-container span { color: #000000; font-weight: 600; font-size: 12px; cursor: pointer; transition: opacity 0.15s; }
+        .forgot-pwd-container span:hover { opacity: 0.7; }
+
+        /* Login Button - shifted UP nicely */
+        .auth-confirm-btn { width: 100%; height: 50px; background-color: #000000; color: #ffffff; border-radius: 25px; border: none; font-size: 16px; font-weight: 700; cursor: pointer; transition: transform 0.1s; margin-top: 5px; margin-bottom: 25px; } 
         .auth-confirm-btn:active { transform: scale(0.97); }
 
-        .auth-switch { font-size: 13px; color: #888; }
-        .auth-switch b { color: #ffffff; cursor: pointer; margin-left: 5px; }
+        /* Sign Up Text - shifted UP */
+        .auth-switch { font-size: 13px; color: #000000; font-weight: 500; text-align: center; width: 100%; }
+        .auth-switch b { color: #000000; cursor: pointer; margin-left: 5px; font-weight: 800; }
 
         /* --- UI CHANGES: SIDEBAR CSS ONLY --- */
         .sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: #f9f9f9; border-right: 1px solid #eee; transition: 0.3s; z-index: 1001; display: flex; flex-direction: column; }
@@ -492,35 +517,41 @@
         <h1 class="login-title">DATEX AI</h1>
 
         <div class="auth-container">
-            <button class="auth-provider-btn google-btn" onclick="window.loginWithGoogle()">
-                <svg viewBox="0 0 48 48">
-                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
-                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
-                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
-                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
-                    <path fill="none" d="M0 0h48v48H0z"></path>
-                </svg>
-                Sign in with Google
-            </button>
-            <button class="auth-provider-btn apple-btn" onclick="window.loginWithApple()">
-                <i class="fab fa-apple"></i> Sign in with Apple
-            </button>
+            <div class="auth-inner-wrapper">
+                <button class="auth-provider-btn google-btn" onclick="window.loginWithGoogle()">
+                    <svg viewBox="0 0 48 48">
+                        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
+                        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
+                        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
+                        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
+                        <path fill="none" d="M0 0h48v48H0z"></path>
+                    </svg>
+                    Continue with Google
+                </button>
+                <button class="auth-provider-btn apple-btn" onclick="window.loginWithApple()">
+                    <i class="fab fa-apple"></i> Continue with Apple
+                </button>
 
-            <div class="auth-divider">
-                <span>or</span>
-            </div>
+                <div class="auth-divider">
+                    <span>or</span>
+                </div>
 
-            <input type="email" id="auth-email" class="auth-input" placeholder="Enter your email">
-            <input type="password" id="auth-password" class="auth-input" placeholder="Enter your password">
-            
-            <div class="forgot-pwd-container">
-                <span onclick="alert('Password reset link will be sent to your email.')">Forget Password?</span>
-            </div>
+                <div class="email-wrapper">
+                    <input type="email" id="auth-email" class="auth-input" placeholder="Enter your email">
+                    <div id="email-error-msg" class="auth-inline-error">Invalid email</div>
+                </div>
+                
+                <div class="password-wrapper">
+                    <input type="password" id="auth-password" class="auth-input" placeholder="Enter your password">
+                    <i class="fas fa-eye toggle-password" id="togglePassword" onclick="window.togglePasswordVisibility()"></i>
+                    <div id="password-error-msg" class="auth-inline-error">Invalid password</div>
+                </div>
 
-            <button class="auth-confirm-btn" id="auth-confirm-btn" onclick="window.handleEmailAuth()">Log In</button>
+                <button class="auth-confirm-btn" id="auth-confirm-btn" onclick="window.handleEmailAuth()">Log In</button>
 
-            <div class="auth-switch">
-                <span id="auth-switch-text">Don't have any account?<b onclick="window.toggleAuthMode()">SIGN UP</b></span>
+                <div class="auth-switch">
+                    <span id="auth-switch-text">Don't have any account?<b onclick="window.toggleAuthMode()">SIGN UP</b></span>
+                </div>
             </div>
         </div>
     </div>
@@ -778,6 +809,8 @@
 
         window.toggleAuthMode = () => {
             isLoginMode = !isLoginMode;
+            document.getElementById('email-error-msg').classList.remove('show');
+            document.getElementById('password-error-msg').classList.remove('show');
             document.getElementById('auth-confirm-btn').innerText = isLoginMode ? "Log In" : "Sign Up";
             document.getElementById('auth-switch-text').innerHTML = isLoginMode 
                 ? `Don't have any account?<b onclick="window.toggleAuthMode()">SIGN UP</b>` 
@@ -787,12 +820,76 @@
         window.handleEmailAuth = () => {
             const email = document.getElementById('auth-email').value;
             const password = document.getElementById('auth-password').value;
-            if(!email || !password) { alert("Please enter email and password"); return; }
+            const emailErr = document.getElementById('email-error-msg');
+            const pwdErr = document.getElementById('password-error-msg');
+
+            emailErr.classList.remove('show');
+            pwdErr.classList.remove('show');
+
+            let hasError = false;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if(!email || !emailRegex.test(email)) {
+                emailErr.innerText = "Invalid email";
+                emailErr.classList.add('show');
+                hasError = true;
+            }
+            if(!password) {
+                pwdErr.innerText = "Invalid password";
+                pwdErr.classList.add('show');
+                hasError = true;
+            }
             
+            if(hasError) return;
+            
+            const handleError = (err) => {
+                if(err.code === 'auth/invalid-email' || err.code === 'auth/user-not-found') {
+                    emailErr.innerText = "Invalid email";
+                    emailErr.classList.add('show');
+                } else if (err.code === 'auth/email-already-in-use') {
+                    emailErr.innerText = "Email is already registered";
+                    emailErr.classList.add('show');
+                } else if(err.code === 'auth/wrong-password' || err.code === 'auth/weak-password') {
+                    pwdErr.innerText = "Invalid password";
+                    pwdErr.classList.add('show');
+                } else if(err.code === 'auth/invalid-credential') {
+                    emailErr.innerText = "Invalid email";
+                    emailErr.classList.add('show');
+                    pwdErr.innerText = "Invalid password";
+                    pwdErr.classList.add('show');
+                } else {
+                    pwdErr.innerText = "Invalid password";
+                    pwdErr.classList.add('show');
+                }
+            };
+
             if(isLoginMode) {
-                signInWithEmailAndPassword(auth, email, password).catch(err => alert("Login Error: " + err.message));
+                signInWithEmailAndPassword(auth, email, password).catch(handleError);
             } else {
-                createUserWithEmailAndPassword(auth, email, password).catch(err => alert("Signup Error: " + err.message));
+                createUserWithEmailAndPassword(auth, email, password).catch(handleError);
+            }
+        };
+
+        document.getElementById('auth-email').addEventListener('input', () => {
+            const el = document.getElementById('email-error-msg');
+            if(el.classList.contains('show')) el.classList.remove('show');
+        });
+        document.getElementById('auth-password').addEventListener('input', () => {
+            const el = document.getElementById('password-error-msg');
+            if(el.classList.contains('show')) el.classList.remove('show');
+        });
+
+        window.togglePasswordVisibility = () => {
+            const pwdInput = document.getElementById('auth-password');
+            const icon = document.getElementById('togglePassword');
+            if (pwdInput.type === 'password') {
+                pwdInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                pwdInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
             }
         };
 
@@ -1862,7 +1959,7 @@ CRITICAL INSTRUCTIONS:
 7. IDENTITY & CREATOR: If directly asked about your creator, who made you, CEO, Founder, or Owner, state you were created and are owned by a 17 years old youngster from Odisha, India. His name is "Sujal Kumar". CRITICAL RULE: You MUST always write the name "Sujal Kumar" exactly in English/Latin letters. NEVER translate or transliterate the name "Sujal Kumar" into any other language or script.
 8. CODING RULE: All programming code MUST be written strictly in ENGLISH.
 9. STRICT SAFETY & NSFW POLICY: This is a family-friendly AI app used by children. ABSOLUTELY NO explicit, adult, sex, sexual, NSFW, or inappropriate content is permitted. You must strictly reject any such prompts.
-10. VISION OVERRIDE: You are a powerful Multimodal AI. You HAVE full vision capabilities. When an image is provided in the message, YOU CAN SEE IT. You must analyze the image and answer the user's question based on its visual contents. NEVER say you cannot see the image or that you are a text-based AI. If a document is attached instead, acknowledge its name politely.
+10. VISION OVERRIDE: You are a powerful Multimodal AI. You HAVE full full vision capabilities. When an image is provided in the message, YOU CAN SEE IT. You must analyze the image and answer the user's question based on its visual contents. NEVER say you cannot see the image or that you are a text-based AI. If a document is attached instead, acknowledge its name politely.
 11. CHAIN-OF-THOUGHT: For complex logical, mathematical, or coding problems, internally think step-by-step before providing the final answer. Break down the problem logically.
 12. ZERO AI FILLERS: NEVER use filler phrases like 'As an AI', 'Here is the answer', or 'I am programmed to'. Be direct, highly authoritative, and confident. Start your answer immediately.
 13. DYNAMIC EXPERT PERSONA: Automatically adapt your persona to the user's request. If they ask a coding question, act as a Senior Staff Software Engineer. If they ask about science, act as an expert researcher. Deliver highly sophisticated and nuanced insights.
