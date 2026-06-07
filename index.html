@@ -150,7 +150,7 @@
         .password-wrapper { position: relative; width: 100%; margin-bottom: 15px; }
         .password-wrapper .auth-input { padding-right: 45px; }
         
-        /* Eye icon moved slightly left and hit-area made larger for better clickability */
+        /* Eye icon */
         .toggle-password { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #000000; font-size: 18px; padding: 10px; z-index: 10; -webkit-tap-highlight-color: transparent; }
 
         /* ABSOLUTE Error Message: Takes 0 layout space, stops buttons from shifting down! */
@@ -194,7 +194,7 @@
         .sidebar-footer { padding: 15px 20px 20px 20px; display: flex; justify-content: space-between; align-items: center; background: transparent; flex-shrink: 0; }
         .profile-icon { font-size: 28px; color: #000; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: opacity 0.2s; }
         .profile-icon:active { opacity: 0.6; }
-        .profile-icon span { font-size: 15px; font-weight: 600; color: #000; }
+        .profile-icon span { font-size: 15px; font-weight: 600; color: #000; max-width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .new-chat-btn { padding: 12px 18px; background: #000; color: #fff; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 15px; transition: 0.2s; margin-left: 15px; display: flex; justify-content: center; align-items: center; width: 110px; flex-shrink: 0; }
         .new-chat-btn:hover { background: #333; }
 
@@ -443,7 +443,6 @@
         body.dark-mode .close-sidebar-btn { color: #ffffff; }
         body.dark-mode .attachment-menu-header i.fa-times { color: #ffffff; }
         body.dark-mode .profile-icon span { color: #ffffff; }
-        body.dark-mode .profile-icon i { color: #ffffff; }
         body.dark-mode .settings-group span { color: #ffffff; }
         body.dark-mode .settings-group i.fa-cog { background: transparent; color: #ffffff; border-color: #ffffff; }
         body.dark-mode header { background: #000000; border-color: #000000; }
@@ -547,10 +546,10 @@
                     <div id="password-error-msg" class="auth-inline-error">Invalid password</div>
                 </div>
 
-                <button class="auth-confirm-btn" id="auth-confirm-btn" onclick="window.handleEmailAuth()">Log In</button>
+                <button class="auth-confirm-btn" id="auth-confirm-btn" onclick="window.handleEmailAuth()">Sign Up</button>
 
                 <div class="auth-switch">
-                    <span id="auth-switch-text">Don't have any account?<b onclick="window.toggleAuthMode()">SIGN UP</b></span>
+                    <span id="auth-switch-text">Already have an account?<b onclick="window.toggleAuthMode()">LOG IN</b></span>
                 </div>
             </div>
         </div>
@@ -777,9 +776,9 @@
         </div>
         
         <div class="sidebar-footer">
-            <div class="profile-icon">
-                <i class="fas fa-sign-out-alt" style="color: #ff4d4d; font-size: 22px;"></i>
-                <span data-i18n="Logout" style="color: #ff4d4d;" onclick="window.logout()">Logout</span>
+            <div class="profile-icon" onclick="if(confirm('Are you sure you want to logout?')) window.logout()" title="Click to Logout">
+                <img id="sidebar-user-pfp" src="light.logo.jpg" alt="User" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; display: none;">
+                <span id="sidebar-user-name" style="font-size: 15px; font-weight: 600; color: #000; overflow: hidden; text-overflow: ellipsis; max-width: 100px; white-space: nowrap;">User</span>
             </div>
             <button class="new-chat-btn" onclick="createNewChat()" data-i18n="Chat +">Chat +</button>
         </div>
@@ -805,12 +804,27 @@
         const googleProvider = new GoogleAuthProvider();
         const appleProvider = new OAuthProvider('apple.com');
 
-        let isLoginMode = true;
+        let isLoginMode = false; // Changed to default to Sign Up
+
+        const errorMsg = document.getElementById('auth-error-msg');
+        
+        window.showAuthError = (msg) => {
+            const emailErr = document.getElementById('email-error-msg');
+            emailErr.innerText = msg;
+            emailErr.classList.add('show');
+        };
+
+        window.hideAuthError = () => {
+            document.getElementById('email-error-msg').classList.remove('show');
+            document.getElementById('password-error-msg').classList.remove('show');
+        };
+
+        document.getElementById('auth-email').addEventListener('input', window.hideAuthError);
+        document.getElementById('auth-password').addEventListener('input', window.hideAuthError);
 
         window.toggleAuthMode = () => {
             isLoginMode = !isLoginMode;
-            document.getElementById('email-error-msg').classList.remove('show');
-            document.getElementById('password-error-msg').classList.remove('show');
+            window.hideAuthError();
             document.getElementById('auth-confirm-btn').innerText = isLoginMode ? "Log In" : "Sign Up";
             document.getElementById('auth-switch-text').innerHTML = isLoginMode 
                 ? `Don't have any account?<b onclick="window.toggleAuthMode()">SIGN UP</b>` 
@@ -870,15 +884,6 @@
             }
         };
 
-        document.getElementById('auth-email').addEventListener('input', () => {
-            const el = document.getElementById('email-error-msg');
-            if(el.classList.contains('show')) el.classList.remove('show');
-        });
-        document.getElementById('auth-password').addEventListener('input', () => {
-            const el = document.getElementById('password-error-msg');
-            if(el.classList.contains('show')) el.classList.remove('show');
-        });
-
         window.togglePasswordVisibility = () => {
             const pwdInput = document.getElementById('auth-password');
             const icon = document.getElementById('togglePassword');
@@ -893,8 +898,15 @@
             }
         };
 
-        window.loginWithGoogle = () => { signInWithPopup(auth, googleProvider).catch(err => console.error(err)); };
-        window.loginWithApple = () => { signInWithPopup(auth, appleProvider).catch(err => alert("Apple Sign-In requires developer config: " + err.message)); };
+        window.loginWithGoogle = () => { 
+            window.hideAuthError();
+            signInWithPopup(auth, googleProvider).catch(err => {
+                console.error("Google Auth Error:", err);
+                window.showAuthError("Google Sign-In failed. Please try again.");
+            }); 
+        };
+        
+        window.loginWithApple = () => { window.hideAuthError(); signInWithPopup(auth, appleProvider).catch(err => window.showAuthError("Apple Sign-In requires developer config")); };
         window.logout = () => { signOut(auth); document.getElementById('sidebar').classList.remove('active'); document.getElementById('overlay').classList.remove('active'); };
 
         // Handle splash to login/app flow
@@ -911,6 +923,15 @@
         onAuthStateChanged(auth, (user) => {
             isAuthResolved = true;
             window.currentUser = user;
+            if (user) {
+                const nameEl = document.getElementById('sidebar-user-name');
+                const pfpEl = document.getElementById('sidebar-user-pfp');
+                if(nameEl) nameEl.innerText = user.displayName || user.email.split('@')[0];
+                if(pfpEl) {
+                    pfpEl.src = user.photoURL || `https://ui-avatars.com/api/?name=${user.displayName || user.email || 'U'}&background=random`;
+                    pfpEl.style.display = 'block';
+                }
+            }
             checkAndShowUI();
         });
 
@@ -1959,7 +1980,7 @@ CRITICAL INSTRUCTIONS:
 7. IDENTITY & CREATOR: If directly asked about your creator, who made you, CEO, Founder, or Owner, state you were created and are owned by a 17 years old youngster from Odisha, India. His name is "Sujal Kumar". CRITICAL RULE: You MUST always write the name "Sujal Kumar" exactly in English/Latin letters. NEVER translate or transliterate the name "Sujal Kumar" into any other language or script.
 8. CODING RULE: All programming code MUST be written strictly in ENGLISH.
 9. STRICT SAFETY & NSFW POLICY: This is a family-friendly AI app used by children. ABSOLUTELY NO explicit, adult, sex, sexual, NSFW, or inappropriate content is permitted. You must strictly reject any such prompts.
-10. VISION OVERRIDE: You are a powerful Multimodal AI. You HAVE full full vision capabilities. When an image is provided in the message, YOU CAN SEE IT. You must analyze the image and answer the user's question based on its visual contents. NEVER say you cannot see the image or that you are a text-based AI. If a document is attached instead, acknowledge its name politely.
+10. VISION OVERRIDE: You are a powerful Multimodal AI. You HAVE full vision capabilities. When an image is provided in the message, YOU CAN SEE IT. You must analyze the image and answer the user's question based on its visual contents. NEVER say you cannot see the image or that you are a text-based AI. If a document is attached instead, acknowledge its name politely.
 11. CHAIN-OF-THOUGHT: For complex logical, mathematical, or coding problems, internally think step-by-step before providing the final answer. Break down the problem logically.
 12. ZERO AI FILLERS: NEVER use filler phrases like 'As an AI', 'Here is the answer', or 'I am programmed to'. Be direct, highly authoritative, and confident. Start your answer immediately.
 13. DYNAMIC EXPERT PERSONA: Automatically adapt your persona to the user's request. If they ask a coding question, act as a Senior Staff Software Engineer. If they ask about science, act as an expert researcher. Deliver highly sophisticated and nuanced insights.
