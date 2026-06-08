@@ -664,14 +664,14 @@
                         
                         <div id="recording-ui" class="recording-ui">
                             <div class="recording-pill">
-                                <i class="fas fa-trash-alt" onclick="cancelVoiceNoteRecord()" style="color: #ff4d4d; cursor: pointer; font-size: 16px;"></i>
                                 <div class="wave-animation" id="rec-wave">
                                     <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
                                 </div>
+                                <div style="width: 1.5px; height: 18px; background: #bbb; margin: 0 10px; border-radius: 1px;"></div>
                                 <span id="recording-timer" style="font-size: 14px; font-weight: 600; color: #333; min-width: 35px; text-align: right;">0:00</span>
                             </div>
-                            <div id="rec-stop-btn" class="rec-stop-btn" onclick="stopVoiceNoteMidway()">
-                                <i class="fas fa-stop" style="color: #fff; font-size: 14px;"></i>
+                            <div id="rec-action-btn" class="rec-stop-btn" onclick="handleVoiceNoteAction()">
+                                <i class="fas fa-stop" style="color: #fff; font-size: 18px;"></i>
                             </div>
                         </div>
 
@@ -1753,18 +1753,18 @@
     let vnMediaRecorder; let vnAudioChunks = []; let isVoiceNoteActive = false; let isSendingAudio = false; let isCancelingAudio = false; let recTimerInterval; let recSeconds = 0;
     let vnPointerStartY = 0; let vnIsDragging = false; let vnHoldTimer = null;
 
-    const micBtn = document.getElementById('mike-btn'); const micBtnContainer = document.getElementById('mike-btn-container'); const txtArea = document.getElementById('user-input'); const recUi = document.getElementById('recording-ui'); const recTimerDisplay = document.getElementById('recording-timer'); const recStopBtn = document.getElementById('rec-stop-btn'); const recWave = document.getElementById('rec-wave'); const dragLockUi = document.getElementById('drag-lock-ui');
+    const micBtn = document.getElementById('mike-btn'); const micBtnContainer = document.getElementById('mike-btn-container'); const txtArea = document.getElementById('user-input'); const recUi = document.getElementById('recording-ui'); const recTimerDisplay = document.getElementById('recording-timer'); const recWave = document.getElementById('rec-wave'); const dragLockUi = document.getElementById('drag-lock-ui');
 
     micBtn.addEventListener('pointerdown', (e) => {
-        if (isVoiceNoteActive || isGenerating || currentAttachmentData?.type === 'audio') return;
+        if (isVoiceNoteActive || isGenerating || currentAttachmentData?.type === 'audio' || isDictating) return;
         vnPointerStartY = e.clientY || (e.touches && e.touches[0].clientY); vnIsDragging = true; ignoreNextClick = false;
         vnHoldTimer = setTimeout(() => { if (vnIsDragging && !isVoiceNoteActive) { dragLockUi.classList.add('active'); } }, 200); 
     });
 
     micBtn.addEventListener('pointermove', (e) => {
-        if (!vnIsDragging || isVoiceNoteActive) return;
+        if (!vnIsDragging || isVoiceNoteActive || isDictating) return;
         let currentY = e.clientY || (e.touches && e.touches[0].clientY); let diff = vnPointerStartY - currentY;
-        if (diff > 40) { vnIsDragging = false; ignoreNextClick = true; clearTimeout(vnHoldTimer); dragLockUi.classList.remove('active'); if (isDictating && recognition) recognition.stop(); startVoiceNoteRecord(); }
+        if (diff > 40) { vnIsDragging = false; ignoreNextClick = true; clearTimeout(vnHoldTimer); dragLockUi.classList.remove('active'); startVoiceNoteRecord(); }
     });
     micBtn.addEventListener('pointerup', (e) => { vnIsDragging = false; clearTimeout(vnHoldTimer); dragLockUi.classList.remove('active'); });
     micBtn.addEventListener('pointercancel', (e) => { vnIsDragging = false; clearTimeout(vnHoldTimer); dragLockUi.classList.remove('active'); });
@@ -1777,16 +1777,25 @@
             vnMediaRecorder.ondataavailable = e => { if (e.data.size > 0) vnAudioChunks.push(e.data); };
             
             isVoiceNoteActive = true; isSendingAudio = false; isCancelingAudio = false; 
-            txtArea.style.display = 'none'; micBtnContainer.style.display = 'none'; recUi.classList.add('active'); recStopBtn.style.display = 'flex'; recWave.classList.add('playing');
+            txtArea.style.display = 'none'; micBtnContainer.style.display = 'none'; recUi.classList.add('active'); 
+            
+            const actionBtn = document.getElementById('rec-action-btn');
+            actionBtn.innerHTML = '<i class="fas fa-stop" style="color: #fff; font-size: 18px;"></i>';
+            actionBtn.style.display = 'flex';
+            
+            recWave.classList.add('playing');
             recSeconds = 0; recTimerDisplay.innerText = "0:00";
             recTimerInterval = setInterval(() => { recSeconds++; let m = Math.floor(recSeconds / 60); let s = recSeconds % 60; recTimerDisplay.innerText = `${m}:${s < 10 ? '0' : ''}${s}`; }, 1000);
 
             vnMediaRecorder.onstop = () => {
-                if (isCancelingAudio) { isVoiceNoteActive = false; clearInterval(recTimerInterval); recWave.classList.remove('playing'); recStopBtn.style.display = 'none'; currentAttachmentData = null; return; }
+                if (isCancelingAudio) { isVoiceNoteActive = false; clearInterval(recTimerInterval); recWave.classList.remove('playing'); document.getElementById('rec-action-btn').style.display = 'none'; currentAttachmentData = null; return; }
                 const audioBlob = new Blob(vnAudioChunks, { type: 'audio/webm' }); const audioUrl = URL.createObjectURL(audioBlob);
                 currentAttachmentData = { type: 'audio', name: 'Voice Note', data: audioBlob, url: audioUrl, duration: recTimerDisplay.innerText };
                 if (isSendingAudio) { callDatexAPI(); resetVoiceNoteUI(); } 
-                else { isVoiceNoteActive = false; clearInterval(recTimerInterval); recWave.classList.remove('playing'); recStopBtn.style.display = 'none'; }
+                else { 
+                    isVoiceNoteActive = false; clearInterval(recTimerInterval); recWave.classList.remove('playing'); 
+                    document.getElementById('rec-action-btn').innerHTML = '<i class="fas fa-trash" style="color: #fff; font-size: 16px;"></i>';
+                }
             };
             vnMediaRecorder.start();
         } catch (err) { alert("Microphone permission denied!"); resetVoiceNoteUI(); }
@@ -1794,7 +1803,13 @@
 
     function stopVoiceNoteMidway() { if(vnMediaRecorder && vnMediaRecorder.state !== 'inactive') { vnMediaRecorder.stop(); } }
     function cancelVoiceNoteRecord() { isCancelingAudio = true; if(vnMediaRecorder && vnMediaRecorder.state !== 'inactive') { vnMediaRecorder.stop(); } currentAttachmentData = null; resetVoiceNoteUI(); }
-    function resetVoiceNoteUI() { isVoiceNoteActive = false; clearInterval(recTimerInterval); txtArea.style.display = 'block'; micBtnContainer.style.display = 'flex'; recUi.classList.remove('active'); dragLockUi.classList.remove('active'); }
+    
+    function handleVoiceNoteAction() {
+        if (isVoiceNoteActive) { stopVoiceNoteMidway(); }
+        else { cancelVoiceNoteRecord(); }
+    }
+
+    function resetVoiceNoteUI() { isVoiceNoteActive = false; clearInterval(recTimerInterval); txtArea.style.display = 'block'; micBtnContainer.style.display = 'flex'; recUi.classList.remove('active'); dragLockUi.classList.remove('active'); document.getElementById('rec-action-btn').style.display = 'none'; }
 
     window.onload = () => { try { renderChatList(); if(chatHistory.length === 0) createNewChat(); } catch(err) { console.error("Startup shell script catch:", err); } };
 
