@@ -322,10 +322,10 @@
         body.dark-mode .plus-btn-wrapper:active { background-color: rgba(255, 255, 255, 0.15); }
         .plus-icon-btn { pointer-events: none; color: #000; font-size: 20px; transition: color 0.15s; }
 
-        .recording-ui { display: none; flex: 1; align-items: center; gap: 0; padding: 0; height: 44px; color: #333; margin-right: 0; }
+        .recording-ui { display: none; flex: 1; align-items: center; gap: 0; padding: 0; height: 44px; color: #333; margin-right: 0; margin-left: -5px; }
         .recording-ui.active { display: flex; }
         
-        .recording-pill { flex: 1; background: #e5e7eb; height: 44px; border-radius: 22px; display: flex; align-items: center; padding: 0 12px; justify-content: space-between; border: 1px solid #ddd; margin-right: 8px; min-width: 0; transition: background-color 0.15s, border-color 0.15s; }
+        .recording-pill { flex: 1; background: #e5e7eb; height: 44px; border-radius: 22px; display: flex; align-items: center; padding: 0 12px; justify-content: space-between; border: 1px solid #ddd; margin-right: 12px; min-width: 0; transition: background-color 0.15s, border-color 0.15s; }
 
         .wave-animation { display: flex; gap: 3px; align-items: center; height: 20px; flex: 1; justify-content: center; margin: 0 10px; }
         
@@ -347,14 +347,15 @@
         #recording-timer { font-size: 14px; font-weight: 600; color: #000; min-width: 35px; text-align: right; }
         body.dark-mode #recording-timer { color: #fff !important; }
 
-        .rec-stop-btn { width: 44px; height: 44px; border-radius: 50%; background: #000; color: #fff; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0; transition: background-color 0.15s, color 0.15s; }
+        .rec-stop-btn { width: 44px; height: 44px; border-radius: 50%; background: #000; color: #fff; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0; margin-right: 5px; transition: background-color 0.15s, color 0.15s; }
         
         #mike-btn-container { display:flex; align-items:center; height: 44px; }
         #mike-btn { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 20px; color: #000; background: transparent; transition: 0.2s; touch-action: none !important; }
         
         .send-btn-container { display:flex; align-items:center; height: 44px; }
         
-        .send-btn { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; border: none; flex-shrink: 0; background: #000; color: #fff; margin-left: 8px; font-size: 18px; }
+        .send-btn { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; border: none; flex-shrink: 0; background: #000; color: #fff; margin-left: 8px; font-size: 18px; transition: background-color 0.15s, color 0.15s; }
+        body.dark-mode .send-btn { background: #fff !important; color: #000 !important; }
         
         #mike-btn.recording { background-color: #000 !important; color: #fff !important; }
 
@@ -409,7 +410,7 @@
             display: flex; flex-direction: column; overflow: hidden;
         }
         
-        .lang-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2002; display: none; }
+        .lang-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: transparent; z-index: 2002; display: none; }
         .lang-modal-overlay.active { display: block; }
         
         .lang-modal { 
@@ -907,10 +908,10 @@
         let isLoginMode = false; // Default to Sign Up
         let signUpPhase = 1; // 1 = Email/Pass, 2 = Name
 
-        function truncateText(text, limit) {
+        window.truncateText = function(text, limit) {
             if (!text) return "";
             return text.length > limit ? text.substring(0, limit) + "..." : text;
-        }
+        };
 
         window.toggleProfileModal = () => {
             document.getElementById('profile-modal').classList.toggle('active');
@@ -1150,12 +1151,12 @@
                 firstName = fullName.split('.')[0]; 
             }
 
-            const displaySidebarName = truncateText(fullName, 8);
+            const displaySidebarName = window.truncateText(fullName, 8);
             if(nameEl) nameEl.innerText = displaySidebarName;
             
             // Strict 12-char logic for Popup and Welcome screen
-            const displayFullNameModal = truncateText(fullName, 12);
-            const displayFirstNameWelcome = truncateText(firstName, 12);
+            const displayFullNameModal = window.truncateText(fullName, 12);
+            const displayFirstNameWelcome = window.truncateText(firstName, 12);
             
             if(modalNameEl) modalNameEl.innerText = displayFullNameModal;
             
@@ -1603,13 +1604,35 @@
 
     let globalAudioPlayer = null;
     let currentPlayingBtn = null;
+    let audioAnimFrame = null;
+
+    function updateAudioUI() {
+        if(!globalAudioPlayer || globalAudioPlayer.paused) return;
+        if(currentPlayingBtn) {
+             let dot = currentPlayingBtn.nextElementSibling.querySelector('.audio-progress-dot');
+             let timerSpan = currentPlayingBtn.parentElement.querySelector('.audio-timer');
+             if(dot && globalAudioPlayer.duration) { 
+                 let percent = (globalAudioPlayer.currentTime / globalAudioPlayer.duration) * 100; 
+                 if(percent > 100) percent = 100; 
+                 dot.style.left = `calc(${percent}% - 4px)`; 
+             }
+             if(timerSpan && globalAudioPlayer.currentTime) {
+                 let currentSec = Math.floor(globalAudioPlayer.currentTime); 
+                 let m = Math.floor(currentSec / 60); 
+                 let s = currentSec % 60; 
+                 timerSpan.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+             }
+        }
+        audioAnimFrame = requestAnimationFrame(updateAudioUI);
+    }
 
     function stopVoiceNoteBubble() {
         if(globalAudioPlayer && !globalAudioPlayer.paused) {
             globalAudioPlayer.pause();
+            cancelAnimationFrame(audioAnimFrame);
             document.querySelectorAll('.play-btn-icon').forEach(i => i.className = 'fas fa-play play-btn-icon');
             if (currentPlayingBtn) {
-                let oldDot = currentPlayingBtn.nextElementSibling.querySelector('div'); if (oldDot) oldDot.style.left = '0%';
+                let oldDot = currentPlayingBtn.nextElementSibling.querySelector('.audio-progress-dot'); if (oldDot) oldDot.style.left = '0%';
                 let oldTimer = currentPlayingBtn.parentElement.querySelector('.audio-timer'); if (oldTimer) oldTimer.innerText = oldTimer.getAttribute('data-duration');
             }
         }
@@ -1619,9 +1642,10 @@
         if (window.speechSynthesis && (window.speechSynthesis.speaking || isTtsPlaying)) stopTTS();
         if(globalAudioPlayer && globalAudioPlayer.src !== url) {
             globalAudioPlayer.pause();
+            cancelAnimationFrame(audioAnimFrame);
             document.querySelectorAll('.play-btn-icon').forEach(i => i.className = 'fas fa-play play-btn-icon');
             if (currentPlayingBtn) {
-                let oldDot = currentPlayingBtn.nextElementSibling.querySelector('div'); if (oldDot) oldDot.style.left = '0%';
+                let oldDot = currentPlayingBtn.nextElementSibling.querySelector('.audio-progress-dot'); if (oldDot) oldDot.style.left = '0%';
                 let oldTimer = currentPlayingBtn.parentElement.querySelector('.audio-timer'); if (oldTimer) oldTimer.innerText = oldTimer.getAttribute('data-duration');
             }
         }
@@ -1629,21 +1653,22 @@
             globalAudioPlayer = new Audio(url); currentPlayingBtn = btn;
             globalAudioPlayer.onended = () => { 
                 btn.querySelector('i').className = 'fas fa-play play-btn-icon'; 
-                let dot = btn.nextElementSibling.querySelector('div'); if(dot) dot.style.left = '0%';
+                let dot = btn.nextElementSibling.querySelector('.audio-progress-dot'); if(dot) dot.style.left = '0%';
                 let timerSpan = btn.parentElement.querySelector('.audio-timer'); if(timerSpan) timerSpan.innerText = timerSpan.getAttribute('data-duration');
-            };
-            globalAudioPlayer.ontimeupdate = () => {
-                let dot = btn.nextElementSibling.querySelector('div');
-                let timerSpan = btn.parentElement.querySelector('.audio-timer');
-                if(dot && globalAudioPlayer.duration) { let percent = (globalAudioPlayer.currentTime / globalAudioPlayer.duration) * 100; if(percent > 100) percent = 100; dot.style.left = `calc(${percent}% - 4px)`; }
-                if(timerSpan && globalAudioPlayer.currentTime) {
-                    let currentSec = Math.floor(globalAudioPlayer.currentTime); let m = Math.floor(currentSec / 60); let s = currentSec % 60; timerSpan.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
-                }
+                cancelAnimationFrame(audioAnimFrame);
             };
         }
         let icon = btn.querySelector('i');
-        if(globalAudioPlayer.paused) { globalAudioPlayer.play(); icon.className = 'fas fa-pause play-btn-icon'; } 
-        else { globalAudioPlayer.pause(); icon.className = 'fas fa-play play-btn-icon'; }
+        if(globalAudioPlayer.paused) { 
+            globalAudioPlayer.play(); 
+            icon.className = 'fas fa-pause play-btn-icon'; 
+            cancelAnimationFrame(audioAnimFrame);
+            updateAudioUI();
+        } else { 
+            globalAudioPlayer.pause(); 
+            icon.className = 'fas fa-play play-btn-icon'; 
+            cancelAnimationFrame(audioAnimFrame);
+        }
     }
 
     function playNextTtsSegment() {
@@ -1752,19 +1777,43 @@
     let recognition;
     
     if (SpeechRecognition) {
-        recognition = new SpeechRecognition(); recognition.interimResults = false; recognition.continuous = false; 
-        recognition.onstart = () => { isDictating = true; sessionFinalText = document.getElementById('user-input').value; if (sessionFinalText.length > 0 && !sessionFinalText.endsWith(" ")) { sessionFinalText += " "; } document.getElementById('mike-btn').classList.add('recording'); };
-        recognition.onend = () => { isDictating = false; document.getElementById('mike-btn').classList.remove('recording'); };
+        recognition = new SpeechRecognition(); 
+        recognition.interimResults = true; 
+        recognition.continuous = true; 
+        recognition.onstart = () => { 
+            isDictating = true; 
+            sessionFinalText = document.getElementById('user-input').value; 
+            if (sessionFinalText.length > 0 && !sessionFinalText.endsWith(" ")) { sessionFinalText += " "; } 
+            document.getElementById('mike-btn').classList.add('recording'); 
+        };
+        recognition.onend = () => { 
+            isDictating = false; 
+            document.getElementById('mike-btn').classList.remove('recording'); 
+        };
         recognition.onresult = (e) => { 
+            let interimTranscript = "";
             let finalTranscript = ""; 
-            for (let i = e.resultIndex; i < e.results.length; ++i) { if (e.results[i].isFinal) finalTranscript += e.results[i][0].transcript; }
-            if (finalTranscript) {
-                const input = document.getElementById('user-input'); let currentVal = input.value;
-                if (currentVal.length > 0 && !currentVal.endsWith(" ")) currentVal += " ";
-                input.value = currentVal + finalTranscript; autoGrow(input); input.dispatchEvent(new Event('input', { bubbles: true }));
+            for (let i = e.resultIndex; i < e.results.length; ++i) { 
+                if (e.results[i].isFinal) finalTranscript += e.results[i][0].transcript; 
+                else interimTranscript += e.results[i][0].transcript;
+            }
+            let appendText = finalTranscript || interimTranscript;
+            if (appendText) {
+                const input = document.getElementById('user-input');
+                input.value = sessionFinalText + appendText; 
+                if (finalTranscript) {
+                    sessionFinalText = input.value;
+                    if (!sessionFinalText.endsWith(" ")) sessionFinalText += " ";
+                }
+                autoGrow(input); 
+                input.dispatchEvent(new Event('input', { bubbles: true }));
             }
         };
-        recognition.onerror = (e) => { console.error("Speech error: " + e.error); isDictating = false; document.getElementById('mike-btn').classList.remove('recording'); }
+        recognition.onerror = (e) => { 
+            console.error("Speech error: " + e.error); 
+            isDictating = false; 
+            document.getElementById('mike-btn').classList.remove('recording'); 
+        }
     }
 
     let ignoreNextClick = false; 
@@ -1879,7 +1928,7 @@
         
         if (window.currentUser) {
             let name = window.currentUser.displayName || window.currentUser.email.split('@')[0];
-            let firstName = truncateText(name.split(' ')[0], 12);
+            let firstName = window.truncateText(name.split(' ')[0], 12);
             welcomeHtml = `<div style="display:flex; flex-direction:row; gap:0px; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${firstName}</span></div>`;
         }
         
@@ -1911,7 +1960,7 @@
                 attachmentHTML = `<div style="display: flex; align-items: center; gap: 10px; background: #e5e7eb; padding: 10px 14px; border-radius: 12px; margin-bottom: 8px;"><i class="fas fa-file-pdf" style="color: #333; font-size: 24px;"></i><span style="font-size: 13px; font-weight: 500; color: #333; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${attachment.name}</span></div>`;
             } else if (attachment.type === 'audio') {
                 let dur = attachment.duration || "0:02";
-                attachmentHTML = `<div class="audio-bubble-wrap" style="padding: 6px 12px; border-radius: 22px; display: flex; align-items: center; gap: 10px; width: 200px; margin-bottom: 6px; border: 1.5px solid #000;"><div onclick="playAudioBubble(this, '${attachment.url}')" class="audio-play-btn" style="width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0;"><i class="fas fa-play play-btn-icon" style="margin-left: 2px; font-size: 13px;"></i></div><div class="audio-progress-line" style="flex: 1; height: 2px; position: relative;"><div class="audio-progress-dot" style="position: absolute; left: 0; top: -3px; width: 8px; height: 8px; border-radius: 50%; transition: left 0.1s linear;"></div></div><span class="audio-timer" data-duration="${dur}" style="font-size: 12px; font-weight: 500; min-width: 30px; text-align: right;">${dur}</span></div>`;
+                attachmentHTML = `<div class="audio-bubble-wrap" style="padding: 6px 12px; border-radius: 22px; display: flex; align-items: center; gap: 10px; width: 200px; margin-bottom: 6px; border: 1.5px solid #000;"><div onclick="playAudioBubble(this, '${attachment.url}')" class="audio-play-btn" style="width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0;"><i class="fas fa-play play-btn-icon" style="margin-left: 2px; font-size: 13px;"></i></div><div class="audio-progress-line" style="flex: 1; height: 2px; position: relative;"><div class="audio-progress-dot" style="position: absolute; left: 0; top: -3px; width: 8px; height: 8px; border-radius: 50%;"></div></div><span class="audio-timer" data-duration="${dur}" style="font-size: 12px; font-weight: 500; min-width: 30px; text-align: right;">${dur}</span></div>`;
             }
         }
         
