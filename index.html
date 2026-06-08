@@ -56,7 +56,7 @@
         body.dark-mode .logo-dark-theme { display: block !important; }
 
         /* --- SPLASH SCREEN (INTRO) CSS --- */
-        #splash-screen {
+        #splash-screen, #post-login-splash {
             position: fixed;
             top: 0;
             left: 0;
@@ -69,7 +69,11 @@
             z-index: 99999;
             transition: opacity 0.15s ease-out, visibility 0.15s ease-out;
         }
-        #splash-screen img {
+        #post-login-splash {
+            display: none;
+            opacity: 0;
+        }
+        #splash-screen img, #post-login-splash img {
             width: 200px; 
             height: 200px; 
             border-radius: 50%;
@@ -202,14 +206,12 @@
         .profile-modal-top { display: flex; flex-direction: row; align-items: center; justify-content: flex-start; gap: 15px; width: 100%; margin-bottom: 25px; }
         #modal-user-pfp { width: 70px; height: 70px; border-radius: 50%; border: 1.5px solid #000; object-fit: cover; flex-shrink: 0; min-width: 70px; }
         
-        /* Removed overflow: hidden here so the left margin doesn't cut the pill */
-        .profile-modal-details { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; flex: 1; min-width: 0; padding-top: 18px; }
+        .profile-modal-details { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; flex: 1; min-width: 0; padding-top: 18px; max-width: 100%; }
         
         #modal-user-name { font-size: 22px; font-weight: 700; color: #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; display: block; line-height: 1.2; margin: 0; }
         
-        /* Moved pill down and left significantly */
-        .profile-email-pill { display: flex; align-items: center; justify-content: flex-start; gap: 8px; border: 1.5px solid #000; border-radius: 15px; padding: 6px 12px; max-width: 100%; margin: 12px 0 0 -10px; }
-        #modal-user-email { font-size: 13.5px; font-weight: 600; color: #000; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
+        .profile-email-pill { display: flex; align-items: center; justify-content: flex-start; gap: 6px; border: 1.5px solid #000; border-radius: 12px; padding: 4px 10px; max-width: calc(100% + 10px); width: fit-content; margin: 12px 0 0 -10px; }
+        #modal-user-email { font-size: 11.5px; font-weight: 600; color: #000; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
         
         .profile-logout-btn { display: flex; justify-content: center; align-items: center; gap: 10px; width: 100%; height: 50px; border: 1.5px solid #000; border-radius: 14px; background: transparent; color: #000; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.15s; }
         .profile-logout-btn:active { background: #f0f0f0; transform: scale(0.97); }
@@ -448,7 +450,7 @@
 
         /* --- DARK MODE LOGIC --- */
         body.dark-mode { background-color: #000000; color: #ffffff; }
-        body.dark-mode #splash-screen { background-color: #000000; }
+        body.dark-mode #splash-screen, body.dark-mode #post-login-splash { background-color: #000000; }
         body.dark-mode .sidebar { background: #1a1a1a; border-color: #333; }
         body.dark-mode .sidebar-header, body.dark-mode .sidebar-top { background: #1a1a1a; color: #ffffff; }
         body.dark-mode .sidebar h2 { color: #ffffff; }
@@ -538,6 +540,11 @@
         <img src="light.logo.jpg" alt="DATEX AI" class="logo-light-theme">
         <img src="dark.logo.jpg" alt="DATEX AI" class="logo-dark-theme">
     </div>
+    
+    <div id="post-login-splash">
+        <img src="light.logo.jpg" alt="DATEX AI" class="logo-light-theme">
+        <img src="dark.logo.jpg" alt="DATEX AI" class="logo-dark-theme">
+    </div>
 
     <div id="login-screen">
         <img src="dark.logo.jpg" alt="DATEX AI Logo" class="login-logo">
@@ -545,7 +552,7 @@
 
         <div class="auth-container">
             <div class="auth-inner-wrapper">
-                <button class="auth-provider-btn google-btn" onclick="window.loginWithGoogle()">
+                <button type="button" class="auth-provider-btn google-btn" onclick="window.loginWithGoogle()">
                     <svg viewBox="0 0 48 48">
                         <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
                         <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
@@ -555,7 +562,7 @@
                     </svg>
                     Continue with Google
                 </button>
-                <button class="auth-provider-btn apple-btn" onclick="window.loginWithApple()">
+                <button type="button" class="auth-provider-btn apple-btn" onclick="window.loginWithApple()">
                     <i class="fab fa-apple"></i> Continue with Apple
                 </button>
 
@@ -580,7 +587,7 @@
                     <div id="password-error-msg" class="auth-inline-error">Invalid password</div>
                 </div>
 
-                <button class="auth-confirm-btn" id="auth-confirm-btn" onclick="window.handleEmailAuth()">Sign Up</button>
+                <button type="button" class="auth-confirm-btn" id="auth-confirm-btn" onclick="window.handleEmailAuth()">Sign Up</button>
 
                 <div class="auth-switch" id="auth-switch-wrapper">
                     <span id="auth-switch-text">Already have an account?<b onclick="window.toggleAuthMode()">LOG IN</b></span>
@@ -681,7 +688,7 @@
             <div class="profile-modal-details">
                 <span id="modal-user-name">User Name</span>
                 <div class="profile-email-pill" id="modal-email-pill">
-                    <svg viewBox="0 0 48 48" width="14" height="14">
+                    <svg viewBox="0 0 48 48" width="12" height="12" style="flex-shrink: 0;">
                         <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
                         <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
                         <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
@@ -1145,8 +1152,29 @@
         function checkAndShowUI() {
             if(isSplashDone && isAuthResolved) {
                 if(window.currentUser) {
-                    document.getElementById('login-screen').style.display = 'none';
-                    document.getElementById('main-app-wrapper').style.display = 'flex';
+                    const loginScreen = document.getElementById('login-screen');
+                    if (loginScreen.style.display === 'flex') {
+                        // User just logged in from the login screen
+                        loginScreen.style.display = 'none';
+                        loginScreen.classList.remove('active');
+                        
+                        const postSplash = document.getElementById('post-login-splash');
+                        postSplash.style.display = 'flex';
+                        // brief timeout to allow display:flex to apply before changing opacity for transition
+                        setTimeout(() => { postSplash.style.opacity = '1'; }, 10);
+                        
+                        setTimeout(() => {
+                            postSplash.style.opacity = '0';
+                            setTimeout(() => {
+                                postSplash.style.display = 'none';
+                                document.getElementById('main-app-wrapper').style.display = 'flex';
+                            }, 150);
+                        }, 1500);
+                        
+                    } else {
+                        document.getElementById('login-screen').style.display = 'none';
+                        document.getElementById('main-app-wrapper').style.display = 'flex';
+                    }
                 } else {
                     document.getElementById('main-app-wrapper').style.display = 'none';
                     const loginScreen = document.getElementById('login-screen');
@@ -1804,7 +1832,7 @@
         if (window.currentUser) {
             let name = window.currentUser.displayName || window.currentUser.email.split('@')[0];
             let firstName = truncateText(name.split(' ')[0], 12);
-            welcomeHtml = `<div style="display:flex; flex-direction:row; gap:0px; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${firstName}</span></div>`;
+            welcomeHtml = `<div style="display:flex; flex-direction:row; gap:4px; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${firstName}</span></div>`;
         }
         
         document.getElementById('chat-container').innerHTML = `<div class="welcome-screen" id="welcome-screen">${welcomeHtml}</div>`;
