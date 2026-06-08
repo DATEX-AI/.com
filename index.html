@@ -312,13 +312,11 @@
         .file-icon-placeholder { font-size: 28px; color: #333; }
         .file-name-placeholder { font-size: 10px; color: #555; margin-top: 6px; max-width: 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; text-align: center; }
 
-        /* Restored normal padding and shifted slightly left */
         .input-bar { background: transparent; border: none; display: flex; align-items: flex-end; padding: 8px 12px 8px 10px; width: 100%; }
         
         .input-bar textarea { flex: 1; background: transparent; border: none; padding: 10px 12px 10px 0; font-size: 16px; outline: none; min-width: 0; color: #000000; resize: none; max-height: 150px; overflow-y: auto; line-height: 24px; height: 44px; scrollbar-width: none; -ms-overflow-style: none; touch-action: pan-y; overscroll-behavior: none; }
         .input-bar textarea::-webkit-scrollbar { display: none; }
 
-        /* Left margin added to shift Plus icon left, right margin normal */
         .plus-btn-wrapper { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: background-color 0.15s; margin-left: -2px; margin-right: 8px; margin-bottom: 0px; flex-shrink: 0; }
         .plus-btn-wrapper:active { background-color: rgba(0, 0, 0, 0.1); }
         body.dark-mode .plus-btn-wrapper:active { background-color: rgba(255, 255, 255, 0.15); }
@@ -327,11 +325,10 @@
         .recording-ui { display: none; flex: 1; align-items: center; gap: 0; padding: 0; height: 44px; color: #333; margin-right: 0; }
         .recording-ui.active { display: flex; }
         
-        /* Added min-width: 0 to fix overflow pushing buttons */
-        .recording-pill { flex: 1; background: #e5e7eb; height: 44px; border-radius: 22px; display: flex; align-items: center; padding: 0 15px; justify-content: space-between; border: 1px solid #ddd; margin-right: 12px; min-width: 0; }
+        .recording-pill { flex: 1; background: #e5e7eb; height: 44px; border-radius: 22px; display: flex; align-items: center; padding: 0 12px; justify-content: space-between; border: 1px solid #ddd; margin-right: 8px; min-width: 0; transition: background-color 0.15s, border-color 0.15s; }
 
         .wave-animation { display: flex; gap: 3px; align-items: center; height: 20px; flex: 1; justify-content: center; margin: 0 10px; }
-        .wave-bar { width: 3px; height: 5px; background: #333; border-radius: 2px; }
+        .wave-bar { width: 3px; height: 5px; background: #333; border-radius: 2px; transition: background-color 0.15s; }
         .wave-animation.playing .wave-bar { animation: pulseWave 1s infinite ease-in-out; }
         .wave-bar:nth-child(2) { animation-delay: 0.1s; }
         .wave-bar:nth-child(3) { animation-delay: 0.2s; }
@@ -341,6 +338,8 @@
         .wave-bar:nth-child(7) { animation-delay: 0.6s; }
         @keyframes pulseWave { 0%, 100% { height: 5px; } 50% { height: 16px; } }
 
+        .rec-divider { width: 1.5px; height: 18px; background: #bbb; margin: 0 10px; border-radius: 1px; transition: background-color 0.15s; }
+
         .rec-stop-btn { width: 44px; height: 44px; border-radius: 50%; background: #000; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0; }
         
         #mike-btn-container { display:flex; align-items:center; height: 44px; }
@@ -348,8 +347,7 @@
         
         .send-btn-container { display:flex; align-items:center; height: 44px; }
         
-        /* Restored normal margin-left for send button */
-        .send-btn { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; border: none; flex-shrink: 0; background: #000; color: #fff; margin-left: 12px; font-size: 18px; }
+        .send-btn { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; border: none; flex-shrink: 0; background: #000; color: #fff; margin-left: 8px; font-size: 18px; }
         
         #mike-btn.recording { background-color: #000 !important; color: #fff !important; }
 
@@ -522,6 +520,11 @@
         body.dark-mode pre { background: #000; border-color: #444; }
         body.dark-mode .user-expand-btn { background: #1e1e1e; color: #e0e0e0; box-shadow: 0 1px 4px rgba(0,0,0,0.4); }
         body.dark-mode .char-limit-text { color: #aaa; }
+        
+        body.dark-mode .recording-pill { background: #2c2c2c; border-color: #444; }
+        body.dark-mode #recording-timer { color: #fff !important; }
+        body.dark-mode .wave-bar { background: #fff; }
+        body.dark-mode .rec-divider { background: #666; }
 
         /* DARK MODE: PROFILE MODAL */
         body.dark-mode .profile-modal { background: #1a1a1a; border-color: transparent; }
@@ -667,7 +670,7 @@
                                 <div class="wave-animation" id="rec-wave">
                                     <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
                                 </div>
-                                <div style="width: 1.5px; height: 18px; background: #bbb; margin: 0 10px; border-radius: 1px;"></div>
+                                <div class="rec-divider"></div>
                                 <span id="recording-timer" style="font-size: 14px; font-weight: 600; color: #333; min-width: 35px; text-align: right;">0:00</span>
                             </div>
                             <div id="rec-action-btn" class="rec-stop-btn" onclick="handleVoiceNoteAction()">
@@ -1955,28 +1958,53 @@
     }
 
     function openMenu(e, btn) {
-        e.stopPropagation(); const menu = document.getElementById('msg-menu'); const row = btn.closest('.message-row');
+        e.stopPropagation(); 
+        const menu = document.getElementById('msg-menu'); 
+        const row = btn.closest('.message-row');
         if (menu.style.display === 'flex' && selectedMsgRow === row) { hideMsgMenu(); return; }
-        selectedMsgRow = row; const copyBtn = document.getElementById('copy-btn-ui'); const editBtn = document.getElementById('edit-btn-ui'); const deleteBtn = document.getElementById('delete-btn-ui');
+        selectedMsgRow = row; 
+        const copyBtn = document.getElementById('copy-btn-ui'); 
+        const editBtn = document.getElementById('edit-btn-ui'); 
+        const deleteBtn = document.getElementById('delete-btn-ui');
         
-        let isUser = selectedMsgRow.classList.contains('user-row'); let hasAudio = selectedMsgRow.innerHTML.includes('playAudioBubble');
-        if(!isUser) { editBtn.style.display = 'none'; deleteBtn.style.display = 'none'; copyBtn.style.display = 'flex'; } 
-        else { 
-            let allUserRows = Array.from(document.querySelectorAll('.message-row.user-row')); let isLastUserMsg = (selectedMsgRow === allUserRows[allUserRows.length - 1]);
-            if (isLastUserMsg) {
-                deleteBtn.style.display = 'none'; // Deleted from showing
-                if (hasAudio) { editBtn.style.display = 'none'; copyBtn.style.display = 'none'; } else { editBtn.style.display = 'flex'; copyBtn.style.display = 'flex'; }
-            } else {
-                deleteBtn.style.display = 'none'; editBtn.style.display = 'none';
-                if (hasAudio) { copyBtn.style.display = 'none'; } else { copyBtn.style.display = 'flex'; }
+        let isUser = selectedMsgRow.classList.contains('user-row'); 
+        let hasAudio = selectedMsgRow.innerHTML.includes('playAudioBubble');
+        
+        if(!isUser) { 
+            editBtn.style.display = 'none'; 
+            deleteBtn.style.display = 'none'; 
+            copyBtn.style.display = 'flex'; 
+        } else { 
+            let allUserRows = Array.from(document.querySelectorAll('.message-row.user-row')); 
+            let isLastUserMsg = (selectedMsgRow === allUserRows[allUserRows.length - 1]);
+            
+            deleteBtn.style.display = 'none'; // REVERTED: Kept hidden as requested previously
+
+            if (hasAudio) { 
+                copyBtn.style.display = 'none'; 
+                editBtn.style.display = isLastUserMsg ? 'flex' : 'none'; // Only edit button for voice notes as requested
+            } else { 
+                copyBtn.style.display = 'flex'; 
+                editBtn.style.display = isLastUserMsg ? 'flex' : 'none'; 
             }
         }
+        
         const rect = btn.getBoundingClientRect(); let x = isUser ? (rect.left - 140) : (rect.right + 5); let y = rect.top; 
         if (x < 10) x = 10; if (x + 140 > window.innerWidth) x = window.innerWidth - 150; if (y + 120 > window.innerHeight) y = window.innerHeight - 130; 
         menu.style.left = x + 'px'; menu.style.top = y + 'px'; menu.style.display = 'flex';
     }
 
     function hideMsgMenu() { document.getElementById('msg-menu').style.display = 'none'; }
+    
+    // Close menu when clicking anywhere else
+    document.addEventListener('click', function(e) {
+        const menu = document.getElementById('msg-menu');
+        if (menu && menu.style.display === 'flex') {
+            if (!menu.contains(e.target) && !e.target.closest('.action-btn')) {
+                hideMsgMenu();
+            }
+        }
+    });
     
     function copyMsg() { 
         if(!selectedMsgRow) return; 
