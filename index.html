@@ -14,12 +14,12 @@
         /* CSS Variables for completely safe real-time theme gradient switching */
         :root {
             --fade-color-top: rgba(255, 255, 255, 0.95);
-            --fade-color-bottom: rgba(255, 255, 255, 0.95);
+            --fade-color-bottom: rgba(232, 234, 237, 0.95);
         }
         
         body.dark-mode {
             --fade-color-top: rgba(0, 0, 0, 0.95);
-            --fade-color-bottom: rgba(0, 0, 0, 0.95);
+            --fade-color-bottom: rgba(23, 23, 23, 0.95);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
@@ -37,7 +37,7 @@
         }
 
         body { 
-            background-color: #ffffff; 
+            background: linear-gradient(to bottom, #ffffff 30%, #e8eaed 100%); 
             color: #333; 
             display: flex; 
             flex-direction: column;
@@ -46,7 +46,7 @@
             -moz-user-select: none !important; 
             -ms-user-select: none !important; 
             user-select: none !important; 
-            transition: background-color 0.15s ease-out, color 0.15s ease-out;
+            transition: background 0.15s ease-out, color 0.15s ease-out;
         }
 
         /* --- Theme-Based Strict Logo Switcher --- */
@@ -248,38 +248,6 @@
         .avatar-container.loading .avatar-spinner { display: block; }
         @keyframes avatarSpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Gemini Inspired Home Glow */
-        .gemini-home-glow {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 55vh;
-            background: linear-gradient(to top, rgba(0,0,0,0.06), transparent);
-            z-index: 1;
-            pointer-events: none;
-            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease-out;
-            transform: translateY(0);
-            opacity: 1;
-        }
-        body.dark-mode .gemini-home-glow {
-            background: linear-gradient(to top, rgba(255,255,255,0.06), transparent);
-        }
-        body.chat-active .gemini-home-glow {
-            transform: translateY(100%);
-            opacity: 0;
-        }
-        body:not(.chat-active) .bottom-container {
-            background: transparent !important;
-        }
-        body:not(.chat-active) .bottom-container::before {
-            opacity: 0;
-        }
-        #chat-container {
-            position: relative;
-            z-index: 2;
-        }
-
         .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 10px 20px 20px 20px; width: 100%; max-width: 800px; margin: 0 auto; scrollbar-width: none; touch-action: pan-y !important; -webkit-overflow-scrolling: touch !important; overscroll-behavior-y: contain !important; }
         
         .welcome-screen { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; flex: 1; text-align: center; color: #222; font-size: 24px; font-weight: 500; line-height: 1.0; }
@@ -320,7 +288,7 @@
         .typing-dot:nth-child(3) { animation-delay: 0s; }
         @keyframes typingBounce { 0%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-6px); } }
 
-        .bottom-container { width: 100%; background: #ffffff; padding: 10px 20px 15px 20px; display: flex; justify-content: center; z-index: 100; flex-shrink: 0; touch-action: none; position: relative; transition: background-color 0.15s; }
+        .bottom-container { width: 100%; background: transparent; padding: 10px 20px 15px 20px; display: flex; justify-content: center; z-index: 100; flex-shrink: 0; touch-action: none; position: relative; transition: background-color 0.15s; }
         .bottom-container::before { content: ''; position: absolute; top: -10px; left: 0; width: 100%; height: 10px; background: linear-gradient(to top, var(--fade-color-bottom), transparent); pointer-events: none; z-index: 10; transition: background 0.15s; }
 
         .scroll-bottom-btn { position: absolute; top: -55px; right: 20px; width: 38px; height: 38px; background: #ffffff; color: #000000; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.2); cursor: pointer; border: 1px solid #eee; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; transform: translateY(10px); font-size: 16px; }
@@ -502,7 +470,7 @@
         .audio-timer { color: #000; }
 
         /* --- DARK MODE LOGIC --- */
-        body.dark-mode { background-color: #000000; color: #ffffff; }
+        body.dark-mode { background: linear-gradient(to bottom, #000000 30%, #171717 100%); color: #ffffff; }
         body.dark-mode #splash-screen, body.dark-mode #post-login-splash { background-color: #000000; }
         body.dark-mode .sidebar { background: #1a1a1a; border-color: #333; }
         body.dark-mode .sidebar-header, body.dark-mode .sidebar-top { background: #1a1a1a; color: #ffffff; }
@@ -528,8 +496,8 @@
         body.dark-mode .version-pill { background: #333; border-color: #fff; color: #fff; }
         body.dark-mode .welcome-screen { color: #cccccc; }
         body.dark-mode .welcome-screen span { color: #ffffff; }
-        body.dark-mode .bottom-container { background: #000000; }
-        body.dark-mode .bottom-container::before { background: linear-gradient(to top, rgba(0,0,0,0.95), transparent); }
+        body.dark-mode .bottom-container { background: transparent; }
+        body.dark-mode .bottom-container::before { background: linear-gradient(to top, rgba(23, 23, 23, 0.95), transparent); }
         
         body.dark-mode .chat-input-container { background: #1e1e1e; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.35); }
         body.dark-mode .input-bar textarea { color: #ffffff; }
@@ -680,8 +648,6 @@
                 </div>
             </div>
         </header>
-
-        <div class="gemini-home-glow" id="gemini-home-glow"></div>
 
         <main class="main-content" id="chat-container">
             <div class="welcome-screen" id="welcome-screen">
@@ -1948,7 +1914,6 @@
     function loadSelectedChat(index, shouldToggleSidebar = false) {
         if (isGenerating) stopGeneration(); stopTTS(); 
         activeChatIndex = index; isNewSession = false; editingMsgIdx = -1; 
-        document.body.classList.add('chat-active');
         const container = document.getElementById('chat-container'); container.innerHTML = "";
         chatHistory[index].messages.forEach((msg, msgIdx) => {
             if(msg.role === "user") { addUserMessageToUI(msg.content, false, msgIdx, msg.attachment); } 
@@ -1963,7 +1928,6 @@
     function createNewChat(keepSidebarOpen = false) {
         if (isGenerating) stopGeneration(); stopTTS(); 
         isNewSession = true; activeChatIndex = -1; editingMsgIdx = -1; 
-        document.body.classList.remove('chat-active');
         
         let welcomeHtml = `<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Welcome To" style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Welcome To</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">DATEX AI</span></div>`;
         
@@ -2293,7 +2257,6 @@
 
     async function callDatexAPI(isRegenerate = false) {
         stopTTS(); let message = ""; let attachmentToSave = null;
-        document.body.classList.add('chat-active');
         
         if (!isRegenerate) {
             const input = document.getElementById('user-input'); message = input.value.trim();
