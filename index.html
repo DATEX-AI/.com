@@ -312,7 +312,8 @@
         .file-icon-placeholder { font-size: 28px; color: #333; }
         .file-name-placeholder { font-size: 10px; color: #555; margin-top: 6px; max-width: 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; text-align: center; }
 
-        .input-bar { background: transparent; border: none; display: flex; align-items: flex-end; padding: 8px 12px 8px 10px; width: 100%; }
+        /* ADDED: padding-right 64px to ensure send button has fixed space */
+        .input-bar { background: transparent; border: none; display: flex; align-items: flex-end; padding: 8px 64px 8px 10px; width: 100%; position: relative; }
         
         .input-bar textarea { flex: 1; background: transparent; border: none; padding: 10px 12px 10px 0; font-size: 16px; outline: none; min-width: 0; color: #000000; resize: none; max-height: 150px; overflow-y: auto; line-height: 24px; height: 44px; scrollbar-width: none; -ms-overflow-style: none; touch-action: pan-y; overscroll-behavior: none; }
         .input-bar textarea::-webkit-scrollbar { display: none; }
@@ -352,12 +353,14 @@
         #mike-btn-container { display:flex; align-items:center; height: 44px; margin-left: -4px; margin-right: 4px; flex-shrink: 0; }
         #mike-btn { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 20px; color: #000; background: transparent; transition: 0.2s; touch-action: none !important; }
         
-        .send-btn-container { display:flex; align-items:center; height: 44px; flex-shrink: 0; }
+        /* ADDED: Position absolute so it NEVER shifts under any circumstance */
+        .send-btn-container { position: absolute; right: 12px; bottom: 8px; display: flex; align-items: center; height: 44px; z-index: 10; }
         
-        .send-btn { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; border: none; flex-shrink: 0; background: #000; color: #fff; margin-left: 8px; font-size: 18px; transition: background-color 0.15s, color 0.15s; }
+        /* REMOVED: margin-left: 8px to keep the layout pixel perfect absolute */
+        .send-btn { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; border: none; flex-shrink: 0; background: #000; color: #fff; font-size: 18px; transition: background-color 0.15s, color 0.15s; }
         body.dark-mode .send-btn { background: #fff !important; color: #000 !important; }
         
-        #mike-btn.recording { background-color: #000 !important; color: #fff !important; }
+        body.dark-mode #mike-btn.recording { background-color: #fff !important; color: #000 !important; }
 
         pre { background: #1e1e1e; color: #d4d4d4; padding: 45px 15px 15px 15px; border-radius: 12px; margin: 15px 0; overflow-x: auto; position: relative; font-family: 'Consolas', monospace; font-size: 14px; width: 100%; max-width: 100%; border: 1px solid #333; white-space: pre-wrap; word-break: break-word; }
         code { font-family: 'Consolas', monospace; }
@@ -1793,12 +1796,21 @@
             document.getElementById('mike-btn').classList.remove('recording'); 
         };
         recognition.onresult = (e) => { 
-            let transcript = "";
-            for (let i = 0; i < e.results.length; ++i) { 
-                transcript += e.results[i][0].transcript; 
+            let interimTranscript = "";
+            let finalTranscript = "";
+            for (let i = e.resultIndex; i < e.results.length; ++i) { 
+                if (e.results[i].isFinal) {
+                    finalTranscript += e.results[i][0].transcript;
+                } else {
+                    interimTranscript += e.results[i][0].transcript;
+                }
+            }
+            if (finalTranscript) {
+                sessionFinalText += finalTranscript;
             }
             const input = document.getElementById('user-input');
-            input.value = sessionFinalText + transcript; 
+            let space = (sessionFinalText.length > 0 && !sessionFinalText.endsWith(" ") && interimTranscript.length > 0 && !interimTranscript.startsWith(" ")) ? " " : "";
+            input.value = sessionFinalText + space + interimTranscript; 
             autoGrow(input); 
             input.dispatchEvent(new Event('input', { bubbles: true }));
         };
