@@ -352,6 +352,7 @@
         
         #mike-btn-container { display:flex; align-items:center; height: 44px; margin-left: -4px; margin-right: 4px; flex-shrink: 0; }
         #mike-btn { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 20px; color: #000; background: transparent; transition: 0.2s; touch-action: none !important; }
+        #mike-btn.recording { background-color: #000; color: #fff; } /* ADDED THIS FIX */
         
         /* ADDED: Position absolute so it NEVER shifts under any circumstance */
         .send-btn-container { position: absolute; right: 12px; bottom: 8px; display: flex; align-items: center; height: 44px; z-index: 10; }
@@ -890,8 +891,7 @@
             <button class="new-chat-btn" onclick="createNewChat()" data-i18n="Chat +">Chat +</button>
         </div>
     </div>
-
-    <script type="module">
+<script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, OAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
       
