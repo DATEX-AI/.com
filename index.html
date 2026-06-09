@@ -14,12 +14,12 @@
         /* CSS Variables for completely safe real-time theme gradient switching */
         :root {
             --fade-color-top: rgba(255, 255, 255, 0.95);
-            --fade-color-bottom: rgba(232, 234, 237, 0.95);
+            --fade-color-bottom: rgba(255, 255, 255, 0.95);
         }
         
         body.dark-mode {
             --fade-color-top: rgba(0, 0, 0, 0.95);
-            --fade-color-bottom: rgba(23, 23, 23, 0.95);
+            --fade-color-bottom: rgba(0, 0, 0, 0.95);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
@@ -37,7 +37,7 @@
         }
 
         body { 
-            background: linear-gradient(to bottom, #ffffff 30%, #e8eaed 100%); 
+            background-color: #ffffff; 
             color: #333; 
             display: flex; 
             flex-direction: column;
@@ -46,7 +46,7 @@
             -moz-user-select: none !important; 
             -ms-user-select: none !important; 
             user-select: none !important; 
-            transition: background 0.15s ease-out, color 0.15s ease-out;
+            transition: background-color 0.15s ease-out, color 0.15s ease-out;
         }
 
         /* --- Theme-Based Strict Logo Switcher --- */
@@ -288,7 +288,7 @@
         .typing-dot:nth-child(3) { animation-delay: 0s; }
         @keyframes typingBounce { 0%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-6px); } }
 
-        .bottom-container { width: 100%; background: transparent; padding: 10px 20px 15px 20px; display: flex; justify-content: center; z-index: 100; flex-shrink: 0; touch-action: none; position: relative; transition: background-color 0.15s; }
+        .bottom-container { width: 100%; background: #ffffff; padding: 10px 20px 15px 20px; display: flex; justify-content: center; z-index: 100; flex-shrink: 0; touch-action: none; position: relative; transition: background-color 0.15s; }
         .bottom-container::before { content: ''; position: absolute; top: -10px; left: 0; width: 100%; height: 10px; background: linear-gradient(to top, var(--fade-color-bottom), transparent); pointer-events: none; z-index: 10; transition: background 0.15s; }
 
         .scroll-bottom-btn { position: absolute; top: -55px; right: 20px; width: 38px; height: 38px; background: #ffffff; color: #000000; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.2); cursor: pointer; border: 1px solid #eee; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; transform: translateY(10px); font-size: 16px; }
@@ -349,10 +349,10 @@
 
         .rec-stop-btn { width: 44px; height: 44px; border-radius: 50%; background: #000; color: #fff; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0; margin-right: 4px; transition: background-color 0.15s, color 0.15s; }
         
-        #mike-btn-container { display:flex; align-items:center; height: 44px; margin-left: -4px; margin-right: 4px; }
+        #mike-btn-container { display:flex; align-items:center; height: 44px; margin-left: -4px; margin-right: 4px; flex-shrink: 0; }
         #mike-btn { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 20px; color: #000; background: transparent; transition: 0.2s; touch-action: none !important; }
         
-        .send-btn-container { display:flex; align-items:center; height: 44px; }
+        .send-btn-container { display:flex; align-items:center; height: 44px; flex-shrink: 0; }
         
         .send-btn { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; border: none; flex-shrink: 0; background: #000; color: #fff; margin-left: 8px; font-size: 18px; transition: background-color 0.15s, color 0.15s; }
         body.dark-mode .send-btn { background: #fff !important; color: #000 !important; }
@@ -470,7 +470,7 @@
         .audio-timer { color: #000; }
 
         /* --- DARK MODE LOGIC --- */
-        body.dark-mode { background: linear-gradient(to bottom, #000000 30%, #171717 100%); color: #ffffff; }
+        body.dark-mode { background-color: #000000; color: #ffffff; }
         body.dark-mode #splash-screen, body.dark-mode #post-login-splash { background-color: #000000; }
         body.dark-mode .sidebar { background: #1a1a1a; border-color: #333; }
         body.dark-mode .sidebar-header, body.dark-mode .sidebar-top { background: #1a1a1a; color: #ffffff; }
@@ -496,8 +496,8 @@
         body.dark-mode .version-pill { background: #333; border-color: #fff; color: #fff; }
         body.dark-mode .welcome-screen { color: #cccccc; }
         body.dark-mode .welcome-screen span { color: #ffffff; }
-        body.dark-mode .bottom-container { background: transparent; }
-        body.dark-mode .bottom-container::before { background: linear-gradient(to top, rgba(23, 23, 23, 0.95), transparent); }
+        body.dark-mode .bottom-container { background: #000000; }
+        body.dark-mode .bottom-container::before { background: linear-gradient(to top, rgba(0,0,0,0.95), transparent); }
         
         body.dark-mode .chat-input-container { background: #1e1e1e; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.35); }
         body.dark-mode .input-bar textarea { color: #ffffff; }
@@ -1775,7 +1775,6 @@
 
     let isDictating = false; 
     let sessionFinalText = ""; 
-    let lastProcessedIndex = 0;
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     let recognition;
     
@@ -1785,7 +1784,6 @@
         recognition.continuous = true; 
         recognition.onstart = () => { 
             isDictating = true; 
-            lastProcessedIndex = 0;
             sessionFinalText = document.getElementById('user-input').value; 
             if (sessionFinalText.length > 0 && !sessionFinalText.endsWith(" ")) { sessionFinalText += " "; } 
             document.getElementById('mike-btn').classList.add('recording'); 
@@ -1795,22 +1793,12 @@
             document.getElementById('mike-btn').classList.remove('recording'); 
         };
         recognition.onresult = (e) => { 
-            let interimTranscript = "";
-            for (let i = lastProcessedIndex; i < e.results.length; ++i) { 
-                if (e.results[i].isFinal) {
-                    let finalWord = e.results[i][0].transcript;
-                    if (sessionFinalText.length > 0 && !sessionFinalText.endsWith(" ") && !finalWord.startsWith(" ")) {
-                        sessionFinalText += " ";
-                    }
-                    sessionFinalText += finalWord;
-                    lastProcessedIndex = i + 1;
-                } else {
-                    interimTranscript += e.results[i][0].transcript;
-                }
+            let transcript = "";
+            for (let i = 0; i < e.results.length; ++i) { 
+                transcript += e.results[i][0].transcript; 
             }
             const input = document.getElementById('user-input');
-            let space = (sessionFinalText.length > 0 && !sessionFinalText.endsWith(" ") && interimTranscript.length > 0 && !interimTranscript.startsWith(" ")) ? " " : "";
-            input.value = sessionFinalText + space + interimTranscript; 
+            input.value = sessionFinalText + transcript; 
             autoGrow(input); 
             input.dispatchEvent(new Event('input', { bubbles: true }));
         };
