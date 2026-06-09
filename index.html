@@ -248,6 +248,38 @@
         .avatar-container.loading .avatar-spinner { display: block; }
         @keyframes avatarSpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+        /* Gemini Inspired Home Glow */
+        .gemini-home-glow {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 55vh;
+            background: linear-gradient(to top, rgba(0,0,0,0.06), transparent);
+            z-index: 1;
+            pointer-events: none;
+            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease-out;
+            transform: translateY(0);
+            opacity: 1;
+        }
+        body.dark-mode .gemini-home-glow {
+            background: linear-gradient(to top, rgba(255,255,255,0.06), transparent);
+        }
+        body.chat-active .gemini-home-glow {
+            transform: translateY(100%);
+            opacity: 0;
+        }
+        body:not(.chat-active) .bottom-container {
+            background: transparent !important;
+        }
+        body:not(.chat-active) .bottom-container::before {
+            opacity: 0;
+        }
+        #chat-container {
+            position: relative;
+            z-index: 2;
+        }
+
         .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 10px 20px 20px 20px; width: 100%; max-width: 800px; margin: 0 auto; scrollbar-width: none; touch-action: pan-y !important; -webkit-overflow-scrolling: touch !important; overscroll-behavior-y: contain !important; }
         
         .welcome-screen { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; flex: 1; text-align: center; color: #222; font-size: 24px; font-weight: 500; line-height: 1.0; }
@@ -648,6 +680,8 @@
                 </div>
             </div>
         </header>
+
+        <div class="gemini-home-glow" id="gemini-home-glow"></div>
 
         <main class="main-content" id="chat-container">
             <div class="welcome-screen" id="welcome-screen">
@@ -1775,6 +1809,7 @@
 
     let isDictating = false; 
     let sessionFinalText = ""; 
+    let lastProcessedIndex = 0;
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     let recognition;
     
@@ -1784,6 +1819,7 @@
         recognition.continuous = true; 
         recognition.onstart = () => { 
             isDictating = true; 
+            lastProcessedIndex = 0;
             sessionFinalText = document.getElementById('user-input').value; 
             if (sessionFinalText.length > 0 && !sessionFinalText.endsWith(" ")) { sessionFinalText += " "; } 
             document.getElementById('mike-btn').classList.add('recording'); 
@@ -1793,12 +1829,22 @@
             document.getElementById('mike-btn').classList.remove('recording'); 
         };
         recognition.onresult = (e) => { 
-            let transcript = "";
-            for (let i = 0; i < e.results.length; ++i) { 
-                transcript += e.results[i][0].transcript; 
+            let interimTranscript = "";
+            for (let i = lastProcessedIndex; i < e.results.length; ++i) { 
+                if (e.results[i].isFinal) {
+                    let finalWord = e.results[i][0].transcript;
+                    if (sessionFinalText.length > 0 && !sessionFinalText.endsWith(" ") && !finalWord.startsWith(" ")) {
+                        sessionFinalText += " ";
+                    }
+                    sessionFinalText += finalWord;
+                    lastProcessedIndex = i + 1;
+                } else {
+                    interimTranscript += e.results[i][0].transcript;
+                }
             }
             const input = document.getElementById('user-input');
-            input.value = sessionFinalText + transcript; 
+            let space = (sessionFinalText.length > 0 && !sessionFinalText.endsWith(" ") && interimTranscript.length > 0 && !interimTranscript.startsWith(" ")) ? " " : "";
+            input.value = sessionFinalText + space + interimTranscript; 
             autoGrow(input); 
             input.dispatchEvent(new Event('input', { bubbles: true }));
         };
@@ -1902,6 +1948,7 @@
     function loadSelectedChat(index, shouldToggleSidebar = false) {
         if (isGenerating) stopGeneration(); stopTTS(); 
         activeChatIndex = index; isNewSession = false; editingMsgIdx = -1; 
+        document.body.classList.add('chat-active');
         const container = document.getElementById('chat-container'); container.innerHTML = "";
         chatHistory[index].messages.forEach((msg, msgIdx) => {
             if(msg.role === "user") { addUserMessageToUI(msg.content, false, msgIdx, msg.attachment); } 
@@ -1916,6 +1963,7 @@
     function createNewChat(keepSidebarOpen = false) {
         if (isGenerating) stopGeneration(); stopTTS(); 
         isNewSession = true; activeChatIndex = -1; editingMsgIdx = -1; 
+        document.body.classList.remove('chat-active');
         
         let welcomeHtml = `<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Welcome To" style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Welcome To</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">DATEX AI</span></div>`;
         
@@ -2245,6 +2293,7 @@
 
     async function callDatexAPI(isRegenerate = false) {
         stopTTS(); let message = ""; let attachmentToSave = null;
+        document.body.classList.add('chat-active');
         
         if (!isRegenerate) {
             const input = document.getElementById('user-input'); message = input.value.trim();
