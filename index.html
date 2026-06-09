@@ -1793,23 +1793,14 @@
             document.getElementById('mike-btn').classList.remove('recording'); 
         };
         recognition.onresult = (e) => { 
-            let interimTranscript = "";
-            let finalTranscript = ""; 
-            for (let i = e.resultIndex; i < e.results.length; ++i) { 
-                if (e.results[i].isFinal) finalTranscript += e.results[i][0].transcript; 
-                else interimTranscript += e.results[i][0].transcript;
+            let transcript = "";
+            for (let i = 0; i < e.results.length; ++i) { 
+                transcript += e.results[i][0].transcript; 
             }
-            let appendText = finalTranscript || interimTranscript;
-            if (appendText) {
-                const input = document.getElementById('user-input');
-                input.value = sessionFinalText + appendText; 
-                if (finalTranscript) {
-                    sessionFinalText = input.value;
-                    if (!sessionFinalText.endsWith(" ")) sessionFinalText += " ";
-                }
-                autoGrow(input); 
-                input.dispatchEvent(new Event('input', { bubbles: true }));
-            }
+            const input = document.getElementById('user-input');
+            input.value = sessionFinalText + transcript; 
+            autoGrow(input); 
+            input.dispatchEvent(new Event('input', { bubbles: true }));
         };
         recognition.onerror = (e) => { 
             console.error("Speech error: " + e.error); 
