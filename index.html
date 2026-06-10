@@ -352,12 +352,10 @@
         
         #mike-btn-container { display:flex; align-items:center; height: 44px; margin-left: -4px; margin-right: 4px; flex-shrink: 0; }
         #mike-btn { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 20px; color: #000; background: transparent; transition: 0.2s; touch-action: none !important; }
-        #mike-btn.recording { background-color: #000; color: #fff; } /* FIX ADDED HERE */
+        #mike-btn.recording { background-color: #000; color: #fff; } 
         
-        /* ADDED: Position absolute so it NEVER shifts under any circumstance */
         .send-btn-container { position: absolute; right: 12px; bottom: 8px; display: flex; align-items: center; height: 44px; z-index: 10; }
         
-        /* REMOVED: margin-left: 8px to keep the layout pixel perfect absolute */
         .send-btn { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; border: none; flex-shrink: 0; background: #000; color: #fff; font-size: 18px; transition: background-color 0.15s, color 0.15s; }
         body.dark-mode .send-btn { background: #fff !important; color: #000 !important; }
         
@@ -1691,33 +1689,50 @@
         let prefType = currentTtsVoicePref; 
         let isMale = (prefType === 'male');
         
-        let maleKeywords = ['male', 'david', 'daniel', 'mark', 'george', 'alex', 'brian', 'james', 'guy', 'variant 2', 'variant 4', 'voice ii', 'voice 2'];
-        let femaleKeywords = ['female', 'samantha', 'zira', 'victoria', 'tessa', 'karen', 'hazel', 'susan', 'variant 1', 'variant 3', 'voice i', 'voice 1'];
+        let maleKeywords = ['male', 'david', 'daniel', 'mark', 'george', 'alex', 'brian', 'james', 'guy', 'variant 2', 'variant 4', 'voice ii', 'voice 2', 'neerja']; 
+        let femaleKeywords = ['female', 'samantha', 'zira', 'victoria', 'tessa', 'karen', 'hazel', 'susan', 'variant 1', 'variant 3', 'voice i', 'voice 1', 'jenny', 'aria'];
 
         let voices = window.speechSynthesis.getVoices();
         if(voices.length > 0) {
-            let selectedVoice = voices.find(v => {
+            // 1. Language Filter
+            let langVoices = voices.filter(v => v.lang.startsWith('en') || v.lang.startsWith('hi'));
+            if (langVoices.length === 0) langVoices = voices;
+
+            // 2. Google / Premium filter
+            let premiumVoices = langVoices.filter(v => 
+                v.name.includes('Google') || 
+                v.name.includes('Neural') || 
+                v.name.includes('Online') ||
+                v.name.includes('Natural')
+            );
+            
+            let searchPool = premiumVoices.length > 0 ? premiumVoices : langVoices;
+
+            // 3. Select based on Male/Female setting
+            let selectedVoice = searchPool.find(v => {
                 let n = v.name.toLowerCase();
                 if (isMale) return maleKeywords.some(k => n.includes(k));
                 return femaleKeywords.some(k => n.includes(k));
             });
             
+            // 4. Fallback if premium pool didn't have the specific gender keyword
             if (!selectedVoice) {
-                let langVoices = voices.filter(v => v.lang.startsWith('en') || v.lang.startsWith('hi'));
-                if(langVoices.length > 0) {
-                    if (isMale) {
-                        selectedVoice = langVoices.find(v => v.name.toLowerCase().includes('male')) || 
-                                        langVoices.find(v => v.name.includes('2') || v.name.includes('II')) || 
-                                        langVoices[langVoices.length - 1];
-                    } else {
-                        selectedVoice = langVoices.find(v => v.name.toLowerCase().includes('female')) || 
-                                        langVoices.find(v => v.name.includes('1') || v.name.includes('I')) || 
-                                        langVoices[0];
-                    }
+                selectedVoice = langVoices.find(v => {
+                    let n = v.name.toLowerCase();
+                    if (isMale) return maleKeywords.some(k => n.includes(k));
+                    return femaleKeywords.some(k => n.includes(k));
+                });
+            }
+
+            // 5. Ultimate Fallback (index based)
+            if (!selectedVoice) {
+                if(isMale) {
+                    selectedVoice = searchPool.length > 1 ? searchPool[searchPool.length - 1] : searchPool[0]; 
                 } else {
-                    selectedVoice = voices[0];
+                    selectedVoice = searchPool[0];
                 }
             }
+
             if(selectedVoice) {
                 ttsUtterance.voice = selectedVoice;
                 ttsUtterance.lang = selectedVoice.lang;
