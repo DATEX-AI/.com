@@ -699,6 +699,7 @@
             <button class="new-chat-btn" onclick="createNewChat()" data-i18n="Chat +">Chat +</button>
         </div>
     </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, OAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
@@ -1607,18 +1608,15 @@
         };
         /* -- FIX ADDED HERE -- */
         recognition.onresult = (e) => { 
-            let currentFinal = "";
-            let currentInterim = "";
+            let finalTranscript = "";
             for (let i = 0; i < e.results.length; ++i) { 
                 if (e.results[i].isFinal) {
-                    currentFinal += e.results[i][0].transcript;
-                } else {
-                    currentInterim += e.results[i][0].transcript;
+                    finalTranscript += e.results[i][0].transcript;
                 }
             }
             const input = document.getElementById('user-input');
-            let space = (sessionFinalText.length > 0 && !sessionFinalText.endsWith(" ") && currentFinal.length > 0 && !currentFinal.startsWith(" ")) ? " " : "";
-            input.value = sessionFinalText + space + currentFinal + currentInterim; 
+            let space = (sessionFinalText.length > 0 && !sessionFinalText.endsWith(" ") && finalTranscript.length > 0 && !finalTranscript.startsWith(" ")) ? " " : "";
+            input.value = sessionFinalText + space + finalTranscript; 
             autoGrow(input); 
             input.dispatchEvent(new Event('input', { bubbles: true }));
         };
