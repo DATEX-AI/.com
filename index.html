@@ -1548,6 +1548,42 @@
         window.speechSynthesis.speak(ttsUtterance);
     }
 
+    function speakText(btn) {
+        if (!window.speechSynthesis) { alert("Your browser does not support Text-to-Speech."); return; }
+        stopVoiceNoteBubble();
+
+        if (currentTtsBtn === btn) {
+            if (isTtsPlaying) { 
+                isTtsPlaying = false; 
+                window.speechSynthesis.pause(); 
+                btn.querySelector('i').className = 'fas fa-play'; 
+            } else { 
+                isTtsPlaying = true; 
+                btn.querySelector('i').className = 'fas fa-pause'; 
+                window.speechSynthesis.resume();
+                if (!window.speechSynthesis.speaking) playNextTtsSegment();
+            }
+            return;
+        }
+        
+        stopTTS(); 
+        
+        const bubble = btn.closest('.bubble-container').querySelector('.bubble');
+        let clone = bubble.cloneNode(true);
+        let preTags = clone.querySelectorAll('pre'); preTags.forEach(p => p.remove()); 
+        let fullText = clone.innerText.trim();
+
+        if (!fullText) return;
+
+        ttsSegments = fullText.replace(/([.!?।\n])\s*/g, "$1|").split("|").filter(s => s.trim().length > 0);
+        if (ttsSegments.length === 0) ttsSegments = [fullText];
+
+        currentTtsVoicePref = localStorage.getItem('datex_voice_type') || 'female';
+        currentTtsBtn = btn; currentSegmentIdx = 0; isTtsPlaying = true; btn.querySelector('i').className = 'fas fa-pause';
+        
+        setTimeout(() => { playNextTtsSegment(); }, 100); 
+    }
+
     let isDictating = false; 
     let sessionFinalText = ""; 
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -1569,16 +1605,20 @@
             isDictating = false; 
             document.getElementById('mike-btn').classList.remove('recording'); 
         };
+        /* -- FIX ADDED HERE -- */
         recognition.onresult = (e) => { 
-            let finalTranscript = "";
+            let currentFinal = "";
+            let currentInterim = "";
             for (let i = 0; i < e.results.length; ++i) { 
                 if (e.results[i].isFinal) {
-                    finalTranscript += e.results[i][0].transcript;
+                    currentFinal += e.results[i][0].transcript;
+                } else {
+                    currentInterim += e.results[i][0].transcript;
                 }
             }
             const input = document.getElementById('user-input');
-            let space = (sessionFinalText.length > 0 && !sessionFinalText.endsWith(" ") && finalTranscript.length > 0 && !finalTranscript.startsWith(" ")) ? " " : "";
-            input.value = sessionFinalText + space + finalTranscript; 
+            let space = (sessionFinalText.length > 0 && !sessionFinalText.endsWith(" ") && currentFinal.length > 0 && !currentFinal.startsWith(" ")) ? " " : "";
+            input.value = sessionFinalText + space + currentFinal + currentInterim; 
             autoGrow(input); 
             input.dispatchEvent(new Event('input', { bubbles: true }));
         };
