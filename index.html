@@ -1764,7 +1764,9 @@
         const bubble = btn.closest('.bubble-container').querySelector('.bubble');
         let clone = bubble.cloneNode(true);
         let preTags = clone.querySelectorAll('pre'); preTags.forEach(p => p.remove()); 
-        let fullText = clone.innerText.trim();
+        
+        // FIX 1: Use textContent instead of innerText because clone is an unattached DOM node.
+        let fullText = clone.textContent.trim();
 
         if (!fullText) return;
 
@@ -1774,7 +1776,8 @@
         currentTtsVoicePref = localStorage.getItem('datex_voice_type') || 'female';
         currentTtsBtn = btn; currentSegmentIdx = 0; isTtsPlaying = true; btn.querySelector('i').className = 'fas fa-pause';
         
-        setTimeout(() => { playNextTtsSegment(); }, 100); 
+        // FIX 2: Removed setTimeout so mobile browsers don't block the audio playback due to gesture policies.
+        playNextTtsSegment(); 
     }
 
     let isDictating = false; 
