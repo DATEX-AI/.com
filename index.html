@@ -1592,10 +1592,8 @@
     
     if (SpeechRecognition) {
         recognition = new SpeechRecognition(); 
-        /* -- FIX APPLIED HERE: Live typing and auto-stop fixed -- */
-        recognition.interimResults = false; 
-        recognition.continuous = false; 
-        
+        recognition.interimResults = true; 
+        recognition.continuous = true; 
         recognition.onstart = () => { 
             isDictating = true; 
             sessionFinalText = document.getElementById('user-input').value; 
@@ -1608,23 +1606,21 @@
         };
         /* -- FIX ADDED HERE -- */
         recognition.onresult = (e) => { 
-            let finalTranscript = "";
+            let currentFinal = "";
+            let currentInterim = "";
             for (let i = 0; i < e.results.length; ++i) { 
                 if (e.results[i].isFinal) {
-                    finalTranscript += e.results[i][0].transcript;
+                    currentFinal += e.results[i][0].transcript;
+                } else {
+                    currentInterim += e.results[i][0].transcript;
                 }
             }
             const input = document.getElementById('user-input');
-            let space = (sessionFinalText.length > 0 && !sessionFinalText.endsWith(" ") && finalTranscript.length > 0 && !finalTranscript.startsWith(" ")) ? " " : "";
-            input.value = sessionFinalText + space + finalTranscript; 
+            let space = (sessionFinalText.length > 0 && !sessionFinalText.endsWith(" ") && currentFinal.length > 0 && !currentFinal.startsWith(" ")) ? " " : "";
+            input.value = sessionFinalText + space + currentFinal + currentInterim; 
             autoGrow(input); 
             input.dispatchEvent(new Event('input', { bubbles: true }));
         };
-        recognition.onerror = (e) => { 
-            console.error("Speech error: " + e.error); 
-            isDictating = false; 
-            document.getElementById('mike-btn').classList.remove('recording'); 
-        }
     }
 
     let ignoreNextClick = false; 
