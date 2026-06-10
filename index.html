@@ -793,7 +793,7 @@
 
             <div class="setting-section">
                 <div class="setting-section-title">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1 4-10z"></path></svg>
                     <span data-i18n="App Language">App Language</span>
                 </div>
                 <div class="select-wrapper" onclick="openLangModal('app')">
@@ -1689,8 +1689,8 @@
         let prefType = currentTtsVoicePref; 
         let isMale = (prefType === 'male');
         
-        let maleKeywords = ['male', 'david', 'daniel', 'mark', 'george', 'alex', 'brian', 'james', 'guy', 'variant 2', 'variant 4', 'voice ii', 'voice 2', 'neerja']; 
-        let femaleKeywords = ['female', 'samantha', 'zira', 'victoria', 'tessa', 'karen', 'hazel', 'susan', 'variant 1', 'variant 3', 'voice i', 'voice 1', 'jenny', 'aria'];
+        let maleKeywords = ['male', 'david', 'mark', 'guy', 'andrew', 'brian', 'ryan', 'uk english male', 'us english male', 'hi-in-male', 'voice ii', 'voice 2', 'variant 2', 'variant 4']; 
+        let femaleKeywords = ['female', 'samantha', 'zira', 'victoria', 'tessa', 'karen', 'hazel', 'susan', 'variant 1', 'variant 3', 'voice i', 'voice 1', 'jenny', 'aria', 'neerja'];
 
         let voices = window.speechSynthesis.getVoices();
         if(voices.length > 0) {
@@ -1780,7 +1780,6 @@
         let clone = bubble.cloneNode(true);
         let preTags = clone.querySelectorAll('pre'); preTags.forEach(p => p.remove()); 
         
-        // FIX 1: Use textContent instead of innerText because clone is an unattached DOM node.
         let fullText = clone.textContent.trim();
 
         if (!fullText) return;
@@ -1791,7 +1790,6 @@
         currentTtsVoicePref = localStorage.getItem('datex_voice_type') || 'female';
         currentTtsBtn = btn; currentSegmentIdx = 0; isTtsPlaying = true; btn.querySelector('i').className = 'fas fa-pause';
         
-        // FIX 2: Removed setTimeout so mobile browsers don't block the audio playback due to gesture policies.
         playNextTtsSegment(); 
     }
 
@@ -1802,7 +1800,6 @@
     
     if (SpeechRecognition) {
         recognition = new SpeechRecognition(); 
-        /* -- FIX APPLIED HERE: Live typing and auto-stop fixed -- */
         recognition.interimResults = false; 
         recognition.continuous = false; 
         
@@ -1816,7 +1813,6 @@
             isDictating = false; 
             document.getElementById('mike-btn').classList.remove('recording'); 
         };
-        /* -- FIX ADDED HERE -- */
         recognition.onresult = (e) => { 
             let finalTranscript = "";
             for (let i = 0; i < e.results.length; ++i) { 
@@ -2071,11 +2067,11 @@
             let allUserRows = Array.from(document.querySelectorAll('.message-row.user-row')); 
             let isLastUserMsg = (selectedMsgRow === allUserRows[allUserRows.length - 1]);
             
-            deleteBtn.style.display = 'none'; // REVERTED: Kept hidden as requested previously
+            deleteBtn.style.display = 'none'; 
 
             if (hasAudio) { 
                 copyBtn.style.display = 'none'; 
-                editBtn.style.display = isLastUserMsg ? 'flex' : 'none'; // Only edit button for voice notes as requested
+                editBtn.style.display = isLastUserMsg ? 'flex' : 'none'; 
             } else { 
                 copyBtn.style.display = 'flex'; 
                 editBtn.style.display = isLastUserMsg ? 'flex' : 'none'; 
@@ -2089,7 +2085,6 @@
 
     function hideMsgMenu() { document.getElementById('msg-menu').style.display = 'none'; }
     
-    // Close menu when clicking anywhere else
     document.addEventListener('click', function(e) {
         const menu = document.getElementById('msg-menu');
         if (menu && menu.style.display === 'flex') {
@@ -2151,7 +2146,6 @@
         }); 
     }
 
-    /* URL encode prompt helper function to avoid bad character crashes */
     function fixedEncodeURIComponent(str) { return encodeURIComponent(str).replace(/[!'()*]/g, function(c) { return '%' + c.charCodeAt(0).toString(16); }); }
 
     function escapeHTML(str) { return str.replace(/[&<>"']/g, function(m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; }); }
@@ -2203,6 +2197,7 @@
     function typeEffect(element, text, speed, boundChatIndex) {
         if (boundChatIndex === undefined) boundChatIndex = activeChatIndex;
         let i = 0; let segments = text.split(/(```[\s\S]*?```)/g); let currentSeg = 0; let accumulatedHTML = ""; 
+        let codeTypingData = null;
         const rowElement = element.closest('.message-row');
 
         if (!text.includes('![Generated Image]')) {
@@ -2231,9 +2226,40 @@
             if (currentSeg < segments.length) {
                 let seg = segments[currentSeg];
                 if (seg.startsWith("```") && seg.endsWith("```")) {
-                    let codeContent = seg.substring(3, seg.length - 3).trim(); 
-                    accumulatedHTML += `<pre><button class="copy-code-btn" onclick="copyCode(this)"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button><code>${escapeHTML(codeContent)}</code></pre>`; 
-                    element.innerHTML = accumulatedHTML; currentSeg++; setTimeout(typeNext, speed);
+                    if (!codeTypingData) {
+                        let codeContent = seg.substring(3, seg.length - 3).trim();
+                        codeTypingData = {
+                            escapedContent: escapeHTML(codeContent),
+                            index: 0,
+                            header: `<pre><button class="copy-code-btn" onclick="copyCode(this)"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button><code>`,
+                            footer: `</code></pre>`
+                        };
+                        accumulatedHTML += codeTypingData.header;
+                    }
+
+                    if (codeTypingData.index < codeTypingData.escapedContent.length) {
+                        let char = codeTypingData.escapedContent.charAt(codeTypingData.index);
+                        if (char === '&') {
+                            let entityEnd = codeTypingData.escapedContent.indexOf(';', codeTypingData.index);
+                            if (entityEnd !== -1 && entityEnd - codeTypingData.index < 8) {
+                                accumulatedHTML += codeTypingData.escapedContent.substring(codeTypingData.index, entityEnd + 1);
+                                codeTypingData.index = entityEnd + 1;
+                            } else {
+                                accumulatedHTML += char;
+                                codeTypingData.index++;
+                            }
+                        } else {
+                            accumulatedHTML += char;
+                            codeTypingData.index++;
+                        }
+                        element.innerHTML = accumulatedHTML + codeTypingData.footer;
+                        setTimeout(typeNext, speed);
+                    } else {
+                        accumulatedHTML += codeTypingData.footer;
+                        codeTypingData = null;
+                        currentSeg++;
+                        setTimeout(typeNext, speed);
+                    }
                 } else {
                     let formattedSeg = formatLinksAndStyles(seg);
                     if (i < formattedSeg.length) {
@@ -2354,7 +2380,7 @@
         let langInstruction = "";
         
         if (responseLangPref === 'auto') {
-            langInstruction = "AUTO-DETECT SCRIPT MATCHING: You MUST respond in the EXACT same language AND script that the user uses. If the user writes in English, reply in English. If the user writes Hindi words using English letters (Hinglish), reply in Hinglish. If the user writes in Devanagari (हिंदी), reply in Hindi. Match their exact language and script.";
+            langInstruction = "STRICT AUTO-LANGUAGE & SCRIPT DETECTION: You possess an advanced auto-detector. If the user's prompt is in English, reply strictly in English. If the user writes in Hinglish (Hindi language using English/Latin alphabet, e.g., 'kaise ho', 'kya kar rahe ho'), you MUST reply entirely in Hinglish using the English alphabet. If the user writes in pure Hindi Devanagari script (e.g., 'कैसे हो'), reply entirely in Devanagari script. Mirroring the user's exact language AND alphabet script is your highest priority.";
         } else {
             langInstruction = `STRICT LANGUAGE LOCK: You MUST strictly respond in the '${responseLangPref}' language only. If the selected language is 'hinglish', use English letters. If 'hindi', use Devanagari script.`;
         }
@@ -2362,7 +2388,7 @@
         let dynamicSystemPrompt = `You are DATEX AI, and your underlying model name is Kyro. Your name is strictly 'DATEX AI'. You must never identify as Llama, Meta, OpenAI, or Google Gemini. 
 CURRENT REAL-TIME DATA: Today is ${dateStr} and the current time is ${timeStr}.
 CRITICAL INSTRUCTIONS:
-1. PERSONALITY & EMOJIS: Use your default highly intelligent and natural personality. You have full access to emojis; use them at your own discretion.
+1. PERSONALITY & EMOJIS: Use your default highly intelligent and natural personality. Use emojis sparingly and only when it naturally fits the context. Avoid overusing emojis.
 2. NO BRAGGING OR UNSOLICITED INFO: NEVER volunteer information about your capabilities. Keep your answers directly focused on the user's prompt.
 3. ${langInstruction}
 4. NO URDU SCRIPT: You are FORBIDDEN from using Urdu script (Arabic/Persian characters like اردو) under any circumstances.
