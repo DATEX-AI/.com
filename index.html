@@ -307,9 +307,9 @@
         .chat-input-container { flex: 1; background: #ffffff; border: none; box-shadow: 0 2px 12px rgba(0,0,0,0.15); border-radius: 34px; display: flex; flex-direction: column; width: 100%; overflow: hidden; position: relative; transition: background-color 0.15s, box-shadow 0.15s; }
 
         .attachment-preview { display: none; position: relative; margin: 12px 0 0 20px; width: 72px; height: 72px; border-radius: 12px; background: #e5e7eb; border: 1px solid #ddd; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-        .attachment-preview img { width: 100%; height: 100%; object-fit: cover; border-radius: 11px; }
+        .attachment-preview img { width: 100%; height: 100%; object-fit: cover; border-radius: 11px; cursor: pointer; }
         /* ENHANCED REMOVE BUTTON CSS */
-        .attachment-preview .remove-btn { position: absolute; top: 4px; right: 4px; width: 24px; height: 24px; background: #ffffff; border: 1px solid #eaeaea; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 12px; color: #000000; cursor: pointer; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: transform 0.15s; }
+        .attachment-preview .remove-btn { position: absolute; top: 6px; right: 6px; width: 20px; height: 20px; background: #ffffff; border: none; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 11px; color: #000000; cursor: pointer; z-index: 10; box-shadow: 0 0 6px rgba(0,0,0,0.3); transition: transform 0.15s; }
         .attachment-preview .remove-btn:active { transform: scale(0.9); }
         body.dark-mode .attachment-preview .remove-btn { border-color: #555; }
         
@@ -454,7 +454,7 @@
         .setting-section { margin-bottom: 18px; } 
         .setting-section:last-child { margin-bottom: 0px; }
         .setting-section-title { font-size: 16px; font-weight: 700; color: #111; display: flex; align-items: center; gap: 10px; margin-bottom: 8px; transition: color 0.15s;}
-        .setting-section-title i { color: #555; display: inline-block; flex-shrink: 0; } 
+        .setting-section-title svg { color: currentColor; } 
         
         .radio-option { display: flex; justify-content: space-between; align-items: center; color: #333; font-weight: 500; font-size: 15px; padding: 8px 5px 8px 10px; margin-bottom: 4px; transition: color 0.15s;}
         .radio-label { cursor: pointer; display: flex; align-items: center; } 
@@ -540,7 +540,6 @@
         body.dark-mode .settings-header, body.dark-mode .lang-modal-header { color: #fff; background: #1a1a1a; border-color:#333; }
         body.dark-mode .settings-header i, body.dark-mode .lang-modal-header i { color: #ffffff; }
         body.dark-mode .setting-section-title { color: #ffffff; }
-        body.dark-mode .setting-section-title i { color: #bbbbbb !important; } 
         body.dark-mode .radio-option { color: #e0e0e0; }
         body.dark-mode .custom-radio { border-color: #666; }
         body.dark-mode .radio-label input:checked + .custom-radio { border-color: #fff; }
@@ -689,12 +688,12 @@
                 <div class="chat-input-container">
                     
                     <div id="attachment-preview" class="attachment-preview">
-                        <img id="attachment-img-preview" src="">
+                        <img id="attachment-img-preview" src="" onclick="openImageModal(this.src)" style="cursor: pointer;">
                         <div id="attachment-file-preview" style="display: none; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%;">
                             <i id="attachment-icon" class="fas fa-file-alt file-icon-placeholder"></i>
                             <span id="attachment-name" class="file-name-placeholder"></span>
                         </div>
-                        <div class="remove-btn" onclick="removeAttachment(event)"><i class="fas fa-times"></i></div>
+                        <div class="remove-btn" onclick="window.removeAttachment(event)"><i class="fas fa-times"></i></div>
                     </div>
 
                     <div class="input-bar">
@@ -812,7 +811,7 @@
 
             <div class="setting-section">
                 <div class="setting-section-title">
-                    <i class="fas fa-globe" style="color: #555; width: 22px; text-align: center; font-size: 20px;"></i>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-right: 2px;"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
                     <span data-i18n="App Language">App Language</span>
                 </div>
                 <div class="select-wrapper" onclick="openLangModal('app')">
@@ -823,7 +822,7 @@
 
             <div class="setting-section">
                 <div class="setting-section-title">
-                    <i class="fas fa-language" style="color: #555; width: 22px; text-align: center; font-size: 20px;"></i>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-right: 2px;"><path d="M4 5h16"></path><path d="M9 3v2c0 4.418-2.239 8-5 8"></path><path d="M5 9c2.106 0 4.5 1.5 4.5 4.5"></path><path d="M12 21l-3-9l-3 9"></path><path d="M7.5 18h3"></path><path d="M20 14l-4 7"></path><path d="M15 21h6"></path></svg>
                     <span data-i18n="Response Language">Response Language</span>
                 </div>
                 <div class="select-wrapper" onclick="openLangModal('response')">
@@ -1634,38 +1633,13 @@
             const fileNameSpan = document.getElementById('attachment-name');
 
             if (file.type.startsWith('image/')) {
-                if (window.createImageBitmap) {
-                    createImageBitmap(file).then(bitmap => {
-                        const canvas = document.createElement('canvas');
-                        const MAX_WIDTH = 800; 
-                        let scale = MAX_WIDTH / bitmap.width;
-                        if (scale > 1) scale = 1;
-                        canvas.width = bitmap.width * scale;
-                        canvas.height = bitmap.height * scale;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-                        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6);
-                        currentAttachmentData = { type: 'image', name: file.name, data: compressedBase64 };
-                        imgPreview.src = compressedBase64;
-                        imgPreview.style.display = 'block'; filePreview.style.display = 'none'; previewContainer.style.display = 'flex';
-                    }).catch(err => {
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            currentAttachmentData = { type: 'image', name: file.name, data: e.target.result };
-                            imgPreview.src = e.target.result;
-                            imgPreview.style.display = 'block'; filePreview.style.display = 'none'; previewContainer.style.display = 'flex';
-                        }
-                        reader.readAsDataURL(file);
-                    });
-                } else {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        currentAttachmentData = { type: 'image', name: file.name, data: e.target.result };
-                        imgPreview.src = e.target.result;
-                        imgPreview.style.display = 'block'; filePreview.style.display = 'none'; previewContainer.style.display = 'flex';
-                    }
-                    reader.readAsDataURL(file);
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    currentAttachmentData = { type: 'image', name: file.name, data: e.target.result };
+                    imgPreview.src = e.target.result;
+                    imgPreview.style.display = 'block'; filePreview.style.display = 'none'; previewContainer.style.display = 'flex';
                 }
+                reader.readAsDataURL(file);
             } else {
                 currentAttachmentData = { type: 'file', name: file.name, data: null };
                 imgPreview.style.display = 'none'; filePreview.style.display = 'flex';
@@ -1907,7 +1881,13 @@
         if (ignoreNextClick) { ignoreNextClick = false; return; }
         if (!recognition) { alert("Speech recognition is not supported in this browser."); return; }
         stopTTS(); stopVoiceNoteBubble();
-        if (isDictating) { recognition.stop(); } else { recognition.start(); }
+        if (isDictating) { 
+            recognition.stop(); 
+            isDictating = false;
+            document.getElementById('mike-btn').classList.remove('recording');
+        } else { 
+            recognition.start(); 
+        }
     };
 
     let vnMediaRecorder; let vnAudioChunks = []; let isVoiceNoteActive = false; let isSendingAudio = false; let isCancelingAudio = false; let recTimerInterval; let recSeconds = 0;
@@ -2001,6 +1981,18 @@
 
     function loadSelectedChat(index, shouldToggleSidebar = false) {
         if (isGenerating) stopGeneration(); stopTTS(); 
+        
+        // --- Bug 2, 3, 4 fixes ---
+        document.getElementById('user-input').value = "";
+        autoGrow(document.getElementById('user-input'));
+        if (currentAttachmentData) window.removeAttachment();
+        if (isVoiceNoteActive) cancelVoiceNoteRecord();
+        if (isDictating && recognition) {
+            recognition.stop();
+            isDictating = false;
+            document.getElementById('mike-btn').classList.remove('recording');
+        }
+        
         activeChatIndex = index; isNewSession = false; editingMsgIdx = -1; 
         const container = document.getElementById('chat-container'); container.innerHTML = "";
         chatHistory[index].messages.forEach((msg, msgIdx) => {
@@ -2015,8 +2007,16 @@
     }
 
     function createNewChat(keepSidebarOpen = false) {
+        // --- Bug 2, 3, 4 fixes ---
+        document.getElementById('user-input').value = "";
+        autoGrow(document.getElementById('user-input'));
+        if (currentAttachmentData) window.removeAttachment();
         if (isVoiceNoteActive) { cancelVoiceNoteRecord(); }
-        if (isDictating && recognition) { recognition.stop(); }
+        if (isDictating && recognition) { 
+            recognition.stop(); 
+            isDictating = false;
+            document.getElementById('mike-btn').classList.remove('recording');
+        }
         if (isGenerating) stopGeneration(); 
         stopTTS(); 
         
@@ -2031,7 +2031,6 @@
         }
         
         document.getElementById('chat-container').innerHTML = `<div class="welcome-screen" id="welcome-screen">${welcomeHtml}</div>`;
-        const input = document.getElementById('user-input'); input.value = ""; autoGrow(input);
         renderChatList(); 
         
         let appLang = localStorage.getItem('datex_app_lang') || 'english'; translateUI(appLang);
@@ -2049,13 +2048,16 @@
 
         let attachmentHTML = '';
         let imageGalleryHTML = '';
-        let isImage = attachment && attachment.type === 'image';
+        let isImage = false;
 
         if (attachment) {
-            if (isImage) {
+            if (attachment.type === 'image') {
+                isImage = true;
                 imageGalleryHTML = `<div class="user-image-gallery" style="margin-bottom: ${text ? '8px' : '0'};"><img src="${attachment.data}" onclick="openImageModal(this.src)" style="width: 120px; height: 120px; border-radius: 16px; object-fit: cover; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); cursor: pointer;"></div>`;
             } else if (attachment.type === 'file') {
-                attachmentHTML = `<div style="display: flex; align-items: center; gap: 10px; background: #e5e7eb; padding: 10px 14px; border-radius: 12px; margin-bottom: 8px;"><i class="fas fa-file-pdf" style="color: #333; font-size: 24px;"></i><span style="font-size: 13px; font-weight: 500; color: #333; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${attachment.name}</span></div>`;
+                isImage = true; 
+                let shortName = attachment.name.length > 15 ? attachment.name.substring(0, 10) + ".." + attachment.name.substring(attachment.name.lastIndexOf('.')) : attachment.name;
+                imageGalleryHTML = `<div class="user-image-gallery" style="margin-bottom: ${text ? '8px' : '0'};"><div style="width: 120px; height: 120px; border-radius: 16px; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: #f3f4f6; border: 1px solid #ddd; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; padding: 10px; text-align: center;"><i class="fas fa-file-alt" style="color: #333; font-size: 32px; margin-bottom: 8px;"></i><span style="font-size: 11px; font-weight: 600; color: #333; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${shortName}</span></div></div>`;
             } else if (attachment.type === 'audio') {
                 let dur = attachment.duration || "0:02";
                 attachmentHTML = `<div class="audio-bubble-wrap" style="padding: 6px 12px; border-radius: 22px; display: flex; align-items: center; gap: 10px; width: 200px; margin-bottom: 6px; border: 1.5px solid #000;"><div onclick="playAudioBubble(this, '${attachment.url}')" class="audio-play-btn" style="width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0;"><i class="fas fa-play play-btn-icon" style="margin-left: 2px; font-size: 13px;"></i></div><div class="audio-progress-line" style="flex: 1; height: 2px; position: relative;"><div class="audio-progress-dot" style="position: absolute; left: 0; top: -3px; width: 8px; height: 8px; border-radius: 50%;"></div></div><span class="audio-timer" data-duration="${dur}" style="font-size: 12px; font-weight: 500; min-width: 30px; text-align: right;">${dur}</span></div>`;
@@ -2244,7 +2246,7 @@
         
         let tempImages = [];
         formatted = formatted.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, function(match, alt, url) {
-            tempImages.push(`<img src="${url}" alt="${alt}" onclick="openImageModal(this.src)" style="width: 100%; max-width: 350px; aspect-ratio: 1/1; border-radius: 16px; margin: 10px 0; display: block; object-fit: cover; background: #f0f0f0; cursor: pointer;" onload="this.style.background='transparent'">`);
+            tempImages.push(`<img src="${url}" alt="${alt}" onclick="openImageModal(this.src)" style="width: 100%; max-width: 350px; aspect-ratio: 1/1; border-radius: 16px; margin: 10px 0; display: block; object-fit: cover; box-shadow: 0 4px 15px rgba(0,0,0,0.1); background: #f0f0f0; cursor: pointer;" onload="this.style.background='transparent'">`);
             return `___IMG_TAG_${tempImages.length - 1}___`;
         });
 
@@ -2370,6 +2372,11 @@
     }
 
     function handleSendClick() { 
+        if (isDictating && recognition) { 
+            recognition.stop(); 
+            isDictating = false;
+            document.getElementById('mike-btn').classList.remove('recording');
+        }
         if (isGenerating) { stopGeneration(); } 
         else if (isVoiceNoteActive) { isSendingAudio = true; if(vnMediaRecorder && vnMediaRecorder.state !== 'inactive') vnMediaRecorder.stop(); } 
         else if (currentAttachmentData && currentAttachmentData.type === 'audio') { callDatexAPI(); resetVoiceNoteUI(); } 
@@ -2523,7 +2530,6 @@ Replace {fixedEncodeURIComponent(detailed_english_prompt)} with a highly detaile
             } else { apiMessages.push({ role: 'assistant', content: msg.content }); }
         });
 
-        // Vision model updated as per Groq's official active models for 2026
         const selectedModel = useVision ? "meta-llama/llama-4-scout-17b-16e-instruct" : "llama-3.3-70b-versatile";
         const isDeepResearchOn = localStorage.getItem('datex_deep_research') === 'true';
         const searchKeywords = ['aaj', 'ajj', 'today', 'news', 'khabar', 'price', 'match', 'ipl', 'score', 'latest', 'update', 'weather', 'mausam', 'kal', 'yesterday', 'current', 'stock', 'who won', 'kaun jeeta', 'batao', 'search', 'link', 'youtube', 'video', 'channel', 'instagram', 'linkedin', 'facebook', 'twitter', 'website', 'profile', 'account', 'url', 'site', 'browser', 'google'];
