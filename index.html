@@ -308,11 +308,14 @@
 
         .attachment-preview { display: none; position: relative; margin: 12px 0 0 20px; width: 72px; height: 72px; border-radius: 12px; background: #e5e7eb; border: 1px solid #ddd; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
         .attachment-preview img { width: 100%; height: 100%; object-fit: cover; border-radius: 11px; }
-        .attachment-preview .remove-btn { position: absolute; top: -6px; right: -6px; width: 22px; height: 22px; background: #fff; border: 1px solid #ddd; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 10px; color: #333; cursor: pointer; z-index: 10; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        /* ENHANCED REMOVE BUTTON CSS */
+        .attachment-preview .remove-btn { position: absolute; top: -8px; right: -8px; width: 26px; height: 26px; background: #ffffff; border: 1.5px solid #eaeaea; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 13px; color: #000000; cursor: pointer; z-index: 10; box-shadow: 0 2px 6px rgba(0,0,0,0.15); transition: transform 0.15s; }
+        .attachment-preview .remove-btn:active { transform: scale(0.9); }
+        body.dark-mode .attachment-preview .remove-btn { border-color: #555; }
+        
         .file-icon-placeholder { font-size: 28px; color: #333; }
         .file-name-placeholder { font-size: 10px; color: #555; margin-top: 6px; max-width: 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; text-align: center; }
 
-        /* ADDED: padding-right 64px to ensure send button has fixed space */
         .input-bar { background: transparent; border: none; display: flex; align-items: flex-end; padding: 8px 64px 8px 10px; width: 100%; position: relative; }
         
         .input-bar textarea { flex: 1; background: transparent; border: none; padding: 10px 12px 10px 0; font-size: 16px; outline: none; min-width: 0; color: #000000; resize: none; max-height: 150px; overflow-y: auto; line-height: 24px; height: 44px; scrollbar-width: none; -ms-overflow-style: none; touch-action: pan-y; overscroll-behavior: none; }
@@ -470,6 +473,14 @@
         .audio-progress-line { background: #bbb; }
         .audio-progress-dot { background: #000; }
         .audio-timer { color: #000; }
+
+        /* --- IMAGE ZOOM MODAL CSS --- */
+        .image-zoom-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 99999; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.25s ease; backdrop-filter: blur(4px); }
+        .image-zoom-overlay.active { display: flex; opacity: 1; }
+        .image-zoom-close { position: absolute; top: 25px; right: 25px; width: 40px; height: 40px; background: #ffffff; color: #000000; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 20px; cursor: pointer; z-index: 100000; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: transform 0.2s; }
+        .image-zoom-close:active { transform: scale(0.9); }
+        #image-zoom-img { max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); transform: scale(0.95); transition: transform 0.25s ease; cursor: default; }
+        .image-zoom-overlay.active #image-zoom-img { transform: scale(1); }
 
         /* --- DARK MODE LOGIC --- */
         body.dark-mode { background-color: #000000; color: #ffffff; }
@@ -718,6 +729,13 @@
         </div>
     </div>
 
+    <div class="image-zoom-overlay" id="image-zoom-overlay" onclick="closeImageModal()">
+        <div class="image-zoom-close" onclick="closeImageModal(); event.stopPropagation();">
+            <i class="fas fa-times"></i>
+        </div>
+        <img id="image-zoom-img" src="" alt="Zoomed Image" onclick="event.stopPropagation()">
+    </div>
+
     <div class="profile-overlay" id="profile-overlay" onclick="toggleProfileModal()"></div>
     <div class="profile-modal" id="profile-modal">
         <div class="profile-modal-top">
@@ -793,7 +811,7 @@
 
             <div class="setting-section">
                 <div class="setting-section-title">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
                     <span data-i18n="App Language">App Language</span>
                 </div>
                 <div class="select-wrapper" onclick="openLangModal('app')">
@@ -1493,6 +1511,23 @@
         resizeHandler();
     }
 
+    window.openImageModal = function(src) {
+        const overlay = document.getElementById('image-zoom-overlay');
+        const img = document.getElementById('image-zoom-img');
+        img.src = src;
+        overlay.style.display = 'flex';
+        setTimeout(() => { overlay.classList.add('active'); }, 10);
+    };
+
+    window.closeImageModal = function() {
+        const overlay = document.getElementById('image-zoom-overlay');
+        overlay.classList.remove('active');
+        setTimeout(() => {
+            overlay.style.display = 'none';
+            document.getElementById('image-zoom-img').src = '';
+        }, 250); 
+    };
+
     const GROQ_API_KEY = "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"; 
     const TAVILY_API_KEY = "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"; 
 
@@ -1602,7 +1637,11 @@
         event.target.value = '';
     }
 
-    function removeAttachment() { currentAttachmentData = null; document.getElementById('attachment-preview').style.display = 'none'; document.getElementById('attachment-img-preview').src = ""; }
+    window.removeAttachment = function() { 
+        currentAttachmentData = null; 
+        document.getElementById('attachment-preview').style.display = 'none'; 
+        document.getElementById('attachment-img-preview').src = ""; 
+    };
 
     function autoGrow(element) { element.style.height = "44px"; if (element.scrollHeight > 44) { element.style.height = (element.scrollHeight) + "px"; } }
 
@@ -1694,11 +1733,9 @@
 
         let voices = window.speechSynthesis.getVoices();
         if(voices.length > 0) {
-            // 1. Language Filter
             let langVoices = voices.filter(v => v.lang.startsWith('en') || v.lang.startsWith('hi'));
             if (langVoices.length === 0) langVoices = voices;
 
-            // 2. Google / Premium filter
             let premiumVoices = langVoices.filter(v => 
                 v.name.includes('Google') || 
                 v.name.includes('Neural') || 
@@ -1708,14 +1745,12 @@
             
             let searchPool = premiumVoices.length > 0 ? premiumVoices : langVoices;
 
-            // 3. Select based on Male/Female setting
             let selectedVoice = searchPool.find(v => {
                 let n = v.name.toLowerCase();
                 if (isMale) return maleKeywords.some(k => n.includes(k));
                 return femaleKeywords.some(k => n.includes(k));
             });
             
-            // 4. Fallback if premium pool didn't have the specific gender keyword
             if (!selectedVoice) {
                 selectedVoice = langVoices.find(v => {
                     let n = v.name.toLowerCase();
@@ -1724,7 +1759,6 @@
                 });
             }
 
-            // 5. Ultimate Fallback (index based)
             if (!selectedVoice) {
                 if(isMale) {
                     selectedVoice = searchPool.length > 1 ? searchPool[searchPool.length - 1] : searchPool[0]; 
@@ -1781,6 +1815,8 @@
         let preTags = clone.querySelectorAll('pre'); preTags.forEach(p => p.remove()); 
         
         let fullText = clone.textContent.trim();
+        
+        fullText = fullText.replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '');
 
         if (!fullText) return;
 
@@ -1972,7 +2008,7 @@
 
         if (attachment) {
             if (isImage) {
-                imageGalleryHTML = `<div class="user-image-gallery" style="margin-bottom: ${text ? '8px' : '0'};"><img src="${attachment.data}" style="width: 120px; height: 120px; border-radius: 16px; object-fit: cover; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"></div>`;
+                imageGalleryHTML = `<div class="user-image-gallery" style="margin-bottom: ${text ? '8px' : '0'};"><img src="${attachment.data}" onclick="openImageModal(this.src)" style="width: 120px; height: 120px; border-radius: 16px; object-fit: cover; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); cursor: pointer;"></div>`;
             } else if (attachment.type === 'file') {
                 attachmentHTML = `<div style="display: flex; align-items: center; gap: 10px; background: #e5e7eb; padding: 10px 14px; border-radius: 12px; margin-bottom: 8px;"><i class="fas fa-file-pdf" style="color: #333; font-size: 24px;"></i><span style="font-size: 13px; font-weight: 500; color: #333; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${attachment.name}</span></div>`;
             } else if (attachment.type === 'audio') {
@@ -2156,7 +2192,7 @@
         
         let tempImages = [];
         formatted = formatted.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, function(match, alt, url) {
-            tempImages.push(`<img src="${url}" alt="${alt}" style="width: 100%; max-width: 350px; aspect-ratio: 1/1; border-radius: 16px; margin: 10px 0; display: block; object-fit: cover; box-shadow: 0 4px 15px rgba(0,0,0,0.1); background: #f0f0f0;" onload="this.style.background='transparent'">`);
+            tempImages.push(`<img src="${url}" alt="${alt}" onclick="openImageModal(this.src)" style="width: 100%; max-width: 350px; aspect-ratio: 1/1; border-radius: 16px; margin: 10px 0; display: block; object-fit: cover; box-shadow: 0 4px 15px rgba(0,0,0,0.1); background: #f0f0f0; cursor: pointer;" onload="this.style.background='transparent'">`);
             return `___IMG_TAG_${tempImages.length - 1}___`;
         });
 
