@@ -309,13 +309,14 @@
         .attachment-preview { display: none; position: relative; margin: 12px 0 0 20px; width: 72px; height: 72px; border-radius: 12px; background: #e5e7eb; border: 1px solid #ddd; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
         .attachment-preview img { width: 100%; height: 100%; object-fit: cover; border-radius: 11px; }
         /* ENHANCED REMOVE BUTTON CSS */
-        .attachment-preview .remove-btn { position: absolute; top: -8px; right: -8px; width: 26px; height: 26px; background: #ffffff; border: 1.5px solid #eaeaea; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 13px; color: #000000; cursor: pointer; z-index: 10; box-shadow: 0 2px 6px rgba(0,0,0,0.15); transition: transform 0.15s; }
+        .attachment-preview .remove-btn { position: absolute; top: 4px; right: 4px; width: 24px; height: 24px; background: #ffffff; border: 1px solid #eaeaea; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 12px; color: #000000; cursor: pointer; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: transform 0.15s; }
         .attachment-preview .remove-btn:active { transform: scale(0.9); }
         body.dark-mode .attachment-preview .remove-btn { border-color: #555; }
         
         .file-icon-placeholder { font-size: 28px; color: #333; }
         .file-name-placeholder { font-size: 10px; color: #555; margin-top: 6px; max-width: 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; text-align: center; }
 
+        /* ADDED: padding-right 64px to ensure send button has fixed space */
         .input-bar { background: transparent; border: none; display: flex; align-items: flex-end; padding: 8px 64px 8px 10px; width: 100%; position: relative; }
         
         .input-bar textarea { flex: 1; background: transparent; border: none; padding: 10px 12px 10px 0; font-size: 16px; outline: none; min-width: 0; color: #000000; resize: none; max-height: 150px; overflow-y: auto; line-height: 24px; height: 44px; scrollbar-width: none; -ms-overflow-style: none; touch-action: pan-y; overscroll-behavior: none; }
@@ -693,7 +694,7 @@
                             <i id="attachment-icon" class="fas fa-file-alt file-icon-placeholder"></i>
                             <span id="attachment-name" class="file-name-placeholder"></span>
                         </div>
-                        <div class="remove-btn" onclick="removeAttachment()"><i class="fas fa-times"></i></div>
+                        <div class="remove-btn" onclick="removeAttachment(event)"><i class="fas fa-times"></i></div>
                     </div>
 
                     <div class="input-bar">
@@ -811,7 +812,7 @@
 
             <div class="setting-section">
                 <div class="setting-section-title">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1 4-10z"></path></svg>
                     <span data-i18n="App Language">App Language</span>
                 </div>
                 <div class="select-wrapper" onclick="openLangModal('app')">
@@ -1637,10 +1638,12 @@
         event.target.value = '';
     }
 
-    window.removeAttachment = function() { 
+    window.removeAttachment = function(e) { 
+        if (e) e.stopPropagation();
         currentAttachmentData = null; 
         document.getElementById('attachment-preview').style.display = 'none'; 
         document.getElementById('attachment-img-preview').src = ""; 
+        document.getElementById('user-input').focus();
     };
 
     function autoGrow(element) { element.style.height = "44px"; if (element.scrollHeight > 44) { element.style.height = (element.scrollHeight) + "px"; } }
@@ -2008,7 +2011,7 @@
 
         if (attachment) {
             if (isImage) {
-                imageGalleryHTML = `<div class="user-image-gallery" style="margin-bottom: ${text ? '8px' : '0'};"><img src="${attachment.data}" onclick="openImageModal(this.src)" style="width: 120px; height: 120px; border-radius: 16px; object-fit: cover; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); cursor: pointer;"></div>`;
+                imageGalleryHTML = `<div class="user-image-gallery" style="margin-bottom: ${text ? '8px' : '0'};"><img src="${attachment.data}" onclick="openImageModal(this.src)" style="width: 120px; height: 120px; border-radius: 16px; object-fit: cover; flex-shrink: 0; cursor: pointer;"></div>`;
             } else if (attachment.type === 'file') {
                 attachmentHTML = `<div style="display: flex; align-items: center; gap: 10px; background: #e5e7eb; padding: 10px 14px; border-radius: 12px; margin-bottom: 8px;"><i class="fas fa-file-pdf" style="color: #333; font-size: 24px;"></i><span style="font-size: 13px; font-weight: 500; color: #333; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${attachment.name}</span></div>`;
             } else if (attachment.type === 'audio') {
@@ -2192,7 +2195,7 @@
         
         let tempImages = [];
         formatted = formatted.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, function(match, alt, url) {
-            tempImages.push(`<img src="${url}" alt="${alt}" onclick="openImageModal(this.src)" style="width: 100%; max-width: 350px; aspect-ratio: 1/1; border-radius: 16px; margin: 10px 0; display: block; object-fit: cover; box-shadow: 0 4px 15px rgba(0,0,0,0.1); background: #f0f0f0; cursor: pointer;" onload="this.style.background='transparent'">`);
+            tempImages.push(`<img src="${url}" alt="${alt}" onclick="openImageModal(this.src)" style="width: 100%; max-width: 350px; aspect-ratio: 1/1; border-radius: 16px; margin: 10px 0; display: block; object-fit: cover; background: #f0f0f0; cursor: pointer;" onload="this.style.background='transparent'">`);
             return `___IMG_TAG_${tempImages.length - 1}___`;
         });
 
@@ -2338,7 +2341,7 @@
         
         if (!isRegenerate) {
             const input = document.getElementById('user-input'); message = input.value.trim();
-            if (currentAttachmentData) { attachmentToSave = currentAttachmentData; removeAttachment(); }
+            if (currentAttachmentData) { attachmentToSave = currentAttachmentData; window.removeAttachment(); }
             if (!message && !attachmentToSave) return;
             input.value = ""; input.style.height = "44px"; 
 
@@ -2471,7 +2474,8 @@ Replace {fixedEncodeURIComponent(detailed_english_prompt)} with a highly detaile
             } else { apiMessages.push({ role: 'assistant', content: msg.content }); }
         });
 
-        const selectedModel = useVision ? "llama-3.2-11b-vision-preview" : "llama-3.3-70b-versatile";
+        // Vision model updated as per Groq's official active models for 2026
+        const selectedModel = useVision ? "meta-llama/llama-4-scout-17b-16e-instruct" : "llama-3.3-70b-versatile";
         const isDeepResearchOn = localStorage.getItem('datex_deep_research') === 'true';
         const searchKeywords = ['aaj', 'ajj', 'today', 'news', 'khabar', 'price', 'match', 'ipl', 'score', 'latest', 'update', 'weather', 'mausam', 'kal', 'yesterday', 'current', 'stock', 'who won', 'kaun jeeta', 'batao', 'search', 'link', 'youtube', 'video', 'channel', 'instagram', 'linkedin', 'facebook', 'twitter', 'website', 'profile', 'account', 'url', 'site', 'browser', 'google'];
         
