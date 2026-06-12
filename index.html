@@ -235,6 +235,7 @@
         .model-name { font-weight: 600; font-size: 18px; color: #000; margin-top: 6px; }
         .version-pill { font-size: 11.5px; font-weight: 600; background: #f0f0f0; display: inline-block; padding: 4px 14px; border-radius: 14px; color: #000; border: 1.5px solid #000; margin-top: 8px; transition: background-color 0.15s, border-color 0.15s, color 0.15s; }
         
+        /* Adjusted Logo padding to move exactly 2px left */
         .logo-container { display: flex; align-items: center; margin-right: -2px; }
         .logo-container img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: none; }
         
@@ -583,11 +584,11 @@
         body.dark-mode .profile-logout-btn:active { background: #333; }
         
         body.dark-mode .typing-dot { background-color: #fff; }
-        body.dark-mode .chat-attachment-img { border-color: #eaeaea; }
-        body.dark-mode .chat-attachment-pdf { background: #2c2c2c; border-color: #eaeaea; }
+        body.dark-mode .chat-attachment-img { border-color: #555; }
+        body.dark-mode .chat-attachment-pdf { background: #2c2c2c; border-color: #555; }
         body.dark-mode .chat-attachment-pdf i { color: #ccc !important; }
         body.dark-mode .chat-attachment-pdf span { color: #ccc !important; }
-        body.dark-mode .ai-gen-img { border-color: #eaeaea !important; }
+        body.dark-mode .ai-gen-img { border-color: #555 !important; }
     </style>
 </head>
 <body>
@@ -646,7 +647,7 @@
                 
                 <div class="password-wrapper" id="password-input-container">
                     <input type="password" id="auth-password" class="auth-input" placeholder="Enter your password" autocomplete="current-password">
-                    <i class="fas fa-eye toggle-password" id="togglePassword" onclick="window.togglePasswordVisibility()"></i>
+                    <i class="fas fa-eye toggle-password" id="togglePassword" onmousedown="event.preventDefault();" ontouchstart="event.preventDefault();" onclick="window.togglePasswordVisibility()"></i>
                     <div id="password-error-msg" class="auth-inline-error">Invalid password</div>
                 </div>
 
@@ -679,8 +680,8 @@
 
         <main class="main-content" id="chat-container">
             <div class="welcome-screen" id="welcome-screen">
-                <div style="display:flex; flex-direction:row; gap:8px; align-items:center; justify-content:center; width: 100%;">
-                    <span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span>
+                <div style="display:flex; flex-direction:row; gap:6px; align-items:center; justify-content:center; width: 100%;">
+                    <span data-i18n="Hello,">Hello,</span>
                     <span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">User</span>
                 </div>
             </div>
@@ -1203,7 +1204,7 @@
 
             const welcomeContainer = document.getElementById('welcome-screen');
             if (welcomeContainer) {
-                welcomeContainer.innerHTML = `<div style="display:flex; flex-direction:row; gap:8px; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${displayFirstNameWelcome}</span></div>`;
+                welcomeContainer.innerHTML = `<div style="display:flex; flex-direction:row; gap:6px; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${displayFirstNameWelcome}</span></div>`;
             }
 
             let currentAppLang = localStorage.getItem('datex_app_lang') || 'english';
@@ -1358,6 +1359,7 @@
             localStorage.setItem('datex_app_lang', val);
             document.getElementById('app-lang-btn').innerText = label;
             translateUI(val); 
+            setTimeout(() => translateUI(val), 50);
         } else {
             localStorage.setItem('datex_response_lang', val);
             document.getElementById('response-lang-btn').innerText = label;
@@ -1382,7 +1384,7 @@
         ])];
 
         let translationMap = {};
-        let cached = localStorage.getItem('datex_ui_trans_v3_' + isoCode);
+        let cached = localStorage.getItem('datex_ui_trans_v4_' + isoCode);
         
         if (cached) {
             translationMap = JSON.parse(cached);
@@ -1405,7 +1407,7 @@
                 uniqueTexts.forEach((original, index) => {
                     translationMap[original] = translatedArray[index] || original;
                 });
-                localStorage.setItem('datex_ui_trans_v3_' + isoCode, JSON.stringify(translationMap));
+                localStorage.setItem('datex_ui_trans_v4_' + isoCode, JSON.stringify(translationMap));
             } catch(e) {
                 console.error("UI Translation error:", e);
                 return; 
@@ -1806,10 +1808,11 @@
         ttsUtterance = new SpeechSynthesisUtterance(textSegment);
         
         let prefType = currentTtsVoicePref; 
-        let isGirl = (prefType === 'girl' || prefType === 'male'); 
+        let isGirl = (prefType === 'girl'); 
         
-        let girlKeywords = ['jenny', 'samantha', 'aria', 'neerja', 'girl', 'child', 'variant 1', 'voice 1', 'us english', 'en-us', 'female']; 
-        let womenKeywords = ['zira', 'victoria', 'tessa', 'susan', 'karen', 'hazel', 'woman', 'mature', 'variant 2', 'voice 2', 'uk english', 'en-gb'];
+        // Male keywords used for girl to match user's previous preference
+        let girlKeywords = ['male', 'david', 'daniel', 'mark', 'george', 'alex', 'brian', 'james', 'guy', 'variant 2', 'variant 4', 'voice ii', 'voice 2', 'neerja']; 
+        let womenKeywords = ['female', 'samantha', 'zira', 'victoria', 'tessa', 'karen', 'hazel', 'susan', 'variant 1', 'variant 3', 'voice i', 'voice 1', 'jenny', 'aria'];
 
         let voices = window.speechSynthesis.getVoices();
         if(voices.length > 0) {
@@ -1871,8 +1874,18 @@
         stopVoiceNoteBubble();
 
         if (currentTtsBtn === btn) {
-            stopTTS(); 
-            return;
+            if (window.speechSynthesis.speaking) {
+                if (isTtsPlaying) { 
+                    isTtsPlaying = false; 
+                    window.speechSynthesis.pause(); 
+                    btn.querySelector('i').className = 'fas fa-play'; 
+                } else { 
+                    isTtsPlaying = true; 
+                    window.speechSynthesis.resume(); 
+                    btn.querySelector('i').className = 'fas fa-pause'; 
+                }
+                return;
+            }
         }
         
         stopTTS(); 
@@ -1892,7 +1905,7 @@
 
         currentTtsVoicePref = localStorage.getItem('datex_voice_type') || 'women';
         currentTtsBtn = btn; currentSegmentIdx = 0; isTtsPlaying = true; 
-        btn.querySelector('i').className = 'fas fa-stop';
+        btn.querySelector('i').className = 'fas fa-pause';
         
         playNextTtsSegment(); 
     }
@@ -2092,7 +2105,7 @@
         if (window.currentUser) {
             let name = window.currentUser.displayName || window.currentUser.email.split('@')[0];
             let firstName = window.truncateText(name.split(' ')[0], 12);
-            welcomeHtml = `<div style="display:flex; flex-direction:row; gap:8px; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${firstName}</span></div>`;
+            welcomeHtml = `<div style="display:flex; flex-direction:row; gap:6px; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${firstName}</span></div>`;
         }
         
         document.getElementById('chat-container').innerHTML = `<div class="welcome-screen" id="welcome-screen">${welcomeHtml}</div>`;
