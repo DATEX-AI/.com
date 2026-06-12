@@ -679,8 +679,8 @@
 
         <main class="main-content" id="chat-container">
             <div class="welcome-screen" id="welcome-screen">
-                <div style="display:flex; flex-direction:row; gap:8px; align-items:center; justify-content:center; width: 100%;">
-                    <span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span>
+                <div style="display:flex; flex-direction:row; gap:0px; align-items:center; justify-content:center; width: 100%;">
+                    <span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,&nbsp;</span>
                     <span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">User</span>
                 </div>
             </div>
@@ -1203,7 +1203,7 @@
 
             const welcomeContainer = document.getElementById('welcome-screen');
             if (welcomeContainer) {
-                welcomeContainer.innerHTML = `<div style="display:flex; flex-direction:row; gap:8px; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${displayFirstNameWelcome}</span></div>`;
+                welcomeContainer.innerHTML = `<div style="display:flex; flex-direction:row; gap:0px; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,&nbsp;</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${displayFirstNameWelcome}</span></div>`;
             }
 
             let currentAppLang = localStorage.getItem('datex_app_lang') || 'english';
@@ -1567,17 +1567,20 @@
 
     window.currentAttachments = [];
 
+    // ====== NEW TTS SYSTEM (BUG FIXES INCLUDED) ======
     let ttsUtterance = null;
     let ttsSegments = [];
     let currentSegmentIdx = 0;
     let isTtsPlaying = false;
+    let isTtsPaused = false;
     let currentTtsBtn = null;
     let currentTtsVoicePref = 'women';
 
-    function stopTTS() {
+    function fullStopTTS() {
         isTtsPlaying = false;
+        isTtsPaused = false;
         ttsSegments = [];        
-        currentSegmentIdx = 9999; 
+        currentSegmentIdx = 0; 
         
         if (window.speechSynthesis) {
             window.speechSynthesis.cancel(); 
@@ -1589,6 +1592,134 @@
             currentTtsBtn = null;
         }
     }
+
+    function playNextTtsSegment() {
+        if (!isTtsPlaying || currentSegmentIdx >= ttsSegments.length || !currentTtsBtn) {
+            if (currentSegmentIdx >= ttsSegments.length) fullStopTTS();
+            return;
+        }
+
+        let textSegment = ttsSegments[currentSegmentIdx].trim();
+        if (!textSegment) { currentSegmentIdx++; playNextTtsSegment(); return; }
+
+        ttsUtterance = new SpeechSynthesisUtterance(textSegment);
+        
+        let prefType = currentTtsVoicePref; 
+        
+        // Strict Voice matching
+        let girlKeywords = ['google us english', 'samantha', 'aria', 'neerja', 'jenny', 'heera', 'microsoft sonia', 'en-us', 'child', 'girl']; 
+        let womenKeywords = ['google uk english female', 'microsoft zira', 'hazel', 'victoria', 'susan', 'karen', 'swara', 'microsoft kalpana', 'en-gb', 'woman', 'mature'];
+
+        let voices = window.speechSynthesis.getVoices();
+        if(voices.length > 0) {
+            let langVoices = voices.filter(v => v.lang.startsWith('en') || v.lang.startsWith('hi'));
+            if (langVoices.length === 0) langVoices = voices;
+
+            let premiumVoices = langVoices.filter(v => 
+                v.name.includes('Google') || 
+                v.name.includes('Neural') || 
+                v.name.includes('Online') ||
+                v.name.includes('Natural') ||
+                v.name.includes('Microsoft')
+            );
+            
+            let searchPool = premiumVoices.length > 0 ? premiumVoices : langVoices;
+            let selectedVoice = null;
+
+            if (prefType === 'girl') {
+                selectedVoice = searchPool.find(v => {
+                    let n = v.name.toLowerCase();
+                    return girlKeywords.some(k => n.includes(k));
+                });
+            } else {
+                selectedVoice = searchPool.find(v => {
+                    let n = v.name.toLowerCase();
+                    return womenKeywords.some(k => n.includes(k));
+                });
+            }
+            
+            if (!selectedVoice) {
+                selectedVoice = langVoices.find(v => {
+                    let n = v.name.toLowerCase();
+                    if (prefType === 'girl') return girlKeywords.some(k => n.includes(k));
+                    return womenKeywords.some(k => n.includes(k));
+                });
+            }
+
+            if (!selectedVoice) {
+                selectedVoice = searchPool.find(v => v.name.toLowerCase().includes('female')) || langVoices[0];
+            }
+
+            if(selectedVoice) {
+                ttsUtterance.voice = selectedVoice;
+                ttsUtterance.lang = selectedVoice.lang;
+            }
+        }
+
+        ttsUtterance.onend = () => { 
+            if (isTtsPlaying) { 
+                currentSegmentIdx++; 
+                if (currentSegmentIdx < ttsSegments.length) playNextTtsSegment(); 
+                else fullStopTTS();
+            } 
+        };
+        ttsUtterance.onerror = (e) => { 
+            if (isTtsPlaying) { 
+                currentSegmentIdx++; 
+                if (currentSegmentIdx < ttsSegments.length) playNextTtsSegment(); 
+                else fullStopTTS();
+            } 
+        };
+        window.speechSynthesis.speak(ttsUtterance);
+    }
+
+    function speakText(btn) {
+        if (!window.speechSynthesis) { alert("Your browser does not support Text-to-Speech."); return; }
+        stopVoiceNoteBubble();
+
+        if (currentTtsBtn === btn) {
+            if (isTtsPlaying) {
+                // Pause Voice
+                isTtsPlaying = false;
+                isTtsPaused = true;
+                window.speechSynthesis.cancel();
+                btn.querySelector('i').className = 'fas fa-volume-up'; 
+            } else if (isTtsPaused) {
+                // Resume Voice
+                isTtsPlaying = true;
+                isTtsPaused = false;
+                btn.querySelector('i').className = 'fas fa-stop';
+                playNextTtsSegment(); 
+            }
+            return;
+        }
+        
+        fullStopTTS(); 
+        
+        const bubble = btn.closest('.bubble-container').querySelector('.bubble');
+        let clone = bubble.cloneNode(true);
+        let preTags = clone.querySelectorAll('pre'); preTags.forEach(p => p.remove()); 
+        
+        let fullText = clone.textContent.trim();
+        fullText = fullText.replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '');
+
+        if (!fullText) return;
+
+        ttsSegments = fullText.replace(/([.!?।\n])\s*/g, "$1|").split("|").filter(s => s.trim().length > 0);
+        if (ttsSegments.length === 0) ttsSegments = [fullText];
+
+        // Setting fetch only happens on new text, so it won't interrupt mid-speech
+        currentTtsVoicePref = localStorage.getItem('datex_voice_type') || 'women';
+        
+        currentTtsBtn = btn; 
+        currentSegmentIdx = 0; 
+        isTtsPlaying = true; 
+        isTtsPaused = false;
+        btn.querySelector('i').className = 'fas fa-stop';
+        
+        playNextTtsSegment(); 
+    }
+    // ====== END TTS SYSTEM ======
 
     function updateThreeDotMenus() {
         const allUserRows = Array.from(document.querySelectorAll('.message-row.user-row'));
@@ -1761,7 +1892,7 @@
     }
 
     function playAudioBubble(btn, url) {
-        if (window.speechSynthesis && (window.speechSynthesis.speaking || isTtsPlaying)) stopTTS();
+        if (window.speechSynthesis && (window.speechSynthesis.speaking || isTtsPlaying)) fullStopTTS();
         if(globalAudioPlayer && globalAudioPlayer.src !== url) {
             globalAudioPlayer.pause();
             cancelAnimationFrame(audioAnimFrame);
@@ -1791,118 +1922,6 @@
             icon.className = 'fas fa-play play-btn-icon'; 
             cancelAnimationFrame(audioAnimFrame);
         }
-    }
-
-    // UPDATED PLAY NEXT TTS SEGMENT WITH GIRL/WOMEN LOGIC
-    function playNextTtsSegment() {
-        if (!isTtsPlaying || currentSegmentIdx >= ttsSegments.length || !currentTtsBtn) {
-            if (currentSegmentIdx >= ttsSegments.length) stopTTS();
-            return;
-        }
-
-        let textSegment = ttsSegments[currentSegmentIdx].trim();
-        if (!textSegment) { currentSegmentIdx++; playNextTtsSegment(); return; }
-
-        ttsUtterance = new SpeechSynthesisUtterance(textSegment);
-        
-        let prefType = currentTtsVoicePref; 
-        
-        let girlKeywords = ['google us english', 'samantha', 'aria', 'neerja', 'jenny', 'heera', 'microsoft sonia', 'en-us-x-sfg', 'child', 'girl']; 
-        let womenKeywords = ['google uk english female', 'microsoft zira', 'hazel', 'victoria', 'susan', 'karen', 'swara', 'microsoft kalpana', 'en-gb-x-rjs', 'woman', 'mature'];
-
-        let voices = window.speechSynthesis.getVoices();
-        if(voices.length > 0) {
-            let langVoices = voices.filter(v => v.lang.startsWith('en') || v.lang.startsWith('hi'));
-            if (langVoices.length === 0) langVoices = voices;
-
-            let premiumVoices = langVoices.filter(v => 
-                v.name.includes('Google') || 
-                v.name.includes('Neural') || 
-                v.name.includes('Online') ||
-                v.name.includes('Natural') ||
-                v.name.includes('Microsoft')
-            );
-            
-            let searchPool = premiumVoices.length > 0 ? premiumVoices : langVoices;
-            let selectedVoice = null;
-
-            if (prefType === 'girl') {
-                selectedVoice = searchPool.find(v => {
-                    let n = v.name.toLowerCase();
-                    return girlKeywords.some(k => n.includes(k));
-                });
-            } else {
-                selectedVoice = searchPool.find(v => {
-                    let n = v.name.toLowerCase();
-                    return womenKeywords.some(k => n.includes(k));
-                });
-            }
-            
-            if (!selectedVoice) {
-                selectedVoice = langVoices.find(v => {
-                    let n = v.name.toLowerCase();
-                    if (prefType === 'girl') return girlKeywords.some(k => n.includes(k));
-                    return womenKeywords.some(k => n.includes(k));
-                });
-            }
-
-            if (!selectedVoice) {
-                selectedVoice = searchPool.find(v => v.name.toLowerCase().includes('female')) || langVoices[0];
-            }
-
-            if(selectedVoice) {
-                ttsUtterance.voice = selectedVoice;
-                ttsUtterance.lang = selectedVoice.lang;
-            }
-        }
-
-        ttsUtterance.onend = () => { 
-            if (isTtsPlaying) { 
-                currentSegmentIdx++; 
-                if (currentSegmentIdx < ttsSegments.length) playNextTtsSegment(); 
-                else stopTTS();
-            } 
-        };
-        ttsUtterance.onerror = (e) => { 
-            if (isTtsPlaying) { 
-                currentSegmentIdx++; 
-                if (currentSegmentIdx < ttsSegments.length) playNextTtsSegment(); 
-                else stopTTS();
-            } 
-        };
-        window.speechSynthesis.speak(ttsUtterance);
-    }
-
-    // UPDATED SPEAK TEXT LOGIC
-    function speakText(btn) {
-        if (!window.speechSynthesis) { alert("Your browser does not support Text-to-Speech."); return; }
-        stopVoiceNoteBubble();
-
-        if (currentTtsBtn === btn) {
-            stopTTS(); 
-            return;
-        }
-        
-        stopTTS(); 
-        
-        const bubble = btn.closest('.bubble-container').querySelector('.bubble');
-        let clone = bubble.cloneNode(true);
-        let preTags = clone.querySelectorAll('pre'); preTags.forEach(p => p.remove()); 
-        
-        let fullText = clone.textContent.trim();
-        
-        fullText = fullText.replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '');
-
-        if (!fullText) return;
-
-        ttsSegments = fullText.replace(/([.!?।\n])\s*/g, "$1|").split("|").filter(s => s.trim().length > 0);
-        if (ttsSegments.length === 0) ttsSegments = [fullText];
-
-        currentTtsVoicePref = localStorage.getItem('datex_voice_type') || 'women';
-        currentTtsBtn = btn; currentSegmentIdx = 0; isTtsPlaying = true; 
-        btn.querySelector('i').className = 'fas fa-stop';
-        
-        playNextTtsSegment(); 
     }
 
     let isDictating = false; 
@@ -1949,7 +1968,7 @@
     document.getElementById('mike-btn').onclick = () => {
         if (ignoreNextClick) { ignoreNextClick = false; return; }
         if (!recognition) { alert("Speech recognition is not supported in this browser."); return; }
-        stopTTS(); stopVoiceNoteBubble();
+        fullStopTTS(); stopVoiceNoteBubble();
         if (isDictating) { 
             recognition.stop(); 
             isDictating = false;
@@ -1980,7 +1999,7 @@
     micBtn.addEventListener('pointercancel', (e) => { vnIsDragging = false; clearTimeout(vnHoldTimer); dragLockUi.classList.remove('active'); });
 
     async function startVoiceNoteRecord() {
-        stopTTS(); stopVoiceNoteBubble();
+        fullStopTTS(); stopVoiceNoteBubble();
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             vnMediaRecorder = new MediaRecorder(stream); vnAudioChunks = [];
@@ -2039,7 +2058,7 @@
         
         if (isVoiceNoteActive) { cancelVoiceNoteRecord(); }
         if (isDictating && recognition) { recognition.stop(); }
-        stopTTS();
+        fullStopTTS();
         
         if (isGenerating && activeChatIndex === index) stopGeneration(); 
         
@@ -2050,7 +2069,7 @@
     }
 
     function loadSelectedChat(index, shouldToggleSidebar = false) {
-        if (isGenerating) stopGeneration(); stopTTS(); 
+        if (isGenerating) stopGeneration(); fullStopTTS(); 
         
         document.getElementById('user-input').value = "";
         autoGrow(document.getElementById('user-input'));
@@ -2091,7 +2110,7 @@
             document.getElementById('mike-btn').classList.remove('recording');
         }
         if (isGenerating) stopGeneration(); 
-        stopTTS(); 
+        fullStopTTS(); 
         
         isNewSession = true; activeChatIndex = -1; editingMsgIdx = -1; 
         
@@ -2100,7 +2119,7 @@
         if (window.currentUser) {
             let name = window.currentUser.displayName || window.currentUser.email.split('@')[0];
             let firstName = window.truncateText(name.split(' ')[0], 12);
-            welcomeHtml = `<div style="display:flex; flex-direction:row; gap:8px; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${firstName}</span></div>`;
+            welcomeHtml = `<div style="display:flex; flex-direction:row; gap:0px; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,&nbsp;</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${firstName}</span></div>`;
         }
         
         document.getElementById('chat-container').innerHTML = `<div class="welcome-screen" id="welcome-screen">${welcomeHtml}</div>`;
@@ -2283,7 +2302,7 @@
     }
     
     function editMsg() { 
-        stopTTS(); if(!selectedMsgRow) return; editingMsgIdx = parseInt(selectedMsgRow.getAttribute('data-index')); 
+        fullStopTTS(); if(!selectedMsgRow) return; editingMsgIdx = parseInt(selectedMsgRow.getAttribute('data-index')); 
         const msgObj = chatHistory[activeChatIndex].messages[editingMsgIdx]; const input = document.getElementById('user-input'); 
         input.value = msgObj.content || ""; autoGrow(input); input.focus(); 
         
@@ -2302,7 +2321,7 @@
     function deleteSelectedMsg() {
         if (isVoiceNoteActive) { cancelVoiceNoteRecord(); }
         if (isDictating && recognition) { recognition.stop(); }
-        stopTTS(); 
+        fullStopTTS(); 
         
         if(selectedMsgRow && activeChatIndex !== -1) {
             const msgIdx = parseInt(selectedMsgRow.getAttribute('data-index')); const isUserRow = selectedMsgRow.classList.contains('user-row');
@@ -2481,13 +2500,13 @@
     function resetSendButton() { isGenerating = false; const sendBtn = document.querySelector('.send-btn'); if(sendBtn) { sendBtn.innerHTML = '<i class="fas fa-arrow-up"></i>'; } }
     
     function regenerateMessage(btn) {
-        if (isGenerating) stopGeneration(); stopTTS(); const row = btn.closest('.ai-row'); const indexAttr = row.getAttribute('data-index');
+        if (isGenerating) stopGeneration(); fullStopTTS(); const row = btn.closest('.ai-row'); const indexAttr = row.getAttribute('data-index');
         if (indexAttr) { const msgIdx = parseInt(indexAttr); if (chatHistory[activeChatIndex].messages[msgIdx]) { chatHistory[activeChatIndex].messages.splice(msgIdx, 1); try { localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); } catch(e) {} } }
         row.remove(); callDatexAPI(true);
     }
 
     async function callDatexAPI(isRegenerate = false) {
-        stopTTS(); let message = ""; let attachmentsToSave = [];
+        fullStopTTS(); let message = ""; let attachmentsToSave = [];
         
         if (!isRegenerate) {
             const input = document.getElementById('user-input'); message = input.value.trim();
