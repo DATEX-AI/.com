@@ -189,7 +189,7 @@
 
         .sidebar-footer { padding: 15px 20px 20px 20px; display: flex; justify-content: space-between; align-items: center; gap: 8px; background: transparent; flex-shrink: 0; }
         .profile-icon { display: flex; align-items: center; gap: 10px; cursor: pointer; transition: opacity 0.2s; padding: 5px; border-radius: 12px; flex: 1; min-width: 0; }
-        .profile-icon:active { background: transparent; } /* Animation Hata Diya */
+        .profile-icon:active { background: transparent; } 
         .profile-icon span { font-size: 15px; font-weight: 700; color: #000; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         #sidebar-user-pfp { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 1.5px solid #000; flex-shrink: 0; }
         
@@ -804,16 +804,16 @@
                     <span data-i18n="AI Voice">AI Voice</span>
                 </div>
                 <div class="radio-option">
-                    <span data-i18n="Male">Male</span>
+                    <span data-i18n="Girl">Girl</span>
                     <label class="radio-label">
-                        <input type="radio" name="ai_voice" value="male" onchange="saveVoiceSettings()">
+                        <input type="radio" name="ai_voice" value="girl" onchange="saveVoiceSettings()">
                         <div class="custom-radio"></div>
                     </label>
                 </div>
                 <div class="radio-option">
-                    <span data-i18n="Female">Female</span>
+                    <span data-i18n="Women">Women</span>
                     <label class="radio-label">
-                        <input type="radio" name="ai_voice" value="female" checked onchange="saveVoiceSettings()">
+                        <input type="radio" name="ai_voice" value="women" checked onchange="saveVoiceSettings()">
                         <div class="custom-radio"></div>
                     </label>
                 </div>
@@ -1204,7 +1204,6 @@
 
             const welcomeContainer = document.getElementById('welcome-screen');
             if (welcomeContainer) {
-                // BUG FIX: Removed empty space and gap completely.
                 welcomeContainer.innerHTML = `<div style="display:flex; flex-direction:row; gap:0px; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${displayFirstNameWelcome}</span></div>`;
             }
 
@@ -1453,11 +1452,11 @@
             if(fav) fav.href = 'light.logo.jpg';
         }
         
-        const savedVoice = localStorage.getItem('datex_voice_type') || 'female';
+        const savedVoice = localStorage.getItem('datex_voice_type') || 'women';
         const voiceRadio = document.querySelector(`input[name="ai_voice"][value="${savedVoice}"]`);
         if(voiceRadio) voiceRadio.checked = true;
         else {
-            const fb = document.querySelector(`input[name="ai_voice"][value="female"]`);
+            const fb = document.querySelector(`input[name="ai_voice"][value="women"]`);
             if (fb) fb.checked = true;
         }
 
@@ -1569,15 +1568,18 @@
 
     window.currentAttachments = [];
 
-    // ====== TTS SYSTEM (100% FIXED) ======
+    // ====== TTS SYSTEM (100% FIXED PAUSE/RESUME & VOICE LOGIC) ======
     let ttsUtterance = null;
     let ttsSegments = [];
     let currentSegmentIdx = 0;
     let isTtsPlaying = false;
+    let isTtsPaused = false;
     let currentTtsBtn = null;
+    let currentTtsVoicePref = 'women'; // Default
 
     function fullStopTTS() {
         isTtsPlaying = false;
+        isTtsPaused = false;
         ttsSegments = [];        
         currentSegmentIdx = 0; 
         
@@ -1587,45 +1589,53 @@
         
         if (currentTtsBtn) {
             let icon = currentTtsBtn.querySelector('i');
-            if (icon) icon.className = 'fas fa-volume-up'; // Default Speaker
+            if (icon) icon.className = 'fas fa-volume-up'; // Wapas default speaker icon
             currentTtsBtn = null;
         }
     }
 
     function playNextTtsSegment() {
-        if (!isTtsPlaying || currentSegmentIdx >= ttsSegments.length || !currentTtsBtn) {
-            fullStopTTS();
+        if ((!isTtsPlaying && !isTtsPaused) || currentSegmentIdx >= ttsSegments.length || !currentTtsBtn) {
+            if (currentSegmentIdx >= ttsSegments.length) fullStopTTS();
             return;
         }
+
+        if (isTtsPaused) return; // Agar pause hai toh wahi ruk jao
 
         let textSegment = ttsSegments[currentSegmentIdx].trim();
         if (!textSegment) { currentSegmentIdx++; playNextTtsSegment(); return; }
 
         ttsUtterance = new SpeechSynthesisUtterance(textSegment);
         
-        let prefType = localStorage.getItem('datex_voice_type') || 'female'; 
+        // Settings hamesha lock rakho current message ke liye
+        let prefType = currentTtsVoicePref; 
         let voices = window.speechSynthesis.getVoices();
         
         if(voices.length > 0) {
             let selectedVoice = null;
-            if (prefType === 'male') {
-                selectedVoice = voices.find(v => v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('david') || v.name.toLowerCase().includes('mark') || v.name.toLowerCase().includes('guy'));
-            } else {
+            
+            // Girl = High pitch / specific names
+            if (prefType === 'girl') {
                 selectedVoice = voices.find(v => v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('samantha') || v.name.toLowerCase().includes('zira') || v.name.toLowerCase().includes('girl'));
+            } 
+            // Women = Default normal female voice
+            else {
+                selectedVoice = voices.find(v => v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('google'));
             }
-            if (!selectedVoice) {
-                selectedVoice = voices[0];
-            }
+            
+            if (!selectedVoice) selectedVoice = voices[0];
+
             ttsUtterance.voice = selectedVoice;
             ttsUtterance.lang = selectedVoice.lang;
         }
 
-        if (prefType === 'male') {
-            ttsUtterance.pitch = 0.5; // Deep Male Pitch
-            ttsUtterance.rate = 0.90;
+        // Pitch & Rate
+        if (prefType === 'girl') {
+            ttsUtterance.pitch = 1.4; // Patli aawaz
+            ttsUtterance.rate = 1.05; 
         } else {
-            ttsUtterance.pitch = 1.3; // High Female Pitch
-            ttsUtterance.rate = 1.05;
+            ttsUtterance.pitch = 1.0; // Normal aawaz
+            ttsUtterance.rate = 0.95; 
         }
 
         ttsUtterance.onend = () => { 
@@ -1634,6 +1644,7 @@
                 playNextTtsSegment(); 
             } 
         };
+        
         ttsUtterance.onerror = (e) => { 
             if (isTtsPlaying && e.error !== 'canceled') { 
                 currentSegmentIdx++; 
@@ -1651,18 +1662,25 @@
         let icon = btn.querySelector('i');
 
         if (currentTtsBtn === btn) {
-            if (window.speechSynthesis.paused) {
-                window.speechSynthesis.resume();
-                icon.className = 'fas fa-stop';
-            } else if (window.speechSynthesis.speaking) {
-                window.speechSynthesis.pause();
+            if (isTtsPlaying) {
+                // Audio chal rahi hai -> usko Pause karo (Toh PLAY icon aayega)
+                isTtsPlaying = false;
+                isTtsPaused = true;
+                window.speechSynthesis.cancel(); // Turant rok dega
                 icon.className = 'fas fa-play';
+            } else if (isTtsPaused) {
+                // Audio ruki hui hai -> usko Resume karo (Toh STOP icon aayega)
+                isTtsPaused = false;
+                isTtsPlaying = true;
+                icon.className = 'fas fa-stop';
+                playNextTtsSegment(); // Wahi se start karega jahan pause hua tha!
             } else {
                 fullStopTTS();
             }
             return;
         }
         
+        // Naya message padhna shuru karo
         fullStopTTS(); 
         currentTtsBtn = btn; 
         
@@ -1676,9 +1694,13 @@
         ttsSegments = fullText.replace(/([.!?।\n])\s*/g, "$1|").split("|").filter(s => s.trim().length > 0);
         if (ttsSegments.length === 0) ttsSegments = [fullText];
 
+        // Preference lock ho jayega ek baar padhna shuru kiya toh
+        currentTtsVoicePref = localStorage.getItem('datex_voice_type') || 'women';
+        
         currentSegmentIdx = 0; 
         isTtsPlaying = true; 
-        icon.className = 'fas fa-stop'; 
+        isTtsPaused = false;
+        icon.className = 'fas fa-stop'; // Shuru hote hi Stop ban jayega
         
         playNextTtsSegment(); 
     }
