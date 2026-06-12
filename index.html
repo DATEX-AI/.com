@@ -235,7 +235,6 @@
         .model-name { font-weight: 600; font-size: 18px; color: #000; margin-top: 6px; }
         .version-pill { font-size: 11.5px; font-weight: 600; background: #f0f0f0; display: inline-block; padding: 4px 14px; border-radius: 14px; color: #000; border: 1.5px solid #000; margin-top: 8px; transition: background-color 0.15s, border-color 0.15s, color 0.15s; }
         
-        /* Adjusted Logo padding to move exactly 2px left */
         .logo-container { display: flex; align-items: center; margin-right: -2px; }
         .logo-container img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: none; }
         
@@ -584,11 +583,11 @@
         body.dark-mode .profile-logout-btn:active { background: #333; }
         
         body.dark-mode .typing-dot { background-color: #fff; }
-        body.dark-mode .chat-attachment-img { border-color: #555; }
-        body.dark-mode .chat-attachment-pdf { background: #2c2c2c; border-color: #555; }
+        body.dark-mode .chat-attachment-img { border-color: #eaeaea; }
+        body.dark-mode .chat-attachment-pdf { background: #2c2c2c; border-color: #eaeaea; }
         body.dark-mode .chat-attachment-pdf i { color: #ccc !important; }
         body.dark-mode .chat-attachment-pdf span { color: #ccc !important; }
-        body.dark-mode .ai-gen-img { border-color: #555 !important; }
+        body.dark-mode .ai-gen-img { border-color: #eaeaea !important; }
     </style>
 </head>
 <body>
@@ -647,7 +646,7 @@
                 
                 <div class="password-wrapper" id="password-input-container">
                     <input type="password" id="auth-password" class="auth-input" placeholder="Enter your password" autocomplete="current-password">
-                    <i class="fas fa-eye toggle-password" id="togglePassword" onmousedown="event.preventDefault();" ontouchstart="event.preventDefault();" onclick="window.togglePasswordVisibility()"></i>
+                    <i class="fas fa-eye toggle-password" id="togglePassword" onclick="window.togglePasswordVisibility()"></i>
                     <div id="password-error-msg" class="auth-inline-error">Invalid password</div>
                 </div>
 
@@ -680,8 +679,8 @@
 
         <main class="main-content" id="chat-container">
             <div class="welcome-screen" id="welcome-screen">
-                <div style="display:flex; flex-direction:row; gap:6px; align-items:center; justify-content:center; width: 100%;">
-                    <span data-i18n="Hello,">Hello,</span>
+                <div style="display:flex; flex-direction:row; gap:8px; align-items:center; justify-content:center; width: 100%;">
+                    <span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span>
                     <span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">User</span>
                 </div>
             </div>
@@ -1204,7 +1203,7 @@
 
             const welcomeContainer = document.getElementById('welcome-screen');
             if (welcomeContainer) {
-                welcomeContainer.innerHTML = `<div style="display:flex; flex-direction:row; gap:6px; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${displayFirstNameWelcome}</span></div>`;
+                welcomeContainer.innerHTML = `<div style="display:flex; flex-direction:row; gap:8px; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${displayFirstNameWelcome}</span></div>`;
             }
 
             let currentAppLang = localStorage.getItem('datex_app_lang') || 'english';
@@ -1253,7 +1252,6 @@
             }
         }
     </script>
-
     <script>
     let userScrolledUp = false; 
 
@@ -1291,13 +1289,13 @@
         {val: 'swedish', label: 'Swedish'}, {val: 'tajik', label: 'Tajik'}, {val: 'tamil', label: 'Tamil'},
         {val: 'tatar', label: 'Tatar'}, {val: 'telugu', label: 'Telugu'}, {val: 'thai', label: 'Thai'},
         {val: 'turkish', label: 'Turkish'}, {val: 'turkmen', label: 'Turkmen'}, {val: 'ukrainian', label: 'Ukrainian'},
-        {val: 'urdu', label: 'Urdu'}, {val: 'urdu', label: 'Urdu'}, {val: 'uyghur', label: 'Urdu'}, {val: 'uzbek', label: 'Uzbek'},
+        {val: 'urdu', label: 'Urdu'}, {val: 'uyghur', label: 'Urdu'}, {val: 'uzbek', label: 'Uzbek'},
         {val: 'vietnamese', label: 'Vietnamese'}, {val: 'welsh', label: 'Welsh'}, {val: 'xhosa', label: 'Xhosa'},
         {val: 'yiddish', label: 'Yiddish'}, {val: 'yoruba', label: 'Yoruba'}, {val: 'zulu', label: 'Zulu'}
     ];
 
     const langToIso = {
-        'english': 'en', 'afrikaans': 'af', 'albanian': 'sq', 'amharic': 'am', 'arabic': 'ar', 'armenian': 'hy', 'azerbaijani': 'az', 'basque': 'eu', 'belarusian': 'be', 'bengali': 'bn', 'bosnian': 'bs', 'bulgarian': 'bg', 'burmese': 'my', 'catalan': 'ca', 'cebuano': 'ceb', 'chinese_simp': 'zh-CN', 'chinese_trad': 'zh-TW', 'croatian': 'hr', 'czech': 'cs', 'danish': 'da', 'dutch': 'nl', 'esperanto': 'eo', 'estonian': 'et', 'filipino': 'tl', 'finnish': 'fi', 'french': 'fr', 'galician': 'gl', 'georgian': 'ka', 'german': 'de', 'greek': 'el', 'gujarati': 'gu', 'haitian': 'ht', 'hausa': 'ha', 'hawaiian': 'haw', 'hebrew': 'he', 'hindi': 'hi', 'hinglish': 'hi', 'hmong': 'hmn', 'hungarian': 'hu', 'icelandic': 'is', 'igbo': 'ig', 'indonesian': 'id', 'irish': 'ga', 'italian': 'it', 'japanese': 'ja', 'javanese': 'jv', 'kannada': 'kn', 'kazakh': 'kk', 'khmer': 'km', 'kinyarwanda': 'rw', 'korean': 'ko', 'kurdish': 'ku', 'kyrgyz': 'ky', 'lao': 'lo', 'latin': 'la', 'latvian': 'lv', 'lithuanian': 'lt', 'luxembourgish': 'lb', 'macedonian': 'mk', 'malagasy': 'mg', 'malay': 'ms', 'malayalam': 'ml', 'maltese': 'mt', 'maori': 'mi', 'marathi': 'mr', 'mongolian': 'mn', 'nepali': 'ne', 'norwegian': 'no', 'odia': 'or', 'pashto': 'ps', 'persian': 'fa', 'polish': 'pl', 'portuguese': 'pt', 'punjabi': 'pa', 'romanian': 'ro', 'russian': 'ru', 'samoan': 'sm', 'scots': 'gd', 'serbian': 'sr', 'sesotho': 'st', 'shona': 'sn', 'sindhi': 'sd', 'sinhala': 'si', 'slovak': 'sk', 'slovenian': 'sl', 'somali': 'so', 'spanish': 'es', 'sundanese': 'su', 'swahili': 'sw', 'swedish': 'sv', 'tajik': 'tg', 'tamil': 'ta', 'tatar': 'tt', 'telugu': 'te', 'thai': 'th', 'turkish': 'tr', 'turkmen': 'tk', 'ukrainian': 'uk', 'urdu': 'ur', 'urdu': 'ur', 'uyghur': 'ug', 'uzbek': 'uz', 'vietnamese': 'vi', 'welsh': 'cy', 'xhosa': 'xh', 'yiddish': 'yi', 'yoruba': 'yo', 'zulu': 'zu'
+        'english': 'en', 'afrikaans': 'af', 'albanian': 'sq', 'amharic': 'am', 'arabic': 'ar', 'armenian': 'hy', 'azerbaijani': 'az', 'basque': 'eu', 'belarusian': 'be', 'bengali': 'bn', 'bosnian': 'bs', 'bulgarian': 'bg', 'burmese': 'my', 'catalan': 'ca', 'cebuano': 'ceb', 'chinese_simp': 'zh-CN', 'chinese_trad': 'zh-TW', 'croatian': 'hr', 'czech': 'cs', 'danish': 'da', 'dutch': 'nl', 'esperanto': 'eo', 'estonian': 'et', 'filipino': 'tl', 'finnish': 'fi', 'french': 'fr', 'galician': 'gl', 'georgian': 'ka', 'german': 'de', 'greek': 'el', 'gujarati': 'gu', 'haitian': 'ht', 'hausa': 'ha', 'hawaiian': 'haw', 'hebrew': 'he', 'hindi': 'hi', 'hinglish': 'hi', 'hmong': 'hmn', 'hungarian': 'hu', 'icelandic': 'is', 'igbo': 'ig', 'indonesian': 'id', 'irish': 'ga', 'italian': 'it', 'japanese': 'ja', 'javanese': 'jv', 'kannada': 'kn', 'kazakh': 'kk', 'khmer': 'km', 'kinyarwanda': 'rw', 'korean': 'ko', 'kurdish': 'ku', 'kyrgyz': 'ky', 'lao': 'lo', 'latin': 'la', 'latvian': 'lv', 'lithuanian': 'lt', 'luxembourgish': 'lb', 'macedonian': 'mk', 'malagasy': 'mg', 'malay': 'ms', 'malayalam': 'ml', 'maltese': 'mt', 'maori': 'mi', 'marathi': 'mr', 'mongolian': 'mn', 'nepali': 'ne', 'norwegian': 'no', 'odia': 'or', 'pashto': 'ps', 'persian': 'fa', 'polish': 'pl', 'portuguese': 'pt', 'punjabi': 'pa', 'romanian': 'ro', 'russian': 'ru', 'samoan': 'sm', 'scots': 'gd', 'serbian': 'sr', 'sesotho': 'st', 'shona': 'sn', 'sindhi': 'sd', 'sinhala': 'si', 'slovak': 'sk', 'slovenian': 'sl', 'somali': 'so', 'spanish': 'es', 'sundanese': 'su', 'swahili': 'sw', 'swedish': 'sv', 'tajik': 'tg', 'tamil': 'ta', 'tatar': 'tt', 'telugu': 'te', 'thai': 'th', 'turkish': 'tr', 'turkmen': 'tk', 'ukrainian': 'uk', 'urdu': 'ur', 'uyghur': 'ug', 'uzbek': 'uz', 'vietnamese': 'vi', 'welsh': 'cy', 'xhosa': 'xh', 'yiddish': 'yi', 'yoruba': 'yo', 'zulu': 'zu'
     };
 
     let currentOpenLangType = ''; 
@@ -1359,7 +1357,6 @@
             localStorage.setItem('datex_app_lang', val);
             document.getElementById('app-lang-btn').innerText = label;
             translateUI(val); 
-            setTimeout(() => translateUI(val), 50);
         } else {
             localStorage.setItem('datex_response_lang', val);
             document.getElementById('response-lang-btn').innerText = label;
@@ -1384,7 +1381,7 @@
         ])];
 
         let translationMap = {};
-        let cached = localStorage.getItem('datex_ui_trans_v4_' + isoCode);
+        let cached = localStorage.getItem('datex_ui_trans_v3_' + isoCode);
         
         if (cached) {
             translationMap = JSON.parse(cached);
@@ -1407,7 +1404,7 @@
                 uniqueTexts.forEach((original, index) => {
                     translationMap[original] = translatedArray[index] || original;
                 });
-                localStorage.setItem('datex_ui_trans_v4_' + isoCode, JSON.stringify(translationMap));
+                localStorage.setItem('datex_ui_trans_v3_' + isoCode, JSON.stringify(translationMap));
             } catch(e) {
                 console.error("UI Translation error:", e);
                 return; 
@@ -1796,6 +1793,7 @@
         }
     }
 
+    // UPDATED PLAY NEXT TTS SEGMENT WITH GIRL/WOMEN LOGIC
     function playNextTtsSegment() {
         if (!isTtsPlaying || currentSegmentIdx >= ttsSegments.length || !currentTtsBtn) {
             if (currentSegmentIdx >= ttsSegments.length) stopTTS();
@@ -1808,11 +1806,9 @@
         ttsUtterance = new SpeechSynthesisUtterance(textSegment);
         
         let prefType = currentTtsVoicePref; 
-        let isGirl = (prefType === 'girl'); 
         
-        // Male keywords used for girl to match user's previous preference
-        let girlKeywords = ['male', 'david', 'daniel', 'mark', 'george', 'alex', 'brian', 'james', 'guy', 'variant 2', 'variant 4', 'voice ii', 'voice 2', 'neerja']; 
-        let womenKeywords = ['female', 'samantha', 'zira', 'victoria', 'tessa', 'karen', 'hazel', 'susan', 'variant 1', 'variant 3', 'voice i', 'voice 1', 'jenny', 'aria'];
+        let girlKeywords = ['google us english', 'samantha', 'aria', 'neerja', 'jenny', 'heera', 'microsoft sonia', 'en-us-x-sfg', 'child', 'girl']; 
+        let womenKeywords = ['google uk english female', 'microsoft zira', 'hazel', 'victoria', 'susan', 'karen', 'swara', 'microsoft kalpana', 'en-gb-x-rjs', 'woman', 'mature'];
 
         let voices = window.speechSynthesis.getVoices();
         if(voices.length > 0) {
@@ -1823,27 +1819,35 @@
                 v.name.includes('Google') || 
                 v.name.includes('Neural') || 
                 v.name.includes('Online') ||
-                v.name.includes('Natural')
+                v.name.includes('Natural') ||
+                v.name.includes('Microsoft')
             );
             
             let searchPool = premiumVoices.length > 0 ? premiumVoices : langVoices;
+            let selectedVoice = null;
 
-            let selectedVoice = searchPool.find(v => {
-                let n = v.name.toLowerCase();
-                if (isGirl) return girlKeywords.some(k => n.includes(k));
-                return womenKeywords.some(k => n.includes(k));
-            });
+            if (prefType === 'girl') {
+                selectedVoice = searchPool.find(v => {
+                    let n = v.name.toLowerCase();
+                    return girlKeywords.some(k => n.includes(k));
+                });
+            } else {
+                selectedVoice = searchPool.find(v => {
+                    let n = v.name.toLowerCase();
+                    return womenKeywords.some(k => n.includes(k));
+                });
+            }
             
             if (!selectedVoice) {
                 selectedVoice = langVoices.find(v => {
                     let n = v.name.toLowerCase();
-                    if (isGirl) return girlKeywords.some(k => n.includes(k));
+                    if (prefType === 'girl') return girlKeywords.some(k => n.includes(k));
                     return womenKeywords.some(k => n.includes(k));
                 });
             }
 
             if (!selectedVoice) {
-                selectedVoice = searchPool.find(v => v.name.toLowerCase().includes('female')) || searchPool[0];
+                selectedVoice = searchPool.find(v => v.name.toLowerCase().includes('female')) || langVoices[0];
             }
 
             if(selectedVoice) {
@@ -1869,23 +1873,14 @@
         window.speechSynthesis.speak(ttsUtterance);
     }
 
+    // UPDATED SPEAK TEXT LOGIC
     function speakText(btn) {
         if (!window.speechSynthesis) { alert("Your browser does not support Text-to-Speech."); return; }
         stopVoiceNoteBubble();
 
         if (currentTtsBtn === btn) {
-            if (window.speechSynthesis.speaking) {
-                if (isTtsPlaying) { 
-                    isTtsPlaying = false; 
-                    window.speechSynthesis.pause(); 
-                    btn.querySelector('i').className = 'fas fa-play'; 
-                } else { 
-                    isTtsPlaying = true; 
-                    window.speechSynthesis.resume(); 
-                    btn.querySelector('i').className = 'fas fa-pause'; 
-                }
-                return;
-            }
+            stopTTS(); 
+            return;
         }
         
         stopTTS(); 
@@ -1905,7 +1900,7 @@
 
         currentTtsVoicePref = localStorage.getItem('datex_voice_type') || 'women';
         currentTtsBtn = btn; currentSegmentIdx = 0; isTtsPlaying = true; 
-        btn.querySelector('i').className = 'fas fa-pause';
+        btn.querySelector('i').className = 'fas fa-stop';
         
         playNextTtsSegment(); 
     }
@@ -2105,7 +2100,7 @@
         if (window.currentUser) {
             let name = window.currentUser.displayName || window.currentUser.email.split('@')[0];
             let firstName = window.truncateText(name.split(' ')[0], 12);
-            welcomeHtml = `<div style="display:flex; flex-direction:row; gap:6px; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${firstName}</span></div>`;
+            welcomeHtml = `<div style="display:flex; flex-direction:row; gap:8px; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${firstName}</span></div>`;
         }
         
         document.getElementById('chat-container').innerHTML = `<div class="welcome-screen" id="welcome-screen">${welcomeHtml}</div>`;
@@ -2654,7 +2649,6 @@ Replace {fixedEncodeURIComponent(detailed_english_prompt)} with a highly detaile
             } else { apiMessages.push({ role: 'assistant', content: msg.content }); }
         });
 
-        // Vision model updated as per Groq's official active models for 2026
         const selectedModel = useVision ? "meta-llama/llama-4-scout-17b-16e-instruct" : "llama-3.3-70b-versatile";
         const isDeepResearchOn = localStorage.getItem('datex_deep_research') === 'true';
         const searchKeywords = ['aaj', 'ajj', 'today', 'news', 'khabar', 'price', 'match', 'ipl', 'score', 'latest', 'update', 'weather', 'mausam', 'kal', 'yesterday', 'current', 'stock', 'who won', 'kaun jeeta', 'batao', 'search', 'link', 'youtube', 'video', 'channel', 'instagram', 'linkedin', 'facebook', 'twitter', 'website', 'profile', 'account', 'url', 'site', 'browser', 'google'];
