@@ -189,7 +189,7 @@
 
         .sidebar-footer { padding: 15px 20px 20px 20px; display: flex; justify-content: space-between; align-items: center; gap: 8px; background: transparent; flex-shrink: 0; }
         .profile-icon { display: flex; align-items: center; gap: 10px; cursor: pointer; transition: opacity 0.2s; padding: 5px; border-radius: 12px; flex: 1; min-width: 0; }
-        .profile-icon:active { opacity: 0.6; background: rgba(0,0,0,0.05); }
+        .profile-icon:active { background: transparent; } 
         .profile-icon span { font-size: 15px; font-weight: 700; color: #000; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         #sidebar-user-pfp { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 1.5px solid #000; flex-shrink: 0; }
         
@@ -409,7 +409,7 @@
         .attachment-options-container { display: flex; justify-content: space-around; padding: 0 20px; margin-top: 10px; }
         .attachment-option { display: flex; flex-direction: column; align-items: center; gap: 12px; cursor: pointer; width: 30%; }
         .attachment-option .icon-box { width: 85px; height: 85px; border: 1px solid #eee; border-radius: 20px; display: flex; justify-content: center; align-items: center; font-size: 32px; color: #444; background: #fdfdfd; transition: 0.2s; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
-        .attachment-option:active .icon-box { background: #eee; transform: scale(0.95); }
+        .attachment-option:active .icon-box { background: #eee; } /* FIX 2: Removed scale effect */
         .attachment-option span { font-size: 14px; color: #333; font-weight: 500; }
         
         .attachment-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); display: none; z-index: 1999; }
@@ -506,7 +506,7 @@
         body.dark-mode .close-sidebar-btn { color: #ffffff; }
         body.dark-mode .attachment-menu-header i.fa-times { color: #ffffff; }
         body.dark-mode .profile-icon span { color: #ffffff; }
-        body.dark-mode .profile-icon:active { background: rgba(255,255,255,0.1); }
+        body.dark-mode .profile-icon:active { background: transparent; } /* FIX 3: Removed profile press animation */
         body.dark-mode #sidebar-user-pfp { border-color: #fff; }
 
         body.dark-mode .settings-group span { color: #ffffff; }
@@ -680,7 +680,7 @@
         <main class="main-content" id="chat-container">
             <div class="welcome-screen" id="welcome-screen">
                 <div style="display:flex; flex-direction:row; gap:0px; align-items:center; justify-content:center; width: 100%;">
-                    <span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,&nbsp;</span>
+                    <span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span>
                     <span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">User</span>
                 </div>
             </div>
@@ -1203,7 +1203,8 @@
 
             const welcomeContainer = document.getElementById('welcome-screen');
             if (welcomeContainer) {
-                welcomeContainer.innerHTML = `<div style="display:flex; flex-direction:row; gap:0px; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,&nbsp;</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${displayFirstNameWelcome}</span></div>`;
+                /* FIX 1: Removed gap and &nbsp; entirely */
+                welcomeContainer.innerHTML = `<div style="display:flex; flex-direction:row; gap:0px; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${displayFirstNameWelcome}</span></div>`;
             }
 
             let currentAppLang = localStorage.getItem('datex_app_lang') || 'english';
@@ -1567,7 +1568,7 @@
 
     window.currentAttachments = [];
 
-    // ====== NEW TTS SYSTEM (BUG FIXES INCLUDED) ======
+    // ====== TTS SYSTEM (PAUSE/RESUME & VOICE FIXES) ======
     let ttsUtterance = null;
     let ttsSegments = [];
     let currentSegmentIdx = 0;
@@ -1605,55 +1606,40 @@
         ttsUtterance = new SpeechSynthesisUtterance(textSegment);
         
         let prefType = currentTtsVoicePref; 
-        
-        // Strict Voice matching
-        let girlKeywords = ['google us english', 'samantha', 'aria', 'neerja', 'jenny', 'heera', 'microsoft sonia', 'en-us', 'child', 'girl']; 
-        let womenKeywords = ['google uk english female', 'microsoft zira', 'hazel', 'victoria', 'susan', 'karen', 'swara', 'microsoft kalpana', 'en-gb', 'woman', 'mature'];
-
         let voices = window.speechSynthesis.getVoices();
+        
         if(voices.length > 0) {
-            let langVoices = voices.filter(v => v.lang.startsWith('en') || v.lang.startsWith('hi'));
-            if (langVoices.length === 0) langVoices = voices;
-
-            let premiumVoices = langVoices.filter(v => 
-                v.name.includes('Google') || 
-                v.name.includes('Neural') || 
-                v.name.includes('Online') ||
-                v.name.includes('Natural') ||
-                v.name.includes('Microsoft')
-            );
-            
-            let searchPool = premiumVoices.length > 0 ? premiumVoices : langVoices;
             let selectedVoice = null;
 
             if (prefType === 'girl') {
-                selectedVoice = searchPool.find(v => {
-                    let n = v.name.toLowerCase();
-                    return girlKeywords.some(k => n.includes(k));
-                });
+                // GIRL: Target US/UK accent (softer, younger sounding)
+                selectedVoice = voices.find(v => 
+                    v.lang.toLowerCase().includes('en-us') && (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('samantha') || v.name.toLowerCase().includes('zira') || v.name.toLowerCase().includes('google'))
+                ) || voices.find(v => v.lang.toLowerCase().includes('en-us') || v.lang.toLowerCase().includes('en-gb'));
             } else {
-                selectedVoice = searchPool.find(v => {
-                    let n = v.name.toLowerCase();
-                    return womenKeywords.some(k => n.includes(k));
-                });
+                // WOMEN: Target Indian accent (mature sounding for local context)
+                selectedVoice = voices.find(v => 
+                    (v.lang.toLowerCase().includes('en-in') || v.lang.toLowerCase().includes('hi-in')) && (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('neerja') || v.name.toLowerCase().includes('google'))
+                ) || voices.find(v => v.lang.toLowerCase().includes('en-in') || v.lang.toLowerCase().includes('hi-in'));
             }
             
             if (!selectedVoice) {
-                selectedVoice = langVoices.find(v => {
-                    let n = v.name.toLowerCase();
-                    if (prefType === 'girl') return girlKeywords.some(k => n.includes(k));
-                    return womenKeywords.some(k => n.includes(k));
-                });
-            }
-
-            if (!selectedVoice) {
-                selectedVoice = searchPool.find(v => v.name.toLowerCase().includes('female')) || langVoices[0];
+                selectedVoice = voices.find(v => v.name.toLowerCase().includes('female')) || voices[0];
             }
 
             if(selectedVoice) {
                 ttsUtterance.voice = selectedVoice;
                 ttsUtterance.lang = selectedVoice.lang;
             }
+        }
+
+        // Apply pitch and rate based on voice setting
+        if (prefType === 'girl') {
+            ttsUtterance.pitch = 1.4; // Slightly high-pitched
+            ttsUtterance.rate = 1.05; // Slightly faster
+        } else {
+            ttsUtterance.pitch = 1.0; // Normal pitch
+            ttsUtterance.rate = 0.95; // Slightly slower, mature pacing
         }
 
         ttsUtterance.onend = () => { 
@@ -1670,6 +1656,7 @@
                 else fullStopTTS();
             } 
         };
+        
         window.speechSynthesis.speak(ttsUtterance);
     }
 
@@ -1682,18 +1669,19 @@
                 // Pause Voice
                 isTtsPlaying = false;
                 isTtsPaused = true;
-                window.speechSynthesis.cancel();
-                btn.querySelector('i').className = 'fas fa-volume-up'; 
+                window.speechSynthesis.cancel(); // Stops current segment immediately
+                btn.querySelector('i').className = 'fas fa-play'; 
             } else if (isTtsPaused) {
                 // Resume Voice
                 isTtsPlaying = true;
                 isTtsPaused = false;
                 btn.querySelector('i').className = 'fas fa-stop';
-                playNextTtsSegment(); 
+                playNextTtsSegment(); // Resumes from the beginning of the paused segment
             }
             return;
         }
         
+        // If clicking a different button or starting fresh
         fullStopTTS(); 
         
         const bubble = btn.closest('.bubble-container').querySelector('.bubble');
@@ -1708,7 +1696,7 @@
         ttsSegments = fullText.replace(/([.!?।\n])\s*/g, "$1|").split("|").filter(s => s.trim().length > 0);
         if (ttsSegments.length === 0) ttsSegments = [fullText];
 
-        // Setting fetch only happens on new text, so it won't interrupt mid-speech
+        // Fetch user setting only when starting a new message
         currentTtsVoicePref = localStorage.getItem('datex_voice_type') || 'women';
         
         currentTtsBtn = btn; 
@@ -2119,7 +2107,7 @@
         if (window.currentUser) {
             let name = window.currentUser.displayName || window.currentUser.email.split('@')[0];
             let firstName = window.truncateText(name.split(' ')[0], 12);
-            welcomeHtml = `<div style="display:flex; flex-direction:row; gap:0px; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,&nbsp;</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${firstName}</span></div>`;
+            welcomeHtml = `<div style="display:flex; flex-direction:row; gap:0px; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${firstName}</span></div>`;
         }
         
         document.getElementById('chat-container').innerHTML = `<div class="welcome-screen" id="welcome-screen">${welcomeHtml}</div>`;
@@ -2234,7 +2222,7 @@
             
             html += `<button class="action-btn btn-black-icon" onclick="openMenu(event, this)"><i class="fas fa-ellipsis-v"></i></button>`;
             if (isStopped) { html += `<button class="action-btn btn-black-icon" onclick="regenerateMessage(this)"><i class="fas fa-redo"></i></button>`; }
-            html += `<button class="action-btn tts-btn" onclick="speakText(this)"><i class="fas fa-volume-up"></i></button></div>`;
+            html += `<button class="action-btn tts-btn" onclick="speakText(this)"><i class="fas fa-play"></i></button></div>`;
             
             container.insertAdjacentHTML('beforeend', html);
         }
