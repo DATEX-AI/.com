@@ -196,7 +196,7 @@
         .new-chat-btn { padding: 12px 15px; background: #000; color: #fff; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 15px; transition: 0.2s; display: flex; justify-content: center; align-items: center; flex-shrink: 0; width: 110px; }
         .new-chat-btn:hover { background: #333; }
 
-        /* --- MODIFIED PROFILE MODAL POPUP (AS PER SKETCH) --- */
+        /* --- MODIFIED PROFILE MODAL POPUP --- */
         .profile-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; z-index: 3000; cursor: pointer; opacity: 0; transition: opacity 0.2s; }
         .profile-overlay.active { display: block; opacity: 1; }
         
@@ -443,10 +443,11 @@
 
         .settings-modal.active, .lang-modal.active { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
         
+        /* FIX 3: Changed header colors to #000000 */
         .settings-header, .lang-modal-header { 
             display: flex; justify-content: space-between; align-items: center; 
             padding: 20px 25px 15px 25px; border-bottom: 1px solid #eee; 
-            font-size: 18px; font-weight: 700; color: #333; background: #fff; z-index: 10; flex-shrink: 0; transition: background-color 0.15s, border-color 0.15s, color 0.15s; 
+            font-size: 18px; font-weight: 700; color: #000000; background: #fff; z-index: 10; flex-shrink: 0; transition: background-color 0.15s, border-color 0.15s, color 0.15s; 
         }
         .settings-header i, .lang-modal-header i { cursor: pointer; color: #000; padding: 5px; font-size: 20px; transition: color 0.15s;}
         
@@ -803,16 +804,16 @@
                     <span data-i18n="AI Voice">AI Voice</span>
                 </div>
                 <div class="radio-option">
-                    <span data-i18n="Girl">Girl</span>
+                    <span data-i18n="Male">Male</span>
                     <label class="radio-label">
-                        <input type="radio" name="ai_voice" value="girl" onchange="saveVoiceSettings()">
+                        <input type="radio" name="ai_voice" value="male" onchange="saveVoiceSettings()">
                         <div class="custom-radio"></div>
                     </label>
                 </div>
                 <div class="radio-option">
-                    <span data-i18n="Women">Women</span>
+                    <span data-i18n="Female">Female</span>
                     <label class="radio-label">
-                        <input type="radio" name="ai_voice" value="women" checked onchange="saveVoiceSettings()">
+                        <input type="radio" name="ai_voice" value="female" checked onchange="saveVoiceSettings()">
                         <div class="custom-radio"></div>
                     </label>
                 </div>
@@ -1203,7 +1204,6 @@
 
             const welcomeContainer = document.getElementById('welcome-screen');
             if (welcomeContainer) {
-                /* FIX 1: Removed gap and &nbsp; entirely */
                 welcomeContainer.innerHTML = `<div style="display:flex; flex-direction:row; gap:0px; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${displayFirstNameWelcome}</span></div>`;
             }
 
@@ -1452,11 +1452,11 @@
             if(fav) fav.href = 'light.logo.jpg';
         }
         
-        const savedVoice = localStorage.getItem('datex_voice_type') || 'women';
+        const savedVoice = localStorage.getItem('datex_voice_type') || 'female';
         const voiceRadio = document.querySelector(`input[name="ai_voice"][value="${savedVoice}"]`);
         if(voiceRadio) voiceRadio.checked = true;
         else {
-            const fb = document.querySelector(`input[name="ai_voice"][value="women"]`);
+            const fb = document.querySelector(`input[name="ai_voice"][value="female"]`);
             if (fb) fb.checked = true;
         }
 
@@ -1568,14 +1568,14 @@
 
     window.currentAttachments = [];
 
-    // ====== TTS SYSTEM (PAUSE/RESUME & VOICE FIXES) ======
+    // ====== TTS SYSTEM (PAUSE/RESUME & MALE/FEMALE FIXES) ======
     let ttsUtterance = null;
     let ttsSegments = [];
     let currentSegmentIdx = 0;
     let isTtsPlaying = false;
     let isTtsPaused = false;
     let currentTtsBtn = null;
-    let currentTtsVoicePref = 'women';
+    let currentTtsVoicePref = 'female'; // Default Female
 
     function fullStopTTS() {
         isTtsPlaying = false;
@@ -1589,7 +1589,7 @@
         
         if (currentTtsBtn) {
             let icon = currentTtsBtn.querySelector('i');
-            if (icon) icon.className = 'fas fa-volume-up'; 
+            if (icon) icon.className = 'fas fa-volume-up'; // Default Speaker icon
             currentTtsBtn = null;
         }
     }
@@ -1610,20 +1610,25 @@
         
         if(voices.length > 0) {
             let selectedVoice = null;
+            
+            let maleKeywords = ['male', 'david', 'mark', 'george', 'guy', 'boy', 'man', 'ravi', 'google uk english male'];
+            let femaleKeywords = ['female', 'samantha', 'zira', 'susan', 'hazel', 'neerja', 'woman', 'girl', 'victoria', 'google uk english female'];
 
-            if (prefType === 'girl') {
-                // GIRL: Target US/UK accent (softer, younger sounding)
-                selectedVoice = voices.find(v => 
-                    v.lang.toLowerCase().includes('en-us') && (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('samantha') || v.name.toLowerCase().includes('zira') || v.name.toLowerCase().includes('google'))
-                ) || voices.find(v => v.lang.toLowerCase().includes('en-us') || v.lang.toLowerCase().includes('en-gb'));
+            if (prefType === 'male') {
+                selectedVoice = voices.find(v => {
+                    let n = v.name.toLowerCase();
+                    return maleKeywords.some(k => n.includes(k));
+                });
             } else {
-                // WOMEN: Target Indian accent (mature sounding for local context)
-                selectedVoice = voices.find(v => 
-                    (v.lang.toLowerCase().includes('en-in') || v.lang.toLowerCase().includes('hi-in')) && (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('neerja') || v.name.toLowerCase().includes('google'))
-                ) || voices.find(v => v.lang.toLowerCase().includes('en-in') || v.lang.toLowerCase().includes('hi-in'));
+                selectedVoice = voices.find(v => {
+                    let n = v.name.toLowerCase();
+                    return femaleKeywords.some(k => n.includes(k));
+                });
             }
             
-            if (!selectedVoice) {
+            if (!selectedVoice && prefType === 'male') {
+                selectedVoice = voices.find(v => v.name.toLowerCase().includes('male')) || voices[0];
+            } else if (!selectedVoice) {
                 selectedVoice = voices.find(v => v.name.toLowerCase().includes('female')) || voices[0];
             }
 
@@ -1633,13 +1638,13 @@
             }
         }
 
-        // Apply pitch and rate based on voice setting
-        if (prefType === 'girl') {
-            ttsUtterance.pitch = 1.4; // Slightly high-pitched
-            ttsUtterance.rate = 1.05; // Slightly faster
+        // Adjust Pitch & Rate
+        if (prefType === 'male') {
+            ttsUtterance.pitch = 0.9;
+            ttsUtterance.rate = 0.95; 
         } else {
-            ttsUtterance.pitch = 1.0; // Normal pitch
-            ttsUtterance.rate = 0.95; // Slightly slower, mature pacing
+            ttsUtterance.pitch = 1.1; 
+            ttsUtterance.rate = 1.0; 
         }
 
         ttsUtterance.onend = () => { 
@@ -1669,19 +1674,19 @@
                 // Pause Voice
                 isTtsPlaying = false;
                 isTtsPaused = true;
-                window.speechSynthesis.cancel(); // Stops current segment immediately
-                btn.querySelector('i').className = 'fas fa-play'; 
+                window.speechSynthesis.cancel(); 
+                btn.querySelector('i').className = 'fas fa-play'; // Pause pe Play icon dikhayega
             } else if (isTtsPaused) {
                 // Resume Voice
                 isTtsPlaying = true;
                 isTtsPaused = false;
-                btn.querySelector('i').className = 'fas fa-stop';
-                playNextTtsSegment(); // Resumes from the beginning of the paused segment
+                btn.querySelector('i').className = 'fas fa-stop'; // Play pe Stop icon dikhayega
+                playNextTtsSegment(); 
             }
             return;
         }
         
-        // If clicking a different button or starting fresh
+        // Naya TTS trigger hua
         fullStopTTS(); 
         
         const bubble = btn.closest('.bubble-container').querySelector('.bubble');
@@ -1696,14 +1701,13 @@
         ttsSegments = fullText.replace(/([.!?।\n])\s*/g, "$1|").split("|").filter(s => s.trim().length > 0);
         if (ttsSegments.length === 0) ttsSegments = [fullText];
 
-        // Fetch user setting only when starting a new message
-        currentTtsVoicePref = localStorage.getItem('datex_voice_type') || 'women';
+        currentTtsVoicePref = localStorage.getItem('datex_voice_type') || 'female';
         
         currentTtsBtn = btn; 
         currentSegmentIdx = 0; 
         isTtsPlaying = true; 
         isTtsPaused = false;
-        btn.querySelector('i').className = 'fas fa-stop';
+        btn.querySelector('i').className = 'fas fa-stop'; // Start hote hi Stop icon aayega
         
         playNextTtsSegment(); 
     }
@@ -2222,7 +2226,8 @@
             
             html += `<button class="action-btn btn-black-icon" onclick="openMenu(event, this)"><i class="fas fa-ellipsis-v"></i></button>`;
             if (isStopped) { html += `<button class="action-btn btn-black-icon" onclick="regenerateMessage(this)"><i class="fas fa-redo"></i></button>`; }
-            html += `<button class="action-btn tts-btn" onclick="speakText(this)"><i class="fas fa-play"></i></button></div>`;
+            /* FIXED: Default icon is Speaker (fa-volume-up) */
+            html += `<button class="action-btn tts-btn" onclick="speakText(this)"><i class="fas fa-volume-up"></i></button></div>`;
             
             container.insertAdjacentHTML('beforeend', html);
         }
