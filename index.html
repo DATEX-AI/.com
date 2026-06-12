@@ -235,7 +235,6 @@
         .model-name { font-weight: 600; font-size: 18px; color: #000; margin-top: 6px; }
         .version-pill { font-size: 11.5px; font-weight: 600; background: #f0f0f0; display: inline-block; padding: 4px 14px; border-radius: 14px; color: #000; border: 1.5px solid #000; margin-top: 8px; transition: background-color 0.15s, border-color 0.15s, color 0.15s; }
         
-        /* Adjusted Logo padding to move exactly 2px left */
         .logo-container { display: flex; align-items: center; margin-right: -2px; }
         .logo-container img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: none; }
         
@@ -269,7 +268,7 @@
         body.dark-mode .img-loading-box { background: #2c2c2c; }
         @keyframes pulsePlaceholder { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
 
-        .user-image-gallery { display: flex; gap: 8px; overflow-x: auto; max-width: 100%; justify-content: flex-end; scrollbar-width: none; -ms-overflow-style: none; }
+        .user-image-gallery { display: flex; gap: 8px; overflow-x: auto; max-width: 100%; justify-content: flex-start; scrollbar-width: none; -ms-overflow-style: none; }
         .user-image-gallery::-webkit-scrollbar { display: none; }
 
         .user-msg-text { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; padding-bottom: 0px; transition: padding-bottom 0.2s; word-break: break-word; overflow-wrap: anywhere; }
@@ -309,12 +308,12 @@
         /* MULTIPLE ATTACHMENT PREVIEW CSS */
         .attachment-preview-container { display: none; gap: 10px; overflow-x: auto; padding: 12px 20px 0 20px; width: 100%; align-items: center; scrollbar-width: none; }
         .attachment-preview-container::-webkit-scrollbar { display: none; }
-        .attachment-item { position: relative; width: 72px; height: 72px; border-radius: 12px; background: #e5e7eb; border: 1px solid #ddd; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .attachment-item { position: relative; width: 72px; height: 72px; border-radius: 12px; background: #e5e7eb; border: 1px solid #ddd; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden;}
         .attachment-item img { width: 100%; height: 100%; object-fit: cover; border-radius: 11px; cursor: pointer; }
-        .attachment-item .remove-btn { position: absolute; top: -6px; right: -6px; width: 22px; height: 22px; background: #ffffff; border: 1px solid #eaeaea; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 11px; color: #000000; cursor: pointer; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: transform 0.15s; }
+        .attachment-item .remove-btn { position: absolute; top: 4px; right: 4px; width: 22px; height: 22px; background: #ffffff; border: none; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 11px; color: #000000; cursor: pointer; z-index: 10; box-shadow: 0 0 6px rgba(0,0,0,0.3); transition: transform 0.15s; }
         .attachment-item .remove-btn:active { transform: scale(0.9); }
         body.dark-mode .attachment-item { background: #2c2c2c; border-color: #444; }
-        body.dark-mode .attachment-item .remove-btn { border-color: #555; background: #1a1a1a; color: #fff; }
+        body.dark-mode .attachment-item .remove-btn { background: #333; color: #fff; }
 
         .input-bar { background: transparent; border: none; display: flex; align-items: flex-end; padding: 8px 64px 8px 10px; width: 100%; position: relative; }
         
@@ -386,9 +385,10 @@
         .action-btn:hover { color: #333; }
         .btn-black-icon { color: #000 !important; }
         
-        /* Speaker Icon Fix */
-        .tts-btn { background: #f0f0f0 !important; width: 34px !important; height: 34px !important; border-radius: 50% !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 0 !important; box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important; color: #333 !important; }
-        body.dark-mode .tts-btn { background: #2c2c2c !important; border: 1px solid #444 !important; color: #fff !important; box-shadow: 0 2px 6px rgba(0,0,0,0.3) !important; }
+        /* EXACT SPEAKER ICON CSS AS REQUESTED */
+        .tts-btn { background: #000 !important; width: 28px !important; height: 28px !important; border-radius: 50% !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 0 !important; box-shadow: none !important; border: none !important; color: #fff !important; }
+        .tts-btn i { font-size: 12px !important; }
+        body.dark-mode .tts-btn { background: #fff !important; color: #000 !important; }
 
         .attachment-menu { position: fixed; bottom: -350px; left: 0; width: 100%; background: #fff; border-top-left-radius: 20px; border-top-right-radius: 20px; box-shadow: 0 -5px 25px rgba(0,0,0,0.15); padding: 0 0 40px 0; transition: bottom 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); z-index: 2000; }
         .attachment-menu.active { bottom: 0; }
@@ -455,7 +455,6 @@
         .setting-section { margin-bottom: 18px; } 
         .setting-section:last-child { margin-bottom: 0px; }
         .setting-section-title { font-size: 16px; font-weight: 700; color: #111; display: flex; align-items: center; gap: 10px; margin-bottom: 8px; transition: color 0.15s;}
-        .setting-section-title svg { color: currentColor; } 
         
         .radio-option { display: flex; justify-content: space-between; align-items: center; color: #333; font-weight: 500; font-size: 15px; padding: 8px 5px 8px 10px; margin-bottom: 4px; transition: color 0.15s;}
         .radio-label { cursor: pointer; display: flex; align-items: center; } 
@@ -804,7 +803,9 @@
 
             <div class="setting-section">
                 <div class="setting-section-title">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-right: 2px;"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 24 24" style="flex-shrink: 0; margin-right: 5px;">
+                        <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95c-.32-1.25-.78-2.45-1.38-3.56 1.84.63 3.37 1.91 4.33 3.56zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2s.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56-1.84-.63-3.37-1.91-4.33-3.56zm2.95-8H5.08c.96-1.66 2.49-2.93 4.33-3.56C8.81 5.55 8.35 6.75 8.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2s.07-1.34.16-2h4.68c.09.66.16 1.32.16 2s-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95c-.96 1.65-2.49 2.93-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2s-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z"/>
+                    </svg>
                     <span data-i18n="App Language">App Language</span>
                 </div>
                 <div class="select-wrapper" onclick="openLangModal('app')">
@@ -815,7 +816,9 @@
 
             <div class="setting-section">
                 <div class="setting-section-title">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-right: 2px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M10.5 17.5L16 12l-1.5-1.5L9 16v1.5h1.5z"></path></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 24 24" style="flex-shrink: 0; margin-right: 5px;">
+                        <path d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"/>
+                    </svg>
                     <span data-i18n="Response Language">Response Language</span>
                 </div>
                 <div class="select-wrapper" onclick="openLangModal('response')">
@@ -1542,7 +1545,6 @@
     let abortController = null;
     let currentAiRow = null;
 
-    // GLOBALLY RENAMED TO SUPPORT MULTIPLE ATTACHMENTS (BUG 3)
     window.currentAttachments = [];
 
     let ttsUtterance = null;
@@ -1617,7 +1619,6 @@
         }
     }
 
-    // MULTIPLE ATTACHMENT RENDERER (BUG 3)
     window.renderAttachmentPreviews = function() {
         const container = document.getElementById('attachment-preview-container');
         container.innerHTML = '';
@@ -1636,8 +1637,6 @@
             } else if (att.type === 'file') {
                 let shortName = att.name.length > 10 ? att.name.substring(0, 6) + ".." + att.name.substring(att.name.lastIndexOf('.')) : att.name;
                 div.innerHTML = `<i class="fas fa-file-alt" style="font-size: 24px; color: #333; margin-bottom: 4px;"></i><span style="font-size: 9px; color: #555; font-weight: 500; max-width: 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${shortName}</span><div class="remove-btn" onclick="window.removeAttachment(event, ${index})"><i class="fas fa-times"></i></div>`;
-            } else if (att.type === 'audio') {
-                 // Audio usually triggers auto-send, so it rarely stays here.
             }
             container.appendChild(div);
         });
@@ -1653,7 +1652,7 @@
                     break;
                 }
                 const file = files[i];
-                if (file.type.startsWith('video/')) { alert("Videos are not allowed! Please select a valid photo or document."); continue; }
+                if (file.type.startsWith('video/')) { alert("Videos are not allowed!"); continue; }
 
                 if (file.type.startsWith('image/')) {
                     const reader = new FileReader();
@@ -2007,7 +2006,6 @@
     function loadSelectedChat(index, shouldToggleSidebar = false) {
         if (isGenerating) stopGeneration(); stopTTS(); 
         
-        // Clear inputs on switch
         document.getElementById('user-input').value = "";
         autoGrow(document.getElementById('user-input'));
         window.currentAttachments = [];
@@ -2033,7 +2031,6 @@
     }
 
     function createNewChat(keepSidebarOpen = false) {
-        // Clear inputs on new chat
         document.getElementById('user-input').value = "";
         autoGrow(document.getElementById('user-input'));
         window.currentAttachments = [];
@@ -2084,7 +2081,7 @@
 
             if (images.length > 0) {
                 hasImageOrFile = true;
-                attachmentHTML += `<div class="user-image-gallery" style="margin-bottom: ${text ? '8px' : '0'}; display: flex; gap: 8px; flex-wrap: wrap; max-width: 250px; justify-content: flex-end;">`;
+                attachmentHTML += `<div class="user-image-gallery" style="margin-bottom: ${text ? '8px' : '0'}; display: flex; gap: 8px; flex-wrap: nowrap; overflow-x: auto; max-width: 250px; justify-content: flex-start; scrollbar-width: none;">`;
                 images.forEach(img => {
                     attachmentHTML += `<img src="${img.data}" onclick="openImageModal(this.src)" style="width: 120px; height: 120px; border-radius: 16px; object-fit: cover; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); cursor: pointer;">`;
                 });
@@ -2093,10 +2090,10 @@
 
             if (files.length > 0) {
                 hasImageOrFile = true;
-                attachmentHTML += `<div style="display: flex; gap: 8px; flex-wrap: wrap; max-width: 250px; justify-content: flex-end; margin-bottom: ${text ? '8px' : '0'};">`;
+                attachmentHTML += `<div style="display: flex; gap: 8px; flex-wrap: nowrap; overflow-x: auto; max-width: 250px; justify-content: flex-start; scrollbar-width: none; margin-bottom: ${text ? '8px' : '0'};">`;
                 files.forEach(file => {
                     let shortName = file.name.length > 15 ? file.name.substring(0, 10) + ".." + file.name.substring(file.name.lastIndexOf('.')) : file.name;
-                    attachmentHTML += `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffffff; padding: 12px; border-radius: 16px; width: 110px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.08); border: 1px solid #eaeaea;"><i class="fas fa-file-pdf" style="color: #e53935; font-size: 32px; margin-bottom: 8px;"></i><span style="font-size: 11px; font-weight: 600; color: #333; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${shortName}</span></div>`;
+                    attachmentHTML += `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffffff; padding: 12px; border-radius: 16px; width: 120px; height: 120px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.08); border: 1px solid #eaeaea; flex-shrink: 0;"><i class="fas fa-file-alt" style="color: #333; font-size: 32px; margin-bottom: 8px;"></i><span style="font-size: 11px; font-weight: 600; color: #333; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${shortName}</span></div>`;
                 });
                 attachmentHTML += `</div>`;
             }
@@ -2168,7 +2165,7 @@
             
             html += `<button class="action-btn btn-black-icon" onclick="openMenu(event, this)"><i class="fas fa-ellipsis-v"></i></button>`;
             if (isStopped) { html += `<button class="action-btn btn-black-icon" onclick="regenerateMessage(this)"><i class="fas fa-redo"></i></button>`; }
-            html += `<button class="action-btn tts-btn" onclick="speakText(this)"><i class="fas fa-volume-up" style="font-size: 13px;"></i></button></div>`;
+            html += `<button class="action-btn tts-btn" onclick="speakText(this)"><i class="fas fa-volume-up"></i></button></div>`;
             
             container.insertAdjacentHTML('beforeend', html);
         }
@@ -2240,7 +2237,6 @@
         const msgObj = chatHistory[activeChatIndex].messages[editingMsgIdx]; const input = document.getElementById('user-input'); 
         input.value = msgObj.content || ""; autoGrow(input); input.focus(); 
         
-        // Handle backwards compatibility for single 'attachment' vs 'attachments' array
         let attsToLoad = [];
         if (msgObj.attachments && msgObj.attachments.length > 0) {
             attsToLoad = [...msgObj.attachments];
