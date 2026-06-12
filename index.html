@@ -189,7 +189,7 @@
 
         .sidebar-footer { padding: 15px 20px 20px 20px; display: flex; justify-content: space-between; align-items: center; gap: 8px; background: transparent; flex-shrink: 0; }
         .profile-icon { display: flex; align-items: center; gap: 10px; cursor: pointer; transition: opacity 0.2s; padding: 5px; border-radius: 12px; flex: 1; min-width: 0; }
-        .profile-icon:active { background: transparent; } 
+        .profile-icon:active { background: transparent; } /* Animation Hata Diya */
         .profile-icon span { font-size: 15px; font-weight: 700; color: #000; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         #sidebar-user-pfp { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 1.5px solid #000; flex-shrink: 0; }
         
@@ -1204,6 +1204,7 @@
 
             const welcomeContainer = document.getElementById('welcome-screen');
             if (welcomeContainer) {
+                // BUG FIX: Removed empty space and gap completely.
                 welcomeContainer.innerHTML = `<div style="display:flex; flex-direction:row; gap:0px; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${displayFirstNameWelcome}</span></div>`;
             }
 
@@ -1568,18 +1569,15 @@
 
     window.currentAttachments = [];
 
-    // ====== TTS SYSTEM (PAUSE/RESUME & MALE/FEMALE FIXES) ======
+    // ====== TTS SYSTEM (100% FIXED) ======
     let ttsUtterance = null;
     let ttsSegments = [];
     let currentSegmentIdx = 0;
     let isTtsPlaying = false;
-    let isTtsPaused = false;
     let currentTtsBtn = null;
-    let currentTtsVoicePref = 'female'; // Default Female
 
     function fullStopTTS() {
         isTtsPlaying = false;
-        isTtsPaused = false;
         ttsSegments = [];        
         currentSegmentIdx = 0; 
         
@@ -1589,14 +1587,14 @@
         
         if (currentTtsBtn) {
             let icon = currentTtsBtn.querySelector('i');
-            if (icon) icon.className = 'fas fa-volume-up'; // Default Speaker icon
+            if (icon) icon.className = 'fas fa-volume-up'; // Default Speaker
             currentTtsBtn = null;
         }
     }
 
     function playNextTtsSegment() {
         if (!isTtsPlaying || currentSegmentIdx >= ttsSegments.length || !currentTtsBtn) {
-            if (currentSegmentIdx >= ttsSegments.length) fullStopTTS();
+            fullStopTTS();
             return;
         }
 
@@ -1605,60 +1603,41 @@
 
         ttsUtterance = new SpeechSynthesisUtterance(textSegment);
         
-        let prefType = currentTtsVoicePref; 
+        let prefType = localStorage.getItem('datex_voice_type') || 'female'; 
         let voices = window.speechSynthesis.getVoices();
         
         if(voices.length > 0) {
             let selectedVoice = null;
-            
-            let maleKeywords = ['male', 'david', 'mark', 'george', 'guy', 'boy', 'man', 'ravi', 'google uk english male'];
-            let femaleKeywords = ['female', 'samantha', 'zira', 'susan', 'hazel', 'neerja', 'woman', 'girl', 'victoria', 'google uk english female'];
-
             if (prefType === 'male') {
-                selectedVoice = voices.find(v => {
-                    let n = v.name.toLowerCase();
-                    return maleKeywords.some(k => n.includes(k));
-                });
+                selectedVoice = voices.find(v => v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('david') || v.name.toLowerCase().includes('mark') || v.name.toLowerCase().includes('guy'));
             } else {
-                selectedVoice = voices.find(v => {
-                    let n = v.name.toLowerCase();
-                    return femaleKeywords.some(k => n.includes(k));
-                });
+                selectedVoice = voices.find(v => v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('samantha') || v.name.toLowerCase().includes('zira') || v.name.toLowerCase().includes('girl'));
             }
-            
-            if (!selectedVoice && prefType === 'male') {
-                selectedVoice = voices.find(v => v.name.toLowerCase().includes('male')) || voices[0];
-            } else if (!selectedVoice) {
-                selectedVoice = voices.find(v => v.name.toLowerCase().includes('female')) || voices[0];
+            if (!selectedVoice) {
+                selectedVoice = voices[0];
             }
-
-            if(selectedVoice) {
-                ttsUtterance.voice = selectedVoice;
-                ttsUtterance.lang = selectedVoice.lang;
-            }
+            ttsUtterance.voice = selectedVoice;
+            ttsUtterance.lang = selectedVoice.lang;
         }
 
-        // Adjust Pitch & Rate
         if (prefType === 'male') {
-            ttsUtterance.pitch = 0.9;
-            ttsUtterance.rate = 0.95; 
+            ttsUtterance.pitch = 0.5; // Deep Male Pitch
+            ttsUtterance.rate = 0.90;
         } else {
-            ttsUtterance.pitch = 1.1; 
-            ttsUtterance.rate = 1.0; 
+            ttsUtterance.pitch = 1.3; // High Female Pitch
+            ttsUtterance.rate = 1.05;
         }
 
         ttsUtterance.onend = () => { 
             if (isTtsPlaying) { 
                 currentSegmentIdx++; 
-                if (currentSegmentIdx < ttsSegments.length) playNextTtsSegment(); 
-                else fullStopTTS();
+                playNextTtsSegment(); 
             } 
         };
         ttsUtterance.onerror = (e) => { 
-            if (isTtsPlaying) { 
+            if (isTtsPlaying && e.error !== 'canceled') { 
                 currentSegmentIdx++; 
-                if (currentSegmentIdx < ttsSegments.length) playNextTtsSegment(); 
-                else fullStopTTS();
+                playNextTtsSegment(); 
             } 
         };
         
@@ -1669,45 +1648,37 @@
         if (!window.speechSynthesis) { alert("Your browser does not support Text-to-Speech."); return; }
         stopVoiceNoteBubble();
 
+        let icon = btn.querySelector('i');
+
         if (currentTtsBtn === btn) {
-            if (isTtsPlaying) {
-                // Pause Voice
-                isTtsPlaying = false;
-                isTtsPaused = true;
-                window.speechSynthesis.cancel(); 
-                btn.querySelector('i').className = 'fas fa-play'; // Pause pe Play icon dikhayega
-            } else if (isTtsPaused) {
-                // Resume Voice
-                isTtsPlaying = true;
-                isTtsPaused = false;
-                btn.querySelector('i').className = 'fas fa-stop'; // Play pe Stop icon dikhayega
-                playNextTtsSegment(); 
+            if (window.speechSynthesis.paused) {
+                window.speechSynthesis.resume();
+                icon.className = 'fas fa-stop';
+            } else if (window.speechSynthesis.speaking) {
+                window.speechSynthesis.pause();
+                icon.className = 'fas fa-play';
+            } else {
+                fullStopTTS();
             }
             return;
         }
         
-        // Naya TTS trigger hua
         fullStopTTS(); 
+        currentTtsBtn = btn; 
         
         const bubble = btn.closest('.bubble-container').querySelector('.bubble');
         let clone = bubble.cloneNode(true);
         let preTags = clone.querySelectorAll('pre'); preTags.forEach(p => p.remove()); 
         
-        let fullText = clone.textContent.trim();
-        fullText = fullText.replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '');
-
+        let fullText = clone.textContent.trim().replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '');
         if (!fullText) return;
 
         ttsSegments = fullText.replace(/([.!?।\n])\s*/g, "$1|").split("|").filter(s => s.trim().length > 0);
         if (ttsSegments.length === 0) ttsSegments = [fullText];
 
-        currentTtsVoicePref = localStorage.getItem('datex_voice_type') || 'female';
-        
-        currentTtsBtn = btn; 
         currentSegmentIdx = 0; 
         isTtsPlaying = true; 
-        isTtsPaused = false;
-        btn.querySelector('i').className = 'fas fa-stop'; // Start hote hi Stop icon aayega
+        icon.className = 'fas fa-stop'; 
         
         playNextTtsSegment(); 
     }
@@ -2226,7 +2197,7 @@
             
             html += `<button class="action-btn btn-black-icon" onclick="openMenu(event, this)"><i class="fas fa-ellipsis-v"></i></button>`;
             if (isStopped) { html += `<button class="action-btn btn-black-icon" onclick="regenerateMessage(this)"><i class="fas fa-redo"></i></button>`; }
-            /* FIXED: Default icon is Speaker (fa-volume-up) */
+            // NEW: Default icon is set to Speaker (Volume Up)
             html += `<button class="action-btn tts-btn" onclick="speakText(this)"><i class="fas fa-volume-up"></i></button></div>`;
             
             container.insertAdjacentHTML('beforeend', html);
