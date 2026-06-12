@@ -271,6 +271,13 @@
         .user-image-gallery { display: flex; gap: 8px; overflow-x: auto; max-width: 100%; justify-content: flex-start; scrollbar-width: none; -ms-overflow-style: none; }
         .user-image-gallery::-webkit-scrollbar { display: none; }
 
+        /* Added specific classes for Chat Attachments without shadows and with grey borders */
+        .chat-attachment-img { width: 120px; height: 120px; border-radius: 16px; object-fit: cover; flex-shrink: 0; box-shadow: none; border: 1.5px solid #eaeaea; cursor: pointer; }
+        .chat-attachment-pdf { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffffff; padding: 12px; border-radius: 16px; width: 120px; height: 120px; text-align: center; box-shadow: none; border: 1.5px solid #eaeaea; flex-shrink: 0; }
+        .chat-attachment-pdf i { color: #333; font-size: 40px; margin-bottom: 14px; }
+        .chat-attachment-pdf span { font-size: 11px; font-weight: 600; color: #333; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ai-gen-img { width: 100%; max-width: 350px; aspect-ratio: 1/1; border-radius: 16px; margin: 10px 0; display: block; object-fit: cover; background: transparent; cursor: pointer; box-shadow: none; border: 1.5px solid #eaeaea; }
+
         .user-msg-text { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; padding-bottom: 0px; transition: padding-bottom 0.2s; word-break: break-word; overflow-wrap: anywhere; }
         .user-msg-text.expanded { -webkit-line-clamp: unset; padding-bottom: 24px; }
         
@@ -281,7 +288,7 @@
         .user-expand-btn:active { transform: scale(0.9); }
         
         .typing-indicator { display: flex; align-items: center; gap: 4px; padding: 4px 6px; height: 24px; }
-        .typing-dot { width: 6px; height: 6px; background-color: #888; border-radius: 50%; animation: typingBounce 1.4s infinite ease-in-out both; }
+        .typing-dot { width: 6px; height: 6px; background-color: #000; border-radius: 50%; animation: typingBounce 1.4s infinite ease-in-out both; }
         .typing-dot:nth-child(1) { animation-delay: -0.32s; }
         .typing-dot:nth-child(2) { animation-delay: -0.16s; }
         .typing-dot:nth-child(3) { animation-delay: 0s; }
@@ -571,6 +578,13 @@
         body.dark-mode #modal-user-email { color: #fff; }
         body.dark-mode .profile-logout-btn { border-color: #fff; color: #fff; background: transparent; }
         body.dark-mode .profile-logout-btn:active { background: #333; }
+        
+        body.dark-mode .typing-dot { background-color: #fff; }
+        body.dark-mode .chat-attachment-img { border-color: #444; }
+        body.dark-mode .chat-attachment-pdf { background: #2c2c2c; border-color: #444; }
+        body.dark-mode .chat-attachment-pdf i { color: #ccc !important; }
+        body.dark-mode .chat-attachment-pdf span { color: #ccc !important; }
+        body.dark-mode .ai-gen-img { border-color: #444 !important; }
     </style>
 </head>
 <body>
@@ -1589,6 +1603,19 @@
                 }
             }
         });
+
+        const allAiRows = Array.from(document.querySelectorAll('.message-row.ai-row'));
+        allAiRows.forEach((row, index) => {
+            let isLastAiMsg = (index === allAiRows.length - 1);
+            let retryBtn = row.querySelector('.fa-redo');
+            if (retryBtn && retryBtn.parentElement) {
+                if (!isLastAiMsg) {
+                    retryBtn.parentElement.style.display = 'none';
+                } else {
+                    retryBtn.parentElement.style.display = 'flex';
+                }
+            }
+        });
     }
 
     const chatContainerEl = document.getElementById('chat-container');
@@ -2083,7 +2110,7 @@
                 hasImageOrFile = true;
                 attachmentHTML += `<div class="user-image-gallery" style="margin-bottom: ${text ? '8px' : '0'}; display: flex; gap: 8px; flex-wrap: nowrap; overflow-x: auto; max-width: 250px; justify-content: flex-start; scrollbar-width: none;">`;
                 images.forEach(img => {
-                    attachmentHTML += `<img src="${img.data}" onclick="openImageModal(this.src)" style="width: 120px; height: 120px; border-radius: 16px; object-fit: cover; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); cursor: pointer;">`;
+                    attachmentHTML += `<img src="${img.data}" onclick="openImageModal(this.src)" class="chat-attachment-img">`;
                 });
                 attachmentHTML += `</div>`;
             }
@@ -2093,7 +2120,7 @@
                 attachmentHTML += `<div style="display: flex; gap: 8px; flex-wrap: nowrap; overflow-x: auto; max-width: 250px; justify-content: flex-start; scrollbar-width: none; margin-bottom: ${text ? '8px' : '0'};">`;
                 files.forEach(file => {
                     let shortName = file.name.length > 15 ? file.name.substring(0, 10) + ".." + file.name.substring(file.name.lastIndexOf('.')) : file.name;
-                    attachmentHTML += `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffffff; padding: 12px; border-radius: 16px; width: 120px; height: 120px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.08); border: 1px solid #eaeaea; flex-shrink: 0;"><i class="fas fa-file-alt" style="color: #333; font-size: 32px; margin-bottom: 8px;"></i><span style="font-size: 11px; font-weight: 600; color: #333; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${shortName}</span></div>`;
+                    attachmentHTML += `<div class="chat-attachment-pdf"><i class="fas fa-file-alt"></i><span>${shortName}</span></div>`;
                 });
                 attachmentHTML += `</div>`;
             }
@@ -2290,7 +2317,7 @@
         
         let tempImages = [];
         formatted = formatted.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, function(match, alt, url) {
-            tempImages.push(`<img src="${url}" alt="${alt}" onclick="openImageModal(this.src)" style="width: 100%; max-width: 350px; aspect-ratio: 1/1; border-radius: 16px; margin: 10px 0; display: block; object-fit: cover; background: #f0f0f0; cursor: pointer;" onload="this.style.background='transparent'">`);
+            tempImages.push(`<img src="${url}" alt="${alt}" onclick="openImageModal(this.src)" class="ai-gen-img" onload="this.style.background='transparent'">`);
             return `___IMG_TAG_${tempImages.length - 1}___`;
         });
 
@@ -2349,6 +2376,7 @@
                     element.classList.remove('img-gen-bubble');
                     element.innerHTML = "You stopped this response";
                     resetSendButton(); addAiActions(rowElement, true); 
+                    updateThreeDotMenus();
                 }
                 const avatarCont = rowElement.querySelector('.avatar-container');
                 if(avatarCont) avatarCont.classList.remove('loading');
@@ -2409,7 +2437,7 @@
                 const avatarCont = rowElement.querySelector('.avatar-container');
                 if(avatarCont) avatarCont.classList.remove('loading');
                 
-                if (activeChatIndex === boundChatIndex) { resetSendButton(); addAiActions(rowElement, false); if (!userScrolledUp) container.scrollTop = container.scrollHeight; }
+                if (activeChatIndex === boundChatIndex) { resetSendButton(); addAiActions(rowElement, false); updateThreeDotMenus(); if (!userScrolledUp) container.scrollTop = container.scrollHeight; }
             }
         }
         typeNext();
@@ -2426,7 +2454,7 @@
         else { callDatexAPI(); } 
     }
     
-    function stopGeneration() { stopGenerationFlag = true; if (abortController) { abortController.abort(); } resetSendButton(); if (currentAiRow) { addAiActions(currentAiRow, true); } }
+    function stopGeneration() { stopGenerationFlag = true; if (abortController) { abortController.abort(); } resetSendButton(); if (currentAiRow) { addAiActions(currentAiRow, true); updateThreeDotMenus(); } }
     function resetSendButton() { isGenerating = false; const sendBtn = document.querySelector('.send-btn'); if(sendBtn) { sendBtn.innerHTML = '<i class="fas fa-arrow-up"></i>'; } }
     
     function regenerateMessage(btn) {
@@ -2482,6 +2510,7 @@
         
         container.appendChild(aiRow); const bubble = aiRow.querySelector('.ai-bubble'); currentAiRow = aiRow;
         container.scrollTop = container.scrollHeight;
+        updateThreeDotMenus();
 
         if (attachmentsToSave.length > 0 && attachmentsToSave[0].type === 'audio' && !isRegenerate) {
             bubble.classList.remove('img-gen-bubble');
@@ -2495,6 +2524,7 @@
                 bubble.innerText = "Error: Could not transcribe voice note. Please check your API key or connection."; 
                 resetSendButton(); 
                 addAiActions(currentAiRow, true); 
+                updateThreeDotMenus();
                 const avatarCont = currentAiRow.querySelector('.avatar-container');
                 if(avatarCont) avatarCont.classList.remove('loading');
                 return; 
@@ -2596,7 +2626,6 @@ Replace {fixedEncodeURIComponent(detailed_english_prompt)} with a highly detaile
             } else { apiMessages.push({ role: 'assistant', content: msg.content }); }
         });
 
-        // Vision model updated as per Groq's official active models for 2026
         const selectedModel = useVision ? "meta-llama/llama-4-scout-17b-16e-instruct" : "llama-3.3-70b-versatile";
         const isDeepResearchOn = localStorage.getItem('datex_deep_research') === 'true';
         const searchKeywords = ['aaj', 'ajj', 'today', 'news', 'khabar', 'price', 'match', 'ipl', 'score', 'latest', 'update', 'weather', 'mausam', 'kal', 'yesterday', 'current', 'stock', 'who won', 'kaun jeeta', 'batao', 'search', 'link', 'youtube', 'video', 'channel', 'instagram', 'linkedin', 'facebook', 'twitter', 'website', 'profile', 'account', 'url', 'site', 'browser', 'google'];
@@ -2651,6 +2680,7 @@ Replace {fixedEncodeURIComponent(detailed_english_prompt)} with a highly detaile
                 resetSendButton(); 
                 if (currentAiRow) {
                     addAiActions(currentAiRow, true);
+                    updateThreeDotMenus();
                     const avatarCont = currentAiRow.querySelector('.avatar-container');
                     if(avatarCont) avatarCont.classList.remove('loading');
                 }
