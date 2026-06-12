@@ -269,8 +269,7 @@
         body.dark-mode .img-loading-box { background: #2c2c2c; }
         @keyframes pulsePlaceholder { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
 
-        /* HORIZONTAL SCROLL FOR USER IMAGES/FILES */
-        .user-image-gallery { display: flex; gap: 8px; overflow-x: auto; max-width: 100%; justify-content: flex-end; scrollbar-width: none; -ms-overflow-style: none; padding-bottom: 4px; }
+        .user-image-gallery { display: flex; gap: 8px; overflow-x: auto; max-width: 100%; justify-content: flex-end; scrollbar-width: none; -ms-overflow-style: none; }
         .user-image-gallery::-webkit-scrollbar { display: none; }
 
         .user-msg-text { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; padding-bottom: 0px; transition: padding-bottom 0.2s; word-break: break-word; overflow-wrap: anywhere; }
@@ -307,16 +306,16 @@
         
         .chat-input-container { flex: 1; background: #ffffff; border: none; box-shadow: 0 2px 12px rgba(0,0,0,0.15); border-radius: 34px; display: flex; flex-direction: column; width: 100%; overflow: hidden; position: relative; transition: background-color 0.15s, box-shadow 0.15s; }
 
-        /* --- MULTI-ATTACHMENT PREVIEW UI --- */
-        .attachment-preview-container { display: none; width: 100%; max-width: 100%; overflow-x: auto; gap: 10px; padding: 12px 20px 0 20px; scrollbar-width: none; -ms-overflow-style: none; }
+        /* MULTIPLE ATTACHMENT PREVIEW CSS */
+        .attachment-preview-container { display: none; gap: 10px; overflow-x: auto; padding: 12px 20px 0 20px; width: 100%; align-items: center; scrollbar-width: none; }
         .attachment-preview-container::-webkit-scrollbar { display: none; }
-        
-        .attachment-preview-item { position: relative; width: 72px; height: 72px; flex-shrink: 0; border-radius: 12px; background: #e5e7eb; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-        .attachment-preview-item img { width: 100%; height: 100%; object-fit: cover; border-radius: 11px; cursor: pointer; }
-        .attachment-preview-item .remove-btn { position: absolute; top: 4px; right: 4px; width: 24px; height: 24px; background: #ffffff; border: 1px solid #eaeaea; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 12px; color: #000000; cursor: pointer; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: transform 0.15s; }
-        .attachment-preview-item .remove-btn:active { transform: scale(0.9); }
-        body.dark-mode .attachment-preview-item .remove-btn { border-color: #555; }
-        
+        .attachment-item { position: relative; width: 72px; height: 72px; border-radius: 12px; background: #e5e7eb; border: 1px solid #ddd; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .attachment-item img { width: 100%; height: 100%; object-fit: cover; border-radius: 11px; cursor: pointer; }
+        .attachment-item .remove-btn { position: absolute; top: -6px; right: -6px; width: 22px; height: 22px; background: #ffffff; border: 1px solid #eaeaea; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 11px; color: #000000; cursor: pointer; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: transform 0.15s; }
+        .attachment-item .remove-btn:active { transform: scale(0.9); }
+        body.dark-mode .attachment-item { background: #2c2c2c; border-color: #444; }
+        body.dark-mode .attachment-item .remove-btn { border-color: #555; background: #1a1a1a; color: #fff; }
+
         .input-bar { background: transparent; border: none; display: flex; align-items: flex-end; padding: 8px 64px 8px 10px; width: 100%; position: relative; }
         
         .input-bar textarea { flex: 1; background: transparent; border: none; padding: 10px 12px 10px 0; font-size: 16px; outline: none; min-width: 0; color: #000000; resize: none; max-height: 150px; overflow-y: auto; line-height: 24px; height: 44px; scrollbar-width: none; -ms-overflow-style: none; touch-action: pan-y; overscroll-behavior: none; }
@@ -387,10 +386,10 @@
         .action-btn:hover { color: #333; }
         .btn-black-icon { color: #000 !important; }
         
-        /* SPEAKER BUTTON UPGRADE */
-        .tts-btn { background: #000 !important; color: #fff !important; width: 32px !important; height: 32px !important; border-radius: 50% !important; display: flex; align-items: center; justify-content: center; padding: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: transform 0.15s; margin-left: auto; }
-        .tts-btn:active { transform: scale(0.9); }
-        
+        /* Speaker Icon Fix */
+        .tts-btn { background: #f0f0f0 !important; width: 34px !important; height: 34px !important; border-radius: 50% !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 0 !important; box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important; color: #333 !important; }
+        body.dark-mode .tts-btn { background: #2c2c2c !important; border: 1px solid #444 !important; color: #fff !important; box-shadow: 0 2px 6px rgba(0,0,0,0.3) !important; }
+
         .attachment-menu { position: fixed; bottom: -350px; left: 0; width: 100%; background: #fff; border-top-left-radius: 20px; border-top-right-radius: 20px; box-shadow: 0 -5px 25px rgba(0,0,0,0.15); padding: 0 0 40px 0; transition: bottom 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); z-index: 2000; }
         .attachment-menu.active { bottom: 0; }
         .attachment-menu-header { display: flex; justify-content: flex-start; align-items: center; padding: 15px 20px 10px 20px; position: relative; }
@@ -526,7 +525,6 @@
         body.dark-mode .action-btn:hover { color: #fff; }
         body.dark-mode .btn-black-icon { color: #fff !important; }
 
-        body.dark-mode .tts-btn { background: #fff !important; color: #000 !important; }
         body.dark-mode .plus-icon-btn { color: #ffffff; }
 
         body.dark-mode .new-chat-btn { background: #ffffff; color: #000000; }
@@ -578,7 +576,6 @@
 </head>
 <body>
     <script>
-        // Extremely safe early theme initialization to prevent flashes
         if(localStorage.getItem('datex_theme') === 'dark') {
             document.body.classList.add('dark-mode');
             const fav = document.getElementById('dynamic-favicon');
@@ -807,7 +804,7 @@
 
             <div class="setting-section">
                 <div class="setting-section-title">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-right: 2px;"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-right: 2px;"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
                     <span data-i18n="App Language">App Language</span>
                 </div>
                 <div class="select-wrapper" onclick="openLangModal('app')">
@@ -1545,7 +1542,8 @@
     let abortController = null;
     let currentAiRow = null;
 
-    let currentAttachments = [];
+    // GLOBALLY RENAMED TO SUPPORT MULTIPLE ATTACHMENTS (BUG 3)
+    window.currentAttachments = [];
 
     let ttsUtterance = null;
     let ttsSegments = [];
@@ -1619,64 +1617,68 @@
         }
     }
 
-    async function processFile(file) {
-        return new Promise((resolve) => {
-            if (file.type.startsWith('image/')) {
-                const reader = new FileReader(); 
-                reader.onload = e => resolve({ type: 'image', name: file.name, data: e.target.result });
-                reader.readAsDataURL(file);
-            } else {
-                resolve({ type: 'file', name: file.name, data: null });
-            }
-        });
-    }
-
-    function renderAttachmentPreview() {
+    // MULTIPLE ATTACHMENT RENDERER (BUG 3)
+    window.renderAttachmentPreviews = function() {
         const container = document.getElementById('attachment-preview-container');
         container.innerHTML = '';
-        if (currentAttachments.length === 0) { container.style.display = 'none'; return; }
+        if (window.currentAttachments.length === 0) {
+            container.style.display = 'none';
+            return;
+        }
+        container.style.display = 'flex';
         
-        currentAttachments.forEach((att, index) => {
-            let div = document.createElement('div');
-            div.className = 'attachment-preview-item';
-            
-            let closeBtn = `<button class="remove-btn" onclick="window.removeAttachment(${index}, event)"><i class="fas fa-times"></i></button>`;
+        window.currentAttachments.forEach((att, index) => {
+            const div = document.createElement('div');
+            div.className = 'attachment-item';
             
             if (att.type === 'image') {
-                div.innerHTML = `<img src="${att.data}" onclick="openImageModal(this.src)">` + closeBtn;
+                div.innerHTML = `<img src="${att.data}" onclick="openImageModal(this.src)"><div class="remove-btn" onclick="window.removeAttachment(event, ${index})"><i class="fas fa-times"></i></div>`;
             } else if (att.type === 'file') {
                 let shortName = att.name.length > 10 ? att.name.substring(0, 6) + ".." + att.name.substring(att.name.lastIndexOf('.')) : att.name;
-                div.innerHTML = `<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%; height:100%; padding:4px;"><i class="fas fa-file-pdf" style="font-size:24px; color:#333; margin-bottom:4px;"></i><span style="font-size:9px; color:#555; max-width:60px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600;">${shortName}</span></div>` + closeBtn;
+                div.innerHTML = `<i class="fas fa-file-alt" style="font-size: 24px; color: #333; margin-bottom: 4px;"></i><span style="font-size: 9px; color: #555; font-weight: 500; max-width: 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${shortName}</span><div class="remove-btn" onclick="window.removeAttachment(event, ${index})"><i class="fas fa-times"></i></div>`;
             } else if (att.type === 'audio') {
-                div.innerHTML = `<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%; height:100%;"><i class="fas fa-microphone" style="font-size:24px; color:#333; margin-bottom:4px;"></i><span style="font-size:9px; color:#555; font-weight:600;">Voice</span></div>` + closeBtn;
+                 // Audio usually triggers auto-send, so it rarely stays here.
             }
             container.appendChild(div);
         });
-        container.style.display = 'flex';
-    }
+        container.scrollLeft = container.scrollWidth;
+    };
 
     function handleFileSelect(event) {
-        let files = Array.from(event.target.files);
-        if(files.some(f => f.type.startsWith('video/'))) { alert("Videos are not allowed! Please select a valid photo or document."); event.target.value=''; return; }
-        
-        let availableSlots = 10 - currentAttachments.length;
-        if(files.length > availableSlots) { 
-            alert("Maximum 10 attachments allowed at a time."); 
-            files = files.slice(0, availableSlots); 
+        const files = event.target.files;
+        if(files.length > 0) {
+            for(let i=0; i<files.length; i++) {
+                if (window.currentAttachments.length >= 10) {
+                    alert("Max 10 attachments allowed!");
+                    break;
+                }
+                const file = files[i];
+                if (file.type.startsWith('video/')) { alert("Videos are not allowed! Please select a valid photo or document."); continue; }
+
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        window.currentAttachments.push({ type: 'image', name: file.name, data: e.target.result });
+                        window.renderAttachmentPreviews();
+                    }
+                    reader.readAsDataURL(file);
+                } else {
+                    window.currentAttachments.push({ type: 'file', name: file.name, data: null });
+                    window.renderAttachmentPreviews();
+                }
+            }
         }
-        if(files.length === 0) return;
-        
-        Promise.all(files.map(processFile)).then(results => {
-            currentAttachments.push(...results);
-            renderAttachmentPreview();
-        });
         event.target.value = '';
     }
 
-    window.removeAttachment = function(index, e) { 
+    window.removeAttachment = function(e, index) { 
         if (e) e.stopPropagation();
-        currentAttachments.splice(index, 1); 
-        renderAttachmentPreview();
+        if(index !== undefined) {
+            window.currentAttachments.splice(index, 1);
+        } else {
+            window.currentAttachments = [];
+        }
+        window.renderAttachmentPreviews();
         document.getElementById('user-input').focus();
     };
 
@@ -1918,7 +1920,8 @@
     const micBtn = document.getElementById('mike-btn'); const micBtnContainer = document.getElementById('mike-btn-container'); const txtArea = document.getElementById('user-input'); const recUi = document.getElementById('recording-ui'); const recTimerDisplay = document.getElementById('recording-timer'); const recWave = document.getElementById('rec-wave'); const dragLockUi = document.getElementById('drag-lock-ui');
 
     micBtn.addEventListener('pointerdown', (e) => {
-        if (isVoiceNoteActive || isGenerating || (currentAttachments.length > 0 && currentAttachments[0].type === 'audio') || isDictating) return;
+        let isAudioAtt = window.currentAttachments.length > 0 && window.currentAttachments[0].type === 'audio';
+        if (isVoiceNoteActive || isGenerating || isAudioAtt || isDictating) return;
         vnPointerStartY = e.clientY || (e.touches && e.touches[0].clientY); vnIsDragging = true; ignoreNextClick = false;
         vnHoldTimer = setTimeout(() => { if (vnIsDragging && !isVoiceNoteActive) { dragLockUi.classList.add('active'); } }, 200); 
     });
@@ -1950,9 +1953,9 @@
             recTimerInterval = setInterval(() => { recSeconds++; let m = Math.floor(recSeconds / 60); let s = recSeconds % 60; recTimerDisplay.innerText = `${m}:${s < 10 ? '0' : ''}${s}`; }, 1000);
 
             vnMediaRecorder.onstop = () => {
-                if (isCancelingAudio) { isVoiceNoteActive = false; clearInterval(recTimerInterval); recWave.classList.remove('playing'); document.getElementById('rec-action-btn').style.display = 'none'; currentAttachments = []; renderAttachmentPreview(); return; }
+                if (isCancelingAudio) { isVoiceNoteActive = false; clearInterval(recTimerInterval); recWave.classList.remove('playing'); document.getElementById('rec-action-btn').style.display = 'none'; window.currentAttachments = []; return; }
                 const audioBlob = new Blob(vnAudioChunks, { type: 'audio/webm' }); const audioUrl = URL.createObjectURL(audioBlob);
-                currentAttachments = [{ type: 'audio', name: 'Voice Note', data: audioBlob, url: audioUrl, duration: recTimerDisplay.innerText }];
+                window.currentAttachments = [{ type: 'audio', name: 'Voice Note', data: audioBlob, url: audioUrl, duration: recTimerDisplay.innerText }];
                 if (isSendingAudio) { callDatexAPI(); resetVoiceNoteUI(); } 
                 else { 
                     isVoiceNoteActive = false; clearInterval(recTimerInterval); recWave.classList.remove('playing'); 
@@ -1964,7 +1967,7 @@
     }
 
     function stopVoiceNoteMidway() { if(vnMediaRecorder && vnMediaRecorder.state !== 'inactive') { vnMediaRecorder.stop(); } }
-    function cancelVoiceNoteRecord() { isCancelingAudio = true; if(vnMediaRecorder && vnMediaRecorder.state !== 'inactive') { vnMediaRecorder.stop(); } currentAttachments = []; resetVoiceNoteUI(); renderAttachmentPreview(); }
+    function cancelVoiceNoteRecord() { isCancelingAudio = true; if(vnMediaRecorder && vnMediaRecorder.state !== 'inactive') { vnMediaRecorder.stop(); } window.currentAttachments = []; resetVoiceNoteUI(); }
     
     function handleVoiceNoteAction() {
         if (isVoiceNoteActive) { stopVoiceNoteMidway(); }
@@ -1990,7 +1993,7 @@
         if(!confirm("Are you sure you want to delete this chat?")) return;
         
         if (isVoiceNoteActive) { cancelVoiceNoteRecord(); }
-        if (isDictating && recognition) { recognition.stop(); isDictating=false; document.getElementById('mike-btn').classList.remove('recording'); }
+        if (isDictating && recognition) { recognition.stop(); }
         stopTTS();
         
         if (isGenerating && activeChatIndex === index) stopGeneration(); 
@@ -2004,9 +2007,11 @@
     function loadSelectedChat(index, shouldToggleSidebar = false) {
         if (isGenerating) stopGeneration(); stopTTS(); 
         
+        // Clear inputs on switch
         document.getElementById('user-input').value = "";
         autoGrow(document.getElementById('user-input'));
-        currentAttachments = []; renderAttachmentPreview();
+        window.currentAttachments = [];
+        window.renderAttachmentPreviews();
         if (isVoiceNoteActive) cancelVoiceNoteRecord();
         if (isDictating && recognition) {
             recognition.stop();
@@ -2028,9 +2033,11 @@
     }
 
     function createNewChat(keepSidebarOpen = false) {
+        // Clear inputs on new chat
         document.getElementById('user-input').value = "";
         autoGrow(document.getElementById('user-input'));
-        currentAttachments = []; renderAttachmentPreview();
+        window.currentAttachments = [];
+        window.renderAttachmentPreviews();
         if (isVoiceNoteActive) { cancelVoiceNoteRecord(); }
         if (isDictating && recognition) { 
             recognition.stop(); 
@@ -2067,39 +2074,47 @@
         const row = document.createElement('div'); row.className = 'message-row user-row'; row.setAttribute('data-index', msgIdx); 
 
         let attachmentHTML = '';
-        let imageGalleryHTML = '';
-        let isImage = false;
-        
-        let atts = attachments || [];
+        let hasImageOrFile = false;
+        let isAudio = false;
 
-        if (atts.length > 0) {
-            let imagesAndDocsHtml = '';
-            atts.forEach(att => {
-                if (att.type === 'image') {
-                    isImage = true;
-                    imagesAndDocsHtml += `<img src="${att.data}" onclick="openImageModal(this.src)" style="width: 120px; height: 120px; border-radius: 16px; object-fit: cover; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); cursor: pointer;">`;
-                } else if (att.type === 'file') {
-                    isImage = true; 
-                    let shortName = att.name.length > 15 ? att.name.substring(0, 10) + ".." + att.name.substring(att.name.lastIndexOf('.')) : att.name;
-                    imagesAndDocsHtml += `<div style="width: 120px; height: 120px; border-radius: 16px; flex-shrink: 0; background: #f3f4f6; border: 1px solid #ddd; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 15px 10px 10px 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"><i class="fas fa-file-pdf" style="color: #333; font-size: 48px; margin-top: 5px;"></i><span style="font-size: 11px; font-weight: 600; color: #333; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center;">${shortName}</span></div>`;
-                } else if (att.type === 'audio') {
-                    let dur = att.duration || "0:02";
-                    attachmentHTML += `<div class="audio-bubble-wrap" style="padding: 6px 12px; border-radius: 22px; display: flex; align-items: center; gap: 10px; width: 200px; margin-bottom: 6px; border: 1.5px solid #000;"><div onclick="playAudioBubble(this, '${att.url}')" class="audio-play-btn" style="width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0;"><i class="fas fa-play play-btn-icon" style="margin-left: 2px; font-size: 13px;"></i></div><div class="audio-progress-line" style="flex: 1; height: 2px; position: relative;"><div class="audio-progress-dot" style="position: absolute; left: 0; top: -3px; width: 8px; height: 8px; border-radius: 50%;"></div></div><span class="audio-timer" data-duration="${dur}" style="font-size: 12px; font-weight: 500; min-width: 30px; text-align: right;">${dur}</span></div>`;
-                }
-            });
-            
-            if (imagesAndDocsHtml !== '') {
-                imageGalleryHTML = `<div class="user-image-gallery" style="margin-bottom: ${text ? '8px' : '0'}; display: flex; gap: 8px; overflow-x: auto; max-width: 100%; justify-content: flex-end; padding-bottom: 4px;">${imagesAndDocsHtml}</div>`;
+        if (attachments && attachments.length > 0) {
+            let images = attachments.filter(a => a.type === 'image');
+            let files = attachments.filter(a => a.type === 'file');
+            let audios = attachments.filter(a => a.type === 'audio');
+
+            if (images.length > 0) {
+                hasImageOrFile = true;
+                attachmentHTML += `<div class="user-image-gallery" style="margin-bottom: ${text ? '8px' : '0'}; display: flex; gap: 8px; flex-wrap: wrap; max-width: 250px; justify-content: flex-end;">`;
+                images.forEach(img => {
+                    attachmentHTML += `<img src="${img.data}" onclick="openImageModal(this.src)" style="width: 120px; height: 120px; border-radius: 16px; object-fit: cover; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); cursor: pointer;">`;
+                });
+                attachmentHTML += `</div>`;
+            }
+
+            if (files.length > 0) {
+                hasImageOrFile = true;
+                attachmentHTML += `<div style="display: flex; gap: 8px; flex-wrap: wrap; max-width: 250px; justify-content: flex-end; margin-bottom: ${text ? '8px' : '0'};">`;
+                files.forEach(file => {
+                    let shortName = file.name.length > 15 ? file.name.substring(0, 10) + ".." + file.name.substring(file.name.lastIndexOf('.')) : file.name;
+                    attachmentHTML += `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffffff; padding: 12px; border-radius: 16px; width: 110px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.08); border: 1px solid #eaeaea;"><i class="fas fa-file-pdf" style="color: #e53935; font-size: 32px; margin-bottom: 8px;"></i><span style="font-size: 11px; font-weight: 600; color: #333; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${shortName}</span></div>`;
+                });
+                attachmentHTML += `</div>`;
+            }
+
+            if (audios.length > 0) {
+                isAudio = true;
+                let dur = audios[0].duration || "0:02";
+                attachmentHTML += `<div class="audio-bubble-wrap" style="padding: 6px 12px; border-radius: 22px; display: flex; align-items: center; gap: 10px; width: 200px; margin-bottom: 6px; border: 1.5px solid #000;"><div onclick="playAudioBubble(this, '${audios[0].url}')" class="audio-play-btn" style="width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0;"><i class="fas fa-play play-btn-icon" style="margin-left: 2px; font-size: 13px;"></i></div><div class="audio-progress-line" style="flex: 1; height: 2px; position: relative;"><div class="audio-progress-dot" style="position: absolute; left: 0; top: -3px; width: 8px; height: 8px; border-radius: 50%;"></div></div><span class="audio-timer" data-duration="${dur}" style="font-size: 12px; font-weight: 500; min-width: 30px; text-align: right;">${dur}</span></div>`;
             }
         }
         
-        let bubbleStyle = (text || (!isImage && atts.length > 0)) ? 'display: flex; flex-direction: column;' : 'display: none;';
+        let bubbleStyle = (text || (!hasImageOrFile && attachments && attachments.length>0)) ? 'display: flex; flex-direction: column;' : 'display: none;';
 
-        row.innerHTML = `<div class="bubble-container" style="align-items: flex-end; max-width: 88%; overflow: hidden;">
-            ${isImage ? imageGalleryHTML : ''}
+        row.innerHTML = `<div class="bubble-container" style="align-items: flex-end;">
+            ${hasImageOrFile ? attachmentHTML : ''}
             <div class="bubble user-bubble" style="${bubbleStyle}">
-                ${!isImage ? attachmentHTML : ''}
-                <div class="user-msg-text" style="${(atts.length > 0 && atts[0].type === 'audio') ? 'display:none !important;' : ''}">${text ? text : ''}</div>
+                ${!hasImageOrFile ? attachmentHTML : ''}
+                <div class="user-msg-text" style="${isAudio ? 'display:none !important;' : ''}">${text ? text : ''}</div>
             </div>
             <div class="action-bar user-action-bar"><button class="action-btn btn-black-icon" onclick="openMenu(event, this)"><i class="fas fa-ellipsis-v"></i></button></div>
         </div>`;
@@ -2225,17 +2240,22 @@
         const msgObj = chatHistory[activeChatIndex].messages[editingMsgIdx]; const input = document.getElementById('user-input'); 
         input.value = msgObj.content || ""; autoGrow(input); input.focus(); 
         
-        let atts = msgObj.attachments || (msgObj.attachment ? [msgObj.attachment] : []);
-        if (atts.length > 0 && atts[0].type !== 'audio') {
-            currentAttachments = [...atts]; 
-            renderAttachmentPreview();
-        } else { currentAttachments = []; renderAttachmentPreview(); }
+        // Handle backwards compatibility for single 'attachment' vs 'attachments' array
+        let attsToLoad = [];
+        if (msgObj.attachments && msgObj.attachments.length > 0) {
+            attsToLoad = [...msgObj.attachments];
+        } else if (msgObj.attachment) {
+            attsToLoad = [msgObj.attachment];
+        }
+
+        window.currentAttachments = attsToLoad.filter(a => a.type !== 'audio');
+        window.renderAttachmentPreviews();
         hideMsgMenu(); 
     }
 
     function deleteSelectedMsg() {
         if (isVoiceNoteActive) { cancelVoiceNoteRecord(); }
-        if (isDictating && recognition) { recognition.stop(); isDictating=false; document.getElementById('mike-btn').classList.remove('recording'); }
+        if (isDictating && recognition) { recognition.stop(); }
         stopTTS(); 
         
         if(selectedMsgRow && activeChatIndex !== -1) {
@@ -2407,7 +2427,6 @@
         }
         if (isGenerating) { stopGeneration(); } 
         else if (isVoiceNoteActive) { isSendingAudio = true; if(vnMediaRecorder && vnMediaRecorder.state !== 'inactive') vnMediaRecorder.stop(); } 
-        else if (currentAttachments.length > 0 && currentAttachments[0].type === 'audio') { callDatexAPI(); resetVoiceNoteUI(); } 
         else { callDatexAPI(); } 
     }
     
@@ -2425,11 +2444,14 @@
         
         if (!isRegenerate) {
             const input = document.getElementById('user-input'); message = input.value.trim();
-            if (currentAttachments.length > 0) { attachmentsToSave = [...currentAttachments]; currentAttachments = []; renderAttachmentPreview(); }
+            if (window.currentAttachments.length > 0) { attachmentsToSave = [...window.currentAttachments]; window.currentAttachments = []; window.renderAttachmentPreviews(); }
             if (!message && attachmentsToSave.length === 0) return;
             input.value = ""; input.style.height = "44px"; 
 
-            if (isNewSession) { const titleText = message ? message.substring(0, 30) : (attachmentsToSave.length > 0 && attachmentsToSave[0].type==='audio' ? "Voice Note" : "Media/File Upload"); const newChat = { title: titleText, messages: [] }; chatHistory.push(newChat); activeChatIndex = chatHistory.length - 1; isNewSession = false; } 
+            if (isNewSession) { 
+                let titleText = message ? message.substring(0, 30) : (attachmentsToSave[0]?.type==='audio' ? "Voice Note" : "Attachment Upload"); 
+                const newChat = { title: titleText, messages: [] }; chatHistory.push(newChat); activeChatIndex = chatHistory.length - 1; isNewSession = false; 
+            } 
             else if (editingMsgIdx !== -1) { chatHistory[activeChatIndex].messages.splice(editingMsgIdx); editingMsgIdx = -1; loadSelectedChat(activeChatIndex, false); }
             
             const requestChatIndex = activeChatIndex; const currentMsgIdx = chatHistory[requestChatIndex].messages.length; const msgObj = { role: "user", content: message };
@@ -2465,13 +2487,11 @@
         container.appendChild(aiRow); const bubble = aiRow.querySelector('.ai-bubble'); currentAiRow = aiRow;
         container.scrollTop = container.scrollHeight;
 
-        let hasAudio = attachmentsToSave.some(a => a.type === 'audio');
-        if (hasAudio && !isRegenerate) {
-            let audioAtt = attachmentsToSave.find(a => a.type === 'audio');
+        if (attachmentsToSave.length > 0 && attachmentsToSave[0].type === 'audio' && !isRegenerate) {
             bubble.classList.remove('img-gen-bubble');
             bubble.innerText = "Transcribing voice note...";
             try {
-                const fd = new FormData(); fd.append('file', audioAtt.data, 'voicenote.webm'); fd.append('model', 'whisper-large-v3'); fd.append('temperature', '0.0'); fd.append('prompt', 'Namaste, kaise ho? Please transcribe strictly in English or Hindi (Devanagari or Latin script). NO URDU SCRIPT.'); 
+                const fd = new FormData(); fd.append('file', attachmentsToSave[0].data, 'voicenote.webm'); fd.append('model', 'whisper-large-v3'); fd.append('temperature', '0.0'); fd.append('prompt', 'Namaste, kaise ho? Please transcribe strictly in English or Hindi (Devanagari or Latin script). NO URDU SCRIPT.'); 
                 const wRes = await fetch("https://api.groq.com/openai/v1/audio/transcriptions", { method: 'POST', headers: { 'Authorization': `Bearer ${GROQ_API_KEY}` }, body: fd }); const wData = await wRes.json();
                 if (wData.text) { message = wData.text; chatHistory[requestChatIndex].messages[chatHistory[requestChatIndex].messages.length - 1].content = message; try { localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); } catch(e) {} } 
                 else { throw new Error("Empty audio"); }
@@ -2551,18 +2571,30 @@ Replace {fixedEncodeURIComponent(detailed_english_prompt)} with a highly detaile
         let recentMessages = chatHistory[requestChatIndex].messages.slice(-6);
         recentMessages.forEach(msg => {
             if (msg.role === 'user') {
-                let atts = msg.attachments || (msg.attachment ? [msg.attachment] : []);
-                if (atts.some(a => a.type === 'image')) {
-                    useVision = true; 
-                    let contentArr = [{ type: "text", text: msg.content ? msg.content : "Please analyze these images." }];
-                    atts.filter(a => a.type === 'image').forEach(img => {
-                        contentArr.push({ type: "image_url", image_url: { url: img.data } });
+                let contentArr = [];
+                let textContent = msg.content || "";
+                
+                let localAtts = msg.attachments || (msg.attachment ? [msg.attachment] : []);
+
+                if (localAtts.length > 0) {
+                    let textNotes = [];
+                    localAtts.forEach(att => {
+                        if (att.type === 'image') {
+                            useVision = true;
+                            contentArr.push({ type: "image_url", image_url: { url: att.data } });
+                        } else if (att.type === 'file') {
+                            textNotes.push(`[System Note: User attached document "${att.name}"]`);
+                        }
                     });
+                    if (textNotes.length > 0) {
+                        textContent = textNotes.join("\n") + "\n" + textContent;
+                    }
+                }
+
+                if (useVision) {
+                    contentArr.unshift({ type: "text", text: textContent ? textContent : "Please analyze the attached image(s)." });
                     apiMessages.push({ role: 'user', content: contentArr });
                 } else {
-                    let textContent = msg.content || ""; 
-                    let fileNames = atts.filter(a => a.type === 'file').map(f => f.name).join(", ");
-                    if (fileNames !== "") { textContent = `[System Note: User has attached document(s): ${fileNames}]\n` + textContent; }
                     apiMessages.push({ role: 'user', content: textContent });
                 }
             } else { apiMessages.push({ role: 'assistant', content: msg.content }); }
