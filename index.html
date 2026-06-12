@@ -235,7 +235,6 @@
         .model-name { font-weight: 600; font-size: 18px; color: #000; margin-top: 6px; }
         .version-pill { font-size: 11.5px; font-weight: 600; background: #f0f0f0; display: inline-block; padding: 4px 14px; border-radius: 14px; color: #000; border: 1.5px solid #000; margin-top: 8px; transition: background-color 0.15s, border-color 0.15s, color 0.15s; }
         
-        /* Adjusted Logo padding to move exactly 2px left */
         .logo-container { display: flex; align-items: center; margin-right: -2px; }
         .logo-container img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: none; }
         
@@ -272,7 +271,6 @@
         .user-image-gallery { display: flex; gap: 8px; overflow-x: auto; max-width: 100%; justify-content: flex-start; scrollbar-width: none; -ms-overflow-style: none; }
         .user-image-gallery::-webkit-scrollbar { display: none; }
 
-        /* FIXED BUG 1: Changed to Light Grey (#eaeaea) */
         .chat-attachment-img { width: 120px; height: 120px; border-radius: 16px; object-fit: cover; flex-shrink: 0; box-shadow: none; border: 1.5px solid #eaeaea; cursor: pointer; }
         .chat-attachment-pdf { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffffff; padding: 12px; border-radius: 16px; width: 120px; height: 120px; text-align: center; box-shadow: none; border: 1.5px solid #eaeaea; flex-shrink: 0; }
         .chat-attachment-pdf i { color: #333; font-size: 40px; margin-bottom: 14px; }
@@ -378,9 +376,15 @@
         .copy-code-btn:hover { color: #e4e4e7; }
         .copy-code-btn.clicked { background: rgba(138, 180, 248, 0.2) !important; color: #8ab4f8 !important; }
         
-        .msg-menu { position: fixed; background: #fff; border: 1px solid #ddd; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); display: none; z-index: 2000; flex-direction: column; width: 140px; overflow: hidden; transition: background-color 0.15s, border-color 0.15s; }
-        .msg-menu button { padding: 12px; border: none; background: none; text-align: left; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 10px; width: 100%; border-bottom: 0.5px solid #f0f0f0; transition: color 0.15s, border-color 0.15s; }
+        /* MSG MENU BUG FIX (Black & White Theme) */
+        .msg-menu { position: fixed; background: #ffffff; border: 1px solid #eaeaea; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); display: none; z-index: 2000; flex-direction: column; width: 140px; overflow: hidden; transition: background-color 0.15s, border-color 0.15s; }
+        .msg-menu button { padding: 12px; border: none; background: transparent; color: #000000; text-align: left; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 10px; width: 100%; border-bottom: 1px solid #eaeaea; transition: color 0.15s, border-color 0.15s, background-color 0.15s; }
         .msg-menu button:last-child { border-bottom: none; }
+        .msg-menu button:active { background: #f5f5f5; }
+
+        body.dark-mode .msg-menu { background: #000000; border-color: #333333; }
+        body.dark-mode .msg-menu button { color: #ffffff; border-color: #333333; }
+        body.dark-mode .msg-menu button:active { background: #1a1a1a; }
 
         .ai-link { color: #1a73e8 !important; text-decoration: underline !important; word-break: break-word !important; cursor: pointer !important; pointer-events: auto !important; font-weight: 600 !important; }
         .ai-link:hover { color: #1557b0 !important; }
@@ -536,8 +540,6 @@
         body.dark-mode .new-chat-btn { background: #ffffff; color: #000000; }
         body.dark-mode .new-chat-btn:hover { background: #e0e0e0; }
 
-        body.dark-mode .msg-menu { background: #2c2c2c; border-color: #444; }
-        body.dark-mode .msg-menu button { color: #e0e0e0; border-color: #444; }
         body.dark-mode .attachment-menu { background: #1a1a1a; }
         body.dark-mode .attachment-option .icon-box { background: #2c2c2c; border-color: #444; color: #ccc; }
         body.dark-mode .attachment-option span { color: #ccc; }
@@ -581,11 +583,11 @@
         body.dark-mode .profile-logout-btn:active { background: #333; }
         
         body.dark-mode .typing-dot { background-color: #fff; }
-        body.dark-mode .chat-attachment-img { border-color: #555; }
-        body.dark-mode .chat-attachment-pdf { background: #2c2c2c; border-color: #555; }
+        body.dark-mode .chat-attachment-img { border-color: #eaeaea; }
+        body.dark-mode .chat-attachment-pdf { background: #2c2c2c; border-color: #eaeaea; }
         body.dark-mode .chat-attachment-pdf i { color: #ccc !important; }
         body.dark-mode .chat-attachment-pdf span { color: #ccc !important; }
-        body.dark-mode .ai-gen-img { border-color: #555 !important; }
+        body.dark-mode .ai-gen-img { border-color: #eaeaea !important; }
     </style>
 </head>
 <body>
@@ -666,7 +668,7 @@
                     <div class="menu-line line-3"></div>
                 </div>
             </div>
-            <div class="header-center"><div class="model-name"><span style="font-family: inherit;">DATEX AI</span> <span data-i18n="Model">Model</span></div><div class="version-pill">Kyro 2.5</div></div>
+            <div class="header-center"><div class="model-name"><span style="font-family: inherit;" data-i18n="DATEX AI">DATEX AI</span> <span data-i18n="Model">Model</span></div><div class="version-pill">Kyro 2.5</div></div>
             <div class="header-right">
                 <div class="logo-container">
                     <img src="light.logo.jpg" alt="Logo" class="logo-light-theme">
@@ -677,9 +679,9 @@
 
         <main class="main-content" id="chat-container">
             <div class="welcome-screen" id="welcome-screen">
-                <div style="display:flex; flex-direction:row; gap:0px; align-items:center; justify-content:center; width: 100%;">
+                <div style="display:flex; flex-direction:row; gap:8px; align-items:center; justify-content:center; width: 100%;">
                     <span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span>
-                    <span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">&nbsp;User</span>
+                    <span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">User</span>
                 </div>
             </div>
         </main>
@@ -1201,12 +1203,12 @@
 
             const welcomeContainer = document.getElementById('welcome-screen');
             if (welcomeContainer) {
-                welcomeContainer.innerHTML = `<div style="display:flex; flex-direction:row; gap:0px; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">&nbsp;${displayFirstNameWelcome}</span></div>`;
+                welcomeContainer.innerHTML = `<div style="display:flex; flex-direction:row; gap:8px; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${displayFirstNameWelcome}</span></div>`;
             }
 
             let currentAppLang = localStorage.getItem('datex_app_lang') || 'english';
             if (currentAppLang !== 'english') {
-                setTimeout(() => translateUI(currentAppLang), 50);
+                translateUI(currentAppLang);
             }
         }
 
@@ -1356,13 +1358,11 @@
             localStorage.setItem('datex_app_lang', val);
             document.getElementById('app-lang-btn').innerText = label;
             translateUI(val); 
-            // Re-translate dynamic parts immediately
-            setTimeout(() => translateUI(val), 50);
         } else {
             localStorage.setItem('datex_response_lang', val);
             document.getElementById('response-lang-btn').innerText = label;
         }
-        setTimeout(() => closeLangModal(), 150); 
+        closeLangModal();
     }
 
     async function translateUI(targetLangVal) {
@@ -1382,13 +1382,11 @@
         ])];
 
         let translationMap = {};
-        // Cache key changed to force reset previous array misalignments
         let cached = localStorage.getItem('datex_ui_trans_v3_' + isoCode);
         
         if (cached) {
             translationMap = JSON.parse(cached);
         } else {
-            // Using ||| instead of \n to prevent Google Translate array misalignment
             let queryStr = uniqueTexts.join(' ||| '); 
             try {
                 let res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${isoCode}&dt=t&q=${encodeURIComponent(queryStr)}`);
@@ -1808,10 +1806,10 @@
         ttsUtterance = new SpeechSynthesisUtterance(textSegment);
         
         let prefType = currentTtsVoicePref; 
-        let isGirl = (prefType === 'girl'); 
+        let isGirl = (prefType === 'girl' || prefType === 'male'); 
         
-        let girlKeywords = ['jenny', 'samantha', 'aria', 'neerja', 'girl', 'child', 'variant 1', 'voice 1', 'female 1']; 
-        let womenKeywords = ['zira', 'victoria', 'tessa', 'susan', 'karen', 'hazel', 'woman', 'mature', 'variant 2', 'voice 2', 'female 2'];
+        let girlKeywords = ['jenny', 'samantha', 'aria', 'neerja', 'girl', 'child', 'variant 1', 'voice 1', 'us english', 'en-us', 'female']; 
+        let womenKeywords = ['zira', 'victoria', 'tessa', 'susan', 'karen', 'hazel', 'woman', 'mature', 'variant 2', 'voice 2', 'uk english', 'en-gb'];
 
         let voices = window.speechSynthesis.getVoices();
         if(voices.length > 0) {
@@ -2070,7 +2068,7 @@
         updateThreeDotMenus();
         
         let appLang = localStorage.getItem('datex_app_lang') || 'english'; 
-        if(appLang !== 'english') setTimeout(() => translateUI(appLang), 50);
+        if(appLang !== 'english') translateUI(appLang);
     }
 
     function createNewChat(keepSidebarOpen = false) {
@@ -2094,14 +2092,14 @@
         if (window.currentUser) {
             let name = window.currentUser.displayName || window.currentUser.email.split('@')[0];
             let firstName = window.truncateText(name.split(' ')[0], 12);
-            welcomeHtml = `<div style="display:flex; flex-direction:row; gap:0px; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">&nbsp;${firstName}</span></div>`;
+            welcomeHtml = `<div style="display:flex; flex-direction:row; gap:8px; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${firstName}</span></div>`;
         }
         
         document.getElementById('chat-container').innerHTML = `<div class="welcome-screen" id="welcome-screen">${welcomeHtml}</div>`;
         renderChatList(); 
         
         let appLang = localStorage.getItem('datex_app_lang') || 'english'; 
-        if(appLang !== 'english') setTimeout(() => translateUI(appLang), 50);
+        if(appLang !== 'english') translateUI(appLang);
 
         if(!keepSidebarOpen && document.getElementById('sidebar').classList.contains('active')) toggleSidebar();
         document.getElementById('scroll-bottom-btn').classList.remove('active');
