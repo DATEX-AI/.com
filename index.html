@@ -235,6 +235,7 @@
         .model-name { font-weight: 600; font-size: 18px; color: #000; margin-top: 6px; }
         .version-pill { font-size: 11.5px; font-weight: 600; background: #f0f0f0; display: inline-block; padding: 4px 14px; border-radius: 14px; color: #000; border: 1.5px solid #000; margin-top: 8px; transition: background-color 0.15s, border-color 0.15s, color 0.15s; }
         
+        /* Adjusted Logo padding to move exactly 2px left */
         .logo-container { display: flex; align-items: center; margin-right: -2px; }
         .logo-container img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: none; }
         
@@ -271,12 +272,12 @@
         .user-image-gallery { display: flex; gap: 8px; overflow-x: auto; max-width: 100%; justify-content: flex-start; scrollbar-width: none; -ms-overflow-style: none; }
         .user-image-gallery::-webkit-scrollbar { display: none; }
 
-        /* Added specific classes for Chat Attachments without shadows and with grey borders */
-        .chat-attachment-img { width: 120px; height: 120px; border-radius: 16px; object-fit: cover; flex-shrink: 0; box-shadow: none; border: 1.5px solid #777; cursor: pointer; }
-        .chat-attachment-pdf { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffffff; padding: 12px; border-radius: 16px; width: 120px; height: 120px; text-align: center; box-shadow: none; border: 1.5px solid #777; flex-shrink: 0; }
+        /* FIXED BUG 1: Changed to Light Grey (#eaeaea) */
+        .chat-attachment-img { width: 120px; height: 120px; border-radius: 16px; object-fit: cover; flex-shrink: 0; box-shadow: none; border: 1.5px solid #eaeaea; cursor: pointer; }
+        .chat-attachment-pdf { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffffff; padding: 12px; border-radius: 16px; width: 120px; height: 120px; text-align: center; box-shadow: none; border: 1.5px solid #eaeaea; flex-shrink: 0; }
         .chat-attachment-pdf i { color: #333; font-size: 40px; margin-bottom: 14px; }
         .chat-attachment-pdf span { font-size: 11px; font-weight: 600; color: #333; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .ai-gen-img { width: 100%; max-width: 350px; aspect-ratio: 1/1; border-radius: 16px; margin: 10px 0; display: block; object-fit: cover; background: transparent; cursor: pointer; box-shadow: none; border: 1.5px solid #777; }
+        .ai-gen-img { width: 100%; max-width: 350px; aspect-ratio: 1/1; border-radius: 16px; margin: 10px 0; display: block; object-fit: cover; background: transparent; cursor: pointer; box-shadow: none; border: 1.5px solid #eaeaea; }
 
         .user-msg-text { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; padding-bottom: 0px; transition: padding-bottom 0.2s; word-break: break-word; overflow-wrap: anywhere; }
         .user-msg-text.expanded { -webkit-line-clamp: unset; padding-bottom: 24px; }
@@ -643,7 +644,7 @@
                 
                 <div class="password-wrapper" id="password-input-container">
                     <input type="password" id="auth-password" class="auth-input" placeholder="Enter your password" autocomplete="current-password">
-                    <i class="fas fa-eye toggle-password" id="togglePassword" onmousedown="event.preventDefault();" ontouchstart="event.preventDefault();" onclick="window.togglePasswordVisibility()"></i>
+                    <i class="fas fa-eye toggle-password" id="togglePassword" onclick="window.togglePasswordVisibility()"></i>
                     <div id="password-error-msg" class="auth-inline-error">Invalid password</div>
                 </div>
 
@@ -678,7 +679,7 @@
             <div class="welcome-screen" id="welcome-screen">
                 <div style="display:flex; flex-direction:row; gap:0px; align-items:center; justify-content:center; width: 100%;">
                     <span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span>
-                    <span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">User</span>
+                    <span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">&nbsp;User</span>
                 </div>
             </div>
         </main>
@@ -937,8 +938,8 @@
         const googleProvider = new GoogleAuthProvider();
         const appleProvider = new OAuthProvider('apple.com');
 
-        let isLoginMode = false; // Default to Sign Up
-        let signUpPhase = 1; // 1 = Email/Pass, 2 = Name
+        let isLoginMode = false; 
+        let signUpPhase = 1; 
 
         window.truncateText = function(text, limit) {
             if (!text) return "";
@@ -952,7 +953,7 @@
 
         window.toggleAuthMode = () => {
             isLoginMode = !isLoginMode;
-            signUpPhase = 1; // Reset phase
+            signUpPhase = 1; 
             
             document.getElementById('email-error-msg').classList.remove('show');
             document.getElementById('password-error-msg').classList.remove('show');
@@ -1002,7 +1003,6 @@
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
             const handleError = (err) => {
-                // Return to Phase 1 if backend validation fails
                 if (signUpPhase === 2 && (err.code === 'auth/email-already-in-use' || err.code === 'auth/invalid-email' || err.code === 'auth/weak-password' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found')) {
                     signUpPhase = 1;
                     document.getElementById('name-input-container').style.display = 'none';
@@ -1043,7 +1043,7 @@
                     document.getElementById('password-input-container').style.display = 'none';
                     document.getElementById('name-input-container').style.display = 'block';
                     btn.innerText = "Log In";
-                    btn.style.marginTop = "5px";
+                    btn.style.marginTop = "40px";
                 } else if(signUpPhase === 2) {
                     if(!name) { nameErr.innerText = "Please enter your name"; nameErr.classList.add('show'); hasError = true; }
                     if(hasError) return;
@@ -1070,7 +1070,7 @@
                     document.getElementById('password-input-container').style.display = 'none';
                     document.getElementById('name-input-container').style.display = 'block';
                     btn.innerText = "Sign Up";
-                    btn.style.marginTop = "5px"; 
+                    btn.style.marginTop = "40px"; 
                     
                 } else if(signUpPhase === 2) {
                     if(!name) { nameErr.innerText = "Please enter your name"; nameErr.classList.add('show'); hasError = true; }
@@ -1115,6 +1115,7 @@
                 icon.classList.remove('fa-eye-slash');
                 icon.classList.add('fa-eye');
             }
+            pwdInput.focus();
         };
 
         window.loginWithGoogle = () => { 
@@ -1138,7 +1139,6 @@
             document.getElementById('profile-modal').classList.remove('active'); 
             document.getElementById('profile-overlay').classList.remove('active'); 
             
-            // Reset to default signup phase 1 UI state on logout
             isLoginMode = false;
             signUpPhase = 1;
             document.getElementById('auth-email').value = "";
@@ -1153,7 +1153,6 @@
             document.getElementById('auth-switch-text').innerHTML = `Already have an account?<b onclick="window.toggleAuthMode()">LOG IN</b>`;
         };
 
-        // Handle splash to login/app flow
         let isAuthResolved = false;
         let isSplashDone = false;
 
@@ -1186,7 +1185,6 @@
             const displaySidebarName = window.truncateText(fullName, 8);
             if(nameEl) nameEl.innerText = displaySidebarName;
             
-            // Strict 12-char logic for Popup and Welcome screen
             const displayFullNameModal = window.truncateText(fullName, 12);
             const displayFirstNameWelcome = window.truncateText(firstName, 12);
             
@@ -1203,7 +1201,7 @@
 
             const welcomeContainer = document.getElementById('welcome-screen');
             if (welcomeContainer) {
-                welcomeContainer.innerHTML = `<div style="display:flex; flex-direction:row; gap:0px; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${displayFirstNameWelcome}</span></div>`;
+                welcomeContainer.innerHTML = `<div style="display:flex; flex-direction:row; gap:0px; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">&nbsp;${displayFirstNameWelcome}</span></div>`;
             }
 
             let currentAppLang = localStorage.getItem('datex_app_lang') || 'english';
@@ -1224,13 +1222,11 @@
                 if(window.currentUser) {
                     const loginScreen = document.getElementById('login-screen');
                     if (loginScreen.style.display === 'flex') {
-                        // User just logged in from the login screen
                         loginScreen.style.display = 'none';
                         loginScreen.classList.remove('active');
                         
                         const postSplash = document.getElementById('post-login-splash');
                         postSplash.style.display = 'flex';
-                        // brief timeout to allow display:flex to apply before changing opacity for transition
                         setTimeout(() => { postSplash.style.opacity = '1'; }, 10);
                         
                         setTimeout(() => {
@@ -1360,6 +1356,8 @@
             localStorage.setItem('datex_app_lang', val);
             document.getElementById('app-lang-btn').innerText = label;
             translateUI(val); 
+            // Re-translate dynamic parts immediately
+            setTimeout(() => translateUI(val), 50);
         } else {
             localStorage.setItem('datex_response_lang', val);
             document.getElementById('response-lang-btn').innerText = label;
@@ -1384,19 +1382,21 @@
         ])];
 
         let translationMap = {};
-        let cached = localStorage.getItem('datex_ui_trans_' + isoCode);
+        // Cache key changed to force reset previous array misalignments
+        let cached = localStorage.getItem('datex_ui_trans_v3_' + isoCode);
         
         if (cached) {
             translationMap = JSON.parse(cached);
         } else {
-            let queryStr = uniqueTexts.join('\n'); 
+            // Using ||| instead of \n to prevent Google Translate array misalignment
+            let queryStr = uniqueTexts.join(' ||| '); 
             try {
                 let res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${isoCode}&dt=t&q=${encodeURIComponent(queryStr)}`);
                 let data = await res.json();
                 let translatedStr = "";
                 data[0].forEach(item => { if(item[0]) translatedStr += item[0]; });
                 
-                let translatedArray = translatedStr.split('\n').map(s => {
+                let translatedArray = translatedStr.split('|||').map(s => {
                     let cleaned = s.trim();
                     if (cleaned.endsWith('|') || cleaned.endsWith('।')) {
                         cleaned = cleaned.slice(0, -1).trim();
@@ -1407,7 +1407,7 @@
                 uniqueTexts.forEach((original, index) => {
                     translationMap[original] = translatedArray[index] || original;
                 });
-                localStorage.setItem('datex_ui_trans_' + isoCode, JSON.stringify(translationMap));
+                localStorage.setItem('datex_ui_trans_v3_' + isoCode, JSON.stringify(translationMap));
             } catch(e) {
                 console.error("UI Translation error:", e);
                 return; 
@@ -1808,10 +1808,10 @@
         ttsUtterance = new SpeechSynthesisUtterance(textSegment);
         
         let prefType = currentTtsVoicePref; 
-        let isGirl = (prefType === 'girl' || prefType === 'male'); // backwards compatible fallback
+        let isGirl = (prefType === 'girl'); 
         
-        let girlKeywords = ['female', 'samantha', 'jenny', 'aria', 'voice 1', 'variant 1', 'neerja']; 
-        let womenKeywords = ['zira', 'victoria', 'tessa', 'karen', 'hazel', 'susan', 'voice 2', 'variant 2'];
+        let girlKeywords = ['jenny', 'samantha', 'aria', 'neerja', 'girl', 'child', 'variant 1', 'voice 1', 'female 1']; 
+        let womenKeywords = ['zira', 'victoria', 'tessa', 'susan', 'karen', 'hazel', 'woman', 'mature', 'variant 2', 'voice 2', 'female 2'];
 
         let voices = window.speechSynthesis.getVoices();
         if(voices.length > 0) {
@@ -1842,11 +1842,7 @@
             }
 
             if (!selectedVoice) {
-                if(isGirl) {
-                    selectedVoice = searchPool.length > 1 ? searchPool[searchPool.length - 1] : searchPool[0]; 
-                } else {
-                    selectedVoice = searchPool[0];
-                }
+                selectedVoice = searchPool.find(v => v.name.toLowerCase().includes('female')) || searchPool[0];
             }
 
             if(selectedVoice) {
@@ -2098,7 +2094,7 @@
         if (window.currentUser) {
             let name = window.currentUser.displayName || window.currentUser.email.split('@')[0];
             let firstName = window.truncateText(name.split(' ')[0], 12);
-            welcomeHtml = `<div style="display:flex; flex-direction:row; gap:0px; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${firstName}</span></div>`;
+            welcomeHtml = `<div style="display:flex; flex-direction:row; gap:0px; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">&nbsp;${firstName}</span></div>`;
         }
         
         document.getElementById('chat-container').innerHTML = `<div class="welcome-screen" id="welcome-screen">${welcomeHtml}</div>`;
