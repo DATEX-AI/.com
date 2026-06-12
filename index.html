@@ -159,10 +159,10 @@
         .forgot-pwd-container span { color: #000000; font-weight: 600; font-size: 12px; cursor: pointer; transition: opacity 0.15s; }
         .forgot-pwd-container span:hover { opacity: 0.7; }
 
-        .auth-confirm-btn { width: 100%; height: 50px; background-color: #000000; color: #ffffff; border-radius: 25px; border: none; font-size: 16px; font-weight: 700; cursor: pointer; transition: transform 0.1s, margin-top 0.3s ease; margin-top: 5px; margin-bottom: 25px; } 
+        .auth-confirm-btn { width: 100%; height: 50px; background-color: #000000; color: #ffffff; border-radius: 25px; border: none; font-size: 16px; font-weight: 700; cursor: pointer; transition: transform 0.1s; margin-top: 5px; margin-bottom: 25px; } 
         .auth-confirm-btn:active { transform: scale(0.97); }
 
-        .auth-switch { font-size: 13px; color: #000000; font-weight: 500; text-align: center; width: 100%; transition: margin-top 0.3s ease; }
+        .auth-switch { font-size: 13px; color: #000000; font-weight: 500; text-align: center; width: 100%; }
         .auth-switch b { color: #000000; cursor: pointer; margin-left: 5px; font-weight: 800; }
 
         /* --- UI CHANGES: SIDEBAR CSS ONLY --- */
@@ -271,11 +271,12 @@
         .user-image-gallery { display: flex; gap: 8px; overflow-x: auto; max-width: 100%; justify-content: flex-start; scrollbar-width: none; -ms-overflow-style: none; }
         .user-image-gallery::-webkit-scrollbar { display: none; }
 
-        .chat-attachment-img { width: 120px; height: 120px; border-radius: 16px; object-fit: cover; flex-shrink: 0; box-shadow: none; border: 1.5px solid #eaeaea; cursor: pointer; }
-        .chat-attachment-pdf { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffffff; padding: 12px; border-radius: 16px; width: 120px; height: 120px; text-align: center; box-shadow: none; border: 1.5px solid #eaeaea; flex-shrink: 0; }
+        /* Added specific classes for Chat Attachments without shadows and with grey borders */
+        .chat-attachment-img { width: 120px; height: 120px; border-radius: 16px; object-fit: cover; flex-shrink: 0; box-shadow: none; border: 1.5px solid #777; cursor: pointer; }
+        .chat-attachment-pdf { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffffff; padding: 12px; border-radius: 16px; width: 120px; height: 120px; text-align: center; box-shadow: none; border: 1.5px solid #777; flex-shrink: 0; }
         .chat-attachment-pdf i { color: #333; font-size: 40px; margin-bottom: 14px; }
         .chat-attachment-pdf span { font-size: 11px; font-weight: 600; color: #333; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .ai-gen-img { width: 100%; max-width: 350px; aspect-ratio: 1/1; border-radius: 16px; margin: 10px 0; display: block; object-fit: cover; background: transparent; cursor: pointer; box-shadow: none; border: 1.5px solid #eaeaea; }
+        .ai-gen-img { width: 100%; max-width: 350px; aspect-ratio: 1/1; border-radius: 16px; margin: 10px 0; display: block; object-fit: cover; background: transparent; cursor: pointer; box-shadow: none; border: 1.5px solid #777; }
 
         .user-msg-text { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; padding-bottom: 0px; transition: padding-bottom 0.2s; word-break: break-word; overflow-wrap: anywhere; }
         .user-msg-text.expanded { -webkit-line-clamp: unset; padding-bottom: 24px; }
@@ -311,6 +312,7 @@
         
         .chat-input-container { flex: 1; background: #ffffff; border: none; box-shadow: 0 2px 12px rgba(0,0,0,0.15); border-radius: 34px; display: flex; flex-direction: column; width: 100%; overflow: hidden; position: relative; transition: background-color 0.15s, box-shadow 0.15s; }
 
+        /* MULTIPLE ATTACHMENT PREVIEW CSS */
         .attachment-preview-container { display: none; gap: 10px; overflow-x: auto; padding: 12px 20px 0 20px; width: 100%; align-items: center; scrollbar-width: none; }
         .attachment-preview-container::-webkit-scrollbar { display: none; }
         .attachment-item { position: relative; width: 72px; height: 72px; border-radius: 12px; background: #e5e7eb; border: 1px solid #ddd; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden;}
@@ -543,6 +545,7 @@
         body.dark-mode .settings-header, body.dark-mode .lang-modal-header { color: #fff; background: #1a1a1a; border-color:#333; }
         body.dark-mode .settings-header i, body.dark-mode .lang-modal-header i { color: #ffffff; }
         body.dark-mode .setting-section-title { color: #ffffff; }
+        body.dark-mode .setting-section-title svg { color: currentColor; } 
         body.dark-mode .radio-option { color: #e0e0e0; }
         body.dark-mode .custom-radio { border-color: #666; }
         body.dark-mode .radio-label input:checked + .custom-radio { border-color: #fff; }
@@ -577,11 +580,11 @@
         body.dark-mode .profile-logout-btn:active { background: #333; }
         
         body.dark-mode .typing-dot { background-color: #fff; }
-        body.dark-mode .chat-attachment-img { border-color: #444; }
-        body.dark-mode .chat-attachment-pdf { background: #2c2c2c; border-color: #444; }
+        body.dark-mode .chat-attachment-img { border-color: #555; }
+        body.dark-mode .chat-attachment-pdf { background: #2c2c2c; border-color: #555; }
         body.dark-mode .chat-attachment-pdf i { color: #ccc !important; }
         body.dark-mode .chat-attachment-pdf span { color: #ccc !important; }
-        body.dark-mode .ai-gen-img { border-color: #444 !important; }
+        body.dark-mode .ai-gen-img { border-color: #555 !important; }
     </style>
 </head>
 <body>
@@ -640,7 +643,7 @@
                 
                 <div class="password-wrapper" id="password-input-container">
                     <input type="password" id="auth-password" class="auth-input" placeholder="Enter your password" autocomplete="current-password">
-                    <i class="fas fa-eye toggle-password" id="togglePassword" onclick="window.togglePasswordVisibility()"></i>
+                    <i class="fas fa-eye toggle-password" id="togglePassword" onmousedown="event.preventDefault();" ontouchstart="event.preventDefault();" onclick="window.togglePasswordVisibility()"></i>
                     <div id="password-error-msg" class="auth-inline-error">Invalid password</div>
                 </div>
 
@@ -797,16 +800,16 @@
                     <span data-i18n="AI Voice">AI Voice</span>
                 </div>
                 <div class="radio-option">
-                    <span data-i18n="Male">Male</span>
+                    <span data-i18n="Girl">Girl</span>
                     <label class="radio-label">
-                        <input type="radio" name="ai_voice" value="male" onchange="saveVoiceSettings()">
+                        <input type="radio" name="ai_voice" value="girl" onchange="saveVoiceSettings()">
                         <div class="custom-radio"></div>
                     </label>
                 </div>
                 <div class="radio-option">
-                    <span data-i18n="Female">Female</span>
+                    <span data-i18n="Women">Women</span>
                     <label class="radio-label">
-                        <input type="radio" name="ai_voice" value="female" checked onchange="saveVoiceSettings()">
+                        <input type="radio" name="ai_voice" value="women" checked onchange="saveVoiceSettings()">
                         <div class="custom-radio"></div>
                     </label>
                 </div>
@@ -964,14 +967,14 @@
                 nameContainer.style.display = 'none';
                 emailContainer.style.display = 'block';
                 pwdContainer.style.display = 'block';
-                btn.innerText = "Next"; // Changed from "Log In" for Phase 1
+                btn.innerText = "Log In"; 
                 btn.style.marginTop = "5px";
                 document.getElementById('auth-switch-text').innerHTML = `Don't have any account?<b onclick="window.toggleAuthMode()">SIGN UP</b>`;
             } else {
                 nameContainer.style.display = 'none';
                 emailContainer.style.display = 'block';
                 pwdContainer.style.display = 'block';
-                btn.innerText = "Next";
+                btn.innerText = "Sign Up";
                 btn.style.marginTop = "5px";
                 document.getElementById('auth-switch-text').innerHTML = `Already have an account?<b onclick="window.toggleAuthMode()">LOG IN</b>`;
             }
@@ -1005,7 +1008,7 @@
                     document.getElementById('name-input-container').style.display = 'none';
                     document.getElementById('email-input-container').style.display = 'block';
                     document.getElementById('password-input-container').style.display = 'block';
-                    btn.innerText = "Next";
+                    btn.innerText = isLoginMode ? "Log In" : "Sign Up";
                     btn.style.marginTop = "5px";
                 }
 
@@ -1040,7 +1043,7 @@
                     document.getElementById('password-input-container').style.display = 'none';
                     document.getElementById('name-input-container').style.display = 'block';
                     btn.innerText = "Log In";
-                    btn.style.marginTop = "40px";
+                    btn.style.marginTop = "5px";
                 } else if(signUpPhase === 2) {
                     if(!name) { nameErr.innerText = "Please enter your name"; nameErr.classList.add('show'); hasError = true; }
                     if(hasError) return;
@@ -1067,7 +1070,7 @@
                     document.getElementById('password-input-container').style.display = 'none';
                     document.getElementById('name-input-container').style.display = 'block';
                     btn.innerText = "Sign Up";
-                    btn.style.marginTop = "40px"; // Shifted down
+                    btn.style.marginTop = "5px"; 
                     
                 } else if(signUpPhase === 2) {
                     if(!name) { nameErr.innerText = "Please enter your name"; nameErr.classList.add('show'); hasError = true; }
@@ -1145,7 +1148,7 @@
             document.getElementById('email-input-container').style.display = 'block';
             document.getElementById('password-input-container').style.display = 'block';
             const btn = document.getElementById('auth-confirm-btn');
-            btn.innerText = "Next";
+            btn.innerText = "Sign Up";
             btn.style.marginTop = "5px";
             document.getElementById('auth-switch-text').innerHTML = `Already have an account?<b onclick="window.toggleAuthMode()">LOG IN</b>`;
         };
@@ -1205,7 +1208,7 @@
 
             let currentAppLang = localStorage.getItem('datex_app_lang') || 'english';
             if (currentAppLang !== 'english') {
-                translateUI(currentAppLang);
+                setTimeout(() => translateUI(currentAppLang), 50);
             }
         }
 
@@ -1451,9 +1454,13 @@
             if(fav) fav.href = 'light.logo.jpg';
         }
         
-        const savedVoice = localStorage.getItem('datex_voice_type') || 'female';
+        const savedVoice = localStorage.getItem('datex_voice_type') || 'women';
         const voiceRadio = document.querySelector(`input[name="ai_voice"][value="${savedVoice}"]`);
         if(voiceRadio) voiceRadio.checked = true;
+        else {
+            const fb = document.querySelector(`input[name="ai_voice"][value="women"]`);
+            if (fb) fb.checked = true;
+        }
 
         const savedAppLang = localStorage.getItem('datex_app_lang') || 'english';
         let appLangLabel = 'English';
@@ -1568,7 +1575,7 @@
     let currentSegmentIdx = 0;
     let isTtsPlaying = false;
     let currentTtsBtn = null;
-    let currentTtsVoicePref = 'female';
+    let currentTtsVoicePref = 'women';
 
     function stopTTS() {
         isTtsPlaying = false;
@@ -1675,11 +1682,19 @@
     function handleFileSelect(event) {
         const files = event.target.files;
         if(files.length > 0) {
-            for(let i=0; i<files.length; i++) {
-                if (window.currentAttachments.length >= 10) {
-                    alert("Max 10 attachments allowed at a time!");
-                    break;
-                }
+            let remaining = 10 - window.currentAttachments.length;
+            if (remaining <= 0) {
+                alert("Max 10 attachments allowed at a time!");
+                event.target.value = '';
+                return;
+            }
+            
+            let toProcess = Math.min(files.length, remaining);
+            if (files.length > remaining) {
+                alert("You can only add up to 10 attachments total. Some files were skipped.");
+            }
+
+            for(let i=0; i<toProcess; i++) {
                 const file = files[i];
                 if (file.type.startsWith('video/')) { alert("Videos are not allowed!"); continue; }
 
@@ -1793,10 +1808,10 @@
         ttsUtterance = new SpeechSynthesisUtterance(textSegment);
         
         let prefType = currentTtsVoicePref; 
-        let isMale = (prefType === 'male');
+        let isGirl = (prefType === 'girl' || prefType === 'male'); // backwards compatible fallback
         
-        let maleKeywords = ['male', 'david', 'mark', 'guy', 'andrew', 'brian', 'ryan', 'uk english male', 'us english male', 'hi-in-male', 'voice ii', 'voice 2', 'variant 2', 'variant 4']; 
-        let femaleKeywords = ['female', 'samantha', 'zira', 'victoria', 'tessa', 'karen', 'hazel', 'susan', 'variant 1', 'variant 3', 'voice i', 'voice 1', 'jenny', 'aria', 'neerja'];
+        let girlKeywords = ['female', 'samantha', 'jenny', 'aria', 'voice 1', 'variant 1', 'neerja']; 
+        let womenKeywords = ['zira', 'victoria', 'tessa', 'karen', 'hazel', 'susan', 'voice 2', 'variant 2'];
 
         let voices = window.speechSynthesis.getVoices();
         if(voices.length > 0) {
@@ -1814,20 +1829,20 @@
 
             let selectedVoice = searchPool.find(v => {
                 let n = v.name.toLowerCase();
-                if (isMale) return maleKeywords.some(k => n.includes(k));
-                return femaleKeywords.some(k => n.includes(k));
+                if (isGirl) return girlKeywords.some(k => n.includes(k));
+                return womenKeywords.some(k => n.includes(k));
             });
             
             if (!selectedVoice) {
                 selectedVoice = langVoices.find(v => {
                     let n = v.name.toLowerCase();
-                    if (isMale) return maleKeywords.some(k => n.includes(k));
-                    return femaleKeywords.some(k => n.includes(k));
+                    if (isGirl) return girlKeywords.some(k => n.includes(k));
+                    return womenKeywords.some(k => n.includes(k));
                 });
             }
 
             if (!selectedVoice) {
-                if(isMale) {
+                if(isGirl) {
                     selectedVoice = searchPool.length > 1 ? searchPool[searchPool.length - 1] : searchPool[0]; 
                 } else {
                     selectedVoice = searchPool[0];
@@ -1881,7 +1896,7 @@
         ttsSegments = fullText.replace(/([.!?।\n])\s*/g, "$1|").split("|").filter(s => s.trim().length > 0);
         if (ttsSegments.length === 0) ttsSegments = [fullText];
 
-        currentTtsVoicePref = localStorage.getItem('datex_voice_type') || 'female';
+        currentTtsVoicePref = localStorage.getItem('datex_voice_type') || 'women';
         currentTtsBtn = btn; currentSegmentIdx = 0; isTtsPlaying = true; 
         btn.querySelector('i').className = 'fas fa-stop';
         
@@ -2057,6 +2072,9 @@
         });
         renderChatList(); if(shouldToggleSidebar) toggleSidebar(); document.getElementById('scroll-bottom-btn').classList.remove('active');
         updateThreeDotMenus();
+        
+        let appLang = localStorage.getItem('datex_app_lang') || 'english'; 
+        if(appLang !== 'english') setTimeout(() => translateUI(appLang), 50);
     }
 
     function createNewChat(keepSidebarOpen = false) {
@@ -2086,7 +2104,8 @@
         document.getElementById('chat-container').innerHTML = `<div class="welcome-screen" id="welcome-screen">${welcomeHtml}</div>`;
         renderChatList(); 
         
-        let appLang = localStorage.getItem('datex_app_lang') || 'english'; translateUI(appLang);
+        let appLang = localStorage.getItem('datex_app_lang') || 'english'; 
+        if(appLang !== 'english') setTimeout(() => translateUI(appLang), 50);
 
         if(!keepSidebarOpen && document.getElementById('sidebar').classList.contains('active')) toggleSidebar();
         document.getElementById('scroll-bottom-btn').classList.remove('active');
