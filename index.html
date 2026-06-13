@@ -85,7 +85,7 @@
             100% { opacity: 1; }
         }
 
-        /* --- LOGIN SCREEN CSS (SLIDE BUG FIXED) --- */
+        /* --- LOGIN SCREEN CSS --- */
         #login-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -443,7 +443,7 @@
 
         .settings-modal.active, .lang-modal.active { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
         
-        /* Changed header colors to #000000 */
+        /* BLACK & WHITE COLORS FOR SETTINGS HEADERS */
         .settings-header, .lang-modal-header { 
             display: flex; justify-content: space-between; align-items: center; 
             padding: 20px 25px 15px 25px; border-bottom: 1px solid #eee; 
@@ -468,15 +468,20 @@
         .setting-section:last-child { margin-bottom: 0px; }
         .setting-section-title { font-size: 16px; font-weight: 700; color: #000000; display: flex; align-items: center; gap: 10px; margin-bottom: 8px; transition: color 0.15s;}
         
-        .radio-option { display: flex; justify-content: space-between; align-items: center; color: #333; font-weight: 500; font-size: 15px; padding: 8px 5px 8px 10px; margin-bottom: 4px; transition: color 0.15s;}
+        /* BLACK TEXT FOR LABELS (Male, Female, Lock icon) */
+        .radio-option span { color: #000000; font-weight: 600; }
+        body.dark-mode .radio-option span { color: #ffffff; }
+
+        .radio-option { display: flex; justify-content: space-between; align-items: center; font-size: 15px; padding: 8px 5px 8px 10px; margin-bottom: 4px; transition: color 0.15s;}
         .radio-label { cursor: pointer; display: flex; align-items: center; } 
         .radio-label input { display: none; }
         .custom-radio { width: 20px; height: 20px; border: 2px solid #aaa; border-radius: 50%; position: relative; transition: 0.15s; flex-shrink: 0; }
         .radio-label input:checked + .custom-radio { border-color: #000; }
         .radio-label input:checked + .custom-radio::after { content: ''; position: absolute; width: 10px; height: 10px; background: #000; border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); }
 
+        /* BLACK TEXT FOR LANGUAGE BOXES */
         .select-wrapper { position: relative; width: 100%; margin-top: 12px; cursor: pointer; } 
-        .custom-select-btn { width: calc(100% - 10px); padding: 12px 40px 12px 15px; border-radius: 10px; background: #f5f5f5; border: 1.5px solid #000; font-size: 14px; margin-left: 5px; color: #333; font-weight: 500; display: flex; align-items: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: background-color 0.15s, border-color 0.15s, color 0.15s; }
+        .custom-select-btn { width: calc(100% - 10px); padding: 12px 40px 12px 15px; border-radius: 10px; background: #f5f5f5; border: 1.5px solid #000000; font-size: 14px; margin-left: 5px; color: #000000; font-weight: 600; display: flex; align-items: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: background-color 0.15s, border-color 0.15s, color 0.15s; }
         .select-arrow { position: absolute; right: 25px; top: 50%; transform: translateY(-70%) rotate(45deg); width: 8px; height: 8px; border-right: 2.5px solid #000; border-bottom: 2.5px solid #000; pointer-events: none; transition: border-color 0.15s; }
 
         /* Audio Bubble Dynamic Theme Styles */
@@ -550,11 +555,9 @@
         body.dark-mode .settings-header i, body.dark-mode .lang-modal-header i { color: #ffffff; }
         body.dark-mode .setting-section-title { color: #ffffff; }
         body.dark-mode .setting-section-title svg { color: currentColor; } 
-        body.dark-mode .radio-option { color: #e0e0e0; }
-        body.dark-mode .custom-radio { border-color: #666; }
         body.dark-mode .radio-label input:checked + .custom-radio { border-color: #fff; }
         body.dark-mode .radio-label input:checked + .custom-radio::after { background: #fff; }
-        body.dark-mode .custom-select-btn { background: #2c2c2c; color: #fff; border-color: #fff; }
+        body.dark-mode .custom-select-btn { background: #2c2c2c; color: #ffffff; border-color: #ffffff; }
         body.dark-mode .select-arrow { border-color: #fff; }
         body.dark-mode pre { background: #000; border-color: #444; }
         body.dark-mode .user-expand-btn { background: #1e1e1e; color: #e0e0e0; box-shadow: 0 1px 4px rgba(0,0,0,0.4); }
@@ -803,17 +806,20 @@
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="10" x2="5" y2="14"></line><line x1="9" y1="6" x2="9" y2="18"></line><line x1="13" y1="3" x2="13" y2="21"></line><line x1="17" y1="6" x2="17" y2="18"></line><line x1="21" y1="10" x2="21" y2="14"></line></svg>
                     <span data-i18n="AI Voice">AI Voice</span>
                 </div>
-                <div class="radio-option">
-                    <span data-i18n="Girl">Girl</span>
-                    <label class="radio-label">
-                        <input type="radio" name="ai_voice" value="girl" onchange="saveVoiceSettings()">
-                        <div class="custom-radio"></div>
+                <div class="radio-option" style="opacity: 0.5;">
+                    <span style="display: flex; align-items: center; gap: 6px;">
+                        <i class="fas fa-lock" style="font-size: 13px;"></i>
+                        <span data-i18n="Male">Male</span>
+                    </span>
+                    <label class="radio-label" style="cursor: not-allowed;">
+                        <input type="radio" name="ai_voice" value="male" disabled>
+                        <div class="custom-radio" style="border-color: #aaa;"></div>
                     </label>
                 </div>
                 <div class="radio-option">
-                    <span data-i18n="Women">Women</span>
+                    <span data-i18n="Female">Female</span>
                     <label class="radio-label">
-                        <input type="radio" name="ai_voice" value="women" checked onchange="saveVoiceSettings()">
+                        <input type="radio" name="ai_voice" value="female" checked onchange="saveVoiceSettings()">
                         <div class="custom-radio"></div>
                     </label>
                 </div>
@@ -1452,11 +1458,11 @@
             if(fav) fav.href = 'light.logo.jpg';
         }
         
-        const savedVoice = localStorage.getItem('datex_voice_type') || 'women';
+        const savedVoice = localStorage.getItem('datex_voice_type') || 'female';
         const voiceRadio = document.querySelector(`input[name="ai_voice"][value="${savedVoice}"]`);
         if(voiceRadio) voiceRadio.checked = true;
         else {
-            const fb = document.querySelector(`input[name="ai_voice"][value="women"]`);
+            const fb = document.querySelector(`input[name="ai_voice"][value="female"]`);
             if (fb) fb.checked = true;
         }
 
@@ -1575,7 +1581,7 @@
     let isTtsPlaying = false;
     let isTtsPaused = false;
     let currentTtsBtn = null;
-    let currentTtsVoicePref = 'women'; // Default
+    let currentTtsVoicePref = 'female'; 
 
     function fullStopTTS() {
         isTtsPlaying = false;
@@ -1608,31 +1614,20 @@
 
         ttsUtterance = new SpeechSynthesisUtterance(textSegment);
         
-        // Voice setting locked for current session
-        let prefType = currentTtsVoicePref; 
         let voices = window.speechSynthesis.getVoices();
         
         if(voices.length > 0) {
-            let selectedVoice = null;
-            if (prefType === 'girl') {
-                selectedVoice = voices.find(v => v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('samantha') || v.name.toLowerCase().includes('zira') || v.name.toLowerCase().includes('girl'));
-            } else {
-                selectedVoice = voices.find(v => v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('google'));
-            }
-            if (!selectedVoice) selectedVoice = voices[0]; // Ultimate fallback
+            // Find female voices or google default
+            let selectedVoice = voices.find(v => v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('google'));
+            if (!selectedVoice) selectedVoice = voices[0];
 
             ttsUtterance.voice = selectedVoice;
             ttsUtterance.lang = selectedVoice.lang;
         }
 
-        // Apply Pitch based on Girl (patli aawaz) / Women (original aawaz)
-        if (prefType === 'girl') {
-            ttsUtterance.pitch = 1.4; 
-            ttsUtterance.rate = 1.05; 
-        } else {
-            ttsUtterance.pitch = 1.0; 
-            ttsUtterance.rate = 1.0;  
-        }
+        // Default Chrome natural voice
+        ttsUtterance.pitch = 1.0; 
+        ttsUtterance.rate = 1.0;  
 
         ttsUtterance.onend = () => { 
             if (isTtsPlaying && !isTtsPaused) { 
@@ -1691,9 +1686,6 @@
         // Custom Segmentation logic (Sentence by Sentence split)
         ttsSegments = fullText.replace(/([.!?।\n])\s*/g, "$1|").split("|").filter(s => s.trim().length > 0);
         if (ttsSegments.length === 0) ttsSegments = [fullText];
-
-        // Fetch User Choice only at the start of new text
-        currentTtsVoicePref = localStorage.getItem('datex_voice_type') || 'women';
         
         currentSegmentIdx = 0; 
         isTtsPlaying = true; 
