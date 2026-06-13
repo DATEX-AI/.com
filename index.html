@@ -1620,6 +1620,7 @@
         }, 250); 
     };
 
+    // Current API Key
     const GROQ_API_KEY = "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"; 
     const TAVILY_API_KEY = "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"; 
 
@@ -1643,27 +1644,30 @@
 
     window.currentAttachments = [];
 
-    // ====== 100% FIXED YOUTUBE STYLE TTS ENGINE (WITH SYNC WAKE-UP + 150ms DELAY) ======
-    let ttsUtterance = null;
-    let isTtsActive = false; 
-    let isTtsPaused = false;
-    let currentTtsBtn = null;
+    // ====== 100% FIXED "SMART MEMORY CHUNK" TTS ENGINE ======
+    // Ye Android Chrome ke bug ko bypass karta hai
+    let ttsState = {
+        active: false,
+        paused: false,
+        btn: null,
+        text: ""
+    };
     
-    // Global array to prevent Garbage Collection bug in Chrome making AI silent (Fixes previous chat bug)
+    // Global array to prevent Garbage Collection bug making AI silent
     window.speechUtterances = window.speechUtterances || [];
 
     function fullStopTTS() {
         if (window.speechSynthesis) {
             window.speechSynthesis.cancel();
         }
-        isTtsActive = false;
-        isTtsPaused = false;
-        
-        if (currentTtsBtn) {
-            let icon = currentTtsBtn.querySelector('i');
+        if (ttsState.btn) {
+            let icon = ttsState.btn.querySelector('i');
             if (icon) icon.className = 'fas fa-volume-up'; 
-            currentTtsBtn = null;
         }
+        ttsState.active = false;
+        ttsState.paused = false;
+        ttsState.btn = null;
+        ttsState.text = "";
     }
 
     function speakText(btn) {
@@ -1672,18 +1676,18 @@
 
         let icon = btn.querySelector('i');
 
-        // YOUTUBE STYLE: IF SAME BUTTON CLICKED, TOGGLE PLAY/PAUSE
-        if (currentTtsBtn === btn) {
-            if (isTtsActive && !isTtsPaused) {
-                // Pause it
-                window.speechSynthesis.pause();
-                isTtsPaused = true;
+        // YOUTUBE STYLE TOGGLE: SMART BYPASS
+        if (ttsState.btn === btn) {
+            if (ttsState.active && !ttsState.paused) {
+                // SIMULATE PAUSE: Native pause() bugged hai, isliye cancel karke text save karenge
+                ttsState.paused = true;
+                window.speechSynthesis.cancel(); 
                 icon.className = 'fas fa-play'; // Show Play icon
-            } else if (isTtsActive && isTtsPaused) {
-                // Resume it
-                window.speechSynthesis.resume();
-                isTtsPaused = false;
+            } else if (ttsState.paused) {
+                // SIMULATE RESUME: Puraane raste se nahi, new fresh chunk play karenge
+                ttsState.paused = false;
                 icon.className = 'fas fa-pause'; // Show Pause icon
+                playTTSChunk(ttsState.text); // Remaining text play karega!
             } else {
                 fullStopTTS();
             }
@@ -1692,7 +1696,8 @@
 
         // FRESH START FOR A NEW MESSAGE
         fullStopTTS();
-        currentTtsBtn = btn;
+        ttsState.btn = btn;
+        ttsState.paused = false;
 
         const bubble = btn.closest('.bubble-container').querySelector('.bubble');
         let clone = bubble.cloneNode(true);
@@ -1700,57 +1705,79 @@
 
         let fullText = clone.textContent.trim().replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '');
         if (!fullText) return;
+        
+        ttsState.text = fullText; // Starting mein full text save hoga
 
         // Pehle icon change hoga...
         icon.className = 'fas fa-pause';
 
-        // ...aur ekdum SYNC (turant) mein ek silent aawaz bajegi taaki browser ka lock hamesha khula rahe!
+        // ...aur ekdum SYNC (turant) mein ek silent aawaz bajegi (Wakeup bypass)
         let wakeUp = new SpeechSynthesisUtterance('');
         wakeUp.volume = 0; 
         window.speechSynthesis.speak(wakeUp);
 
-        // 150ms DELAY ADDED HERE (Taaki actual aawaz thodi der baad natural tareeqe se shuru ho jaisa tune manga tha)
+        // 150ms DELAY ADDED HERE (Taaki actual aawaz thodi der baad start ho)
         setTimeout(() => {
-            ttsUtterance = new SpeechSynthesisUtterance(fullText);
-            window.speechUtterances.push(ttsUtterance); // Prevent bug where voice drops out
-
-            let voices = window.speechSynthesis.getVoices();
-            if(voices.length > 0) {
-                let selectedVoice = voices.find(v => v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('google'));
-                if (selectedVoice) {
-                    ttsUtterance.voice = selectedVoice;
-                }
-            }
-
-            ttsUtterance.volume = 1.0; 
-            ttsUtterance.pitch = 1.0; 
-            ttsUtterance.rate = 1.0;  
-
-            ttsUtterance.onstart = () => {
-                isTtsActive = true;
-                isTtsPaused = false;
-                icon.className = 'fas fa-pause';
-            };
-
-            ttsUtterance.onend = () => { 
-                // Completely done reading -> revert to Speaker icon
-                isTtsActive = false;
-                isTtsPaused = false;
-                icon.className = 'fas fa-volume-up';
-                currentTtsBtn = null;
-            };
-
-            ttsUtterance.onerror = (e) => { 
-                if (e.error !== 'canceled') {
-                    isTtsActive = false;
-                    isTtsPaused = false;
-                    icon.className = 'fas fa-volume-up';
-                    currentTtsBtn = null;
-                }
-            };
-
-            window.speechSynthesis.speak(ttsUtterance);
+            playTTSChunk(ttsState.text);
         }, 150); 
+    }
+
+    // NAYA FUNCTION: Chunk padhne ke liye aur position save karne ke liye
+    function playTTSChunk(textToSpeak) {
+        if (!textToSpeak) return;
+
+        let utterance = new SpeechSynthesisUtterance(textToSpeak);
+        window.speechUtterances.push(utterance); // GC Protection
+
+        let voices = window.speechSynthesis.getVoices();
+        if(voices.length > 0) {
+            let selectedVoice = voices.find(v => v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('google'));
+            if (selectedVoice) {
+                utterance.voice = selectedVoice;
+            }
+        }
+
+        utterance.volume = 1.0; 
+        utterance.pitch = 1.0; 
+        utterance.rate = 1.0;  
+
+        // Jab AI har ek word padhega, toh ye us bache hue text ko save karega (Memory)
+        utterance.onboundary = (e) => {
+            if (e.name === 'word') {
+                // CharIndex se bacha hua text nikal ke save karo taaki Play/Pause me use ho sake
+                ttsState.text = textToSpeak.substring(e.charIndex);
+            }
+        };
+
+        utterance.onstart = () => {
+            ttsState.active = true;
+        };
+
+        utterance.onend = () => { 
+            // Agar automatically finish hua hai (Pause button press nahi kiya tha)
+            if (!ttsState.paused) {
+                if (ttsState.btn) {
+                    ttsState.btn.querySelector('i').className = 'fas fa-volume-up';
+                }
+                ttsState.active = false;
+                ttsState.btn = null;
+                ttsState.text = "";
+            }
+        };
+
+        utterance.onerror = (e) => { 
+            // Canceled error aata hai jab hum manual pause karne ke liye window.speechSynthesis.cancel() dabate hain
+            if (!ttsState.paused && e.error !== 'canceled') {
+                if (ttsState.btn) {
+                    ttsState.btn.querySelector('i').className = 'fas fa-volume-up';
+                }
+                ttsState.active = false;
+                ttsState.btn = null;
+                ttsState.text = "";
+            }
+        };
+
+        window.speechSynthesis.speak(utterance);
     }
     // ====== END TTS SYSTEM ======
 
@@ -1925,7 +1952,7 @@
     }
 
     function playAudioBubble(btn, url) {
-        if (window.speechSynthesis && (window.speechSynthesis.speaking || isTtsActive)) fullStopTTS();
+        if (window.speechSynthesis && (window.speechSynthesis.speaking || ttsState.active)) fullStopTTS();
         if(globalAudioPlayer && globalAudioPlayer.src !== url) {
             globalAudioPlayer.pause();
             cancelAnimationFrame(audioAnimFrame);
