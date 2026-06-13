@@ -67,7 +67,7 @@
             justify-content: center;
             align-items: center;
             z-index: 99999;
-            transition: opacity 0.15s ease-out, visibility 0.15s ease-out;
+            transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
         }
         #post-login-splash {
             display: none;
@@ -85,7 +85,7 @@
             100% { opacity: 1; }
         }
 
-        /* --- LOGIN SCREEN CSS --- */
+        /* --- LOGIN SCREEN CSS (SMOOTH SLIDE ANIMATION ADDED BACK) --- */
         #login-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -97,12 +97,16 @@
             align-items: center;
             padding: 15px 0 0 0; 
             opacity: 0;
-            transition: none !important; 
+            transform: translateY(100vh); 
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease-out;
             overflow: hidden; 
             scrollbar-width: none;
         }
         #login-screen::-webkit-scrollbar { display: none; }
-        #login-screen.active { opacity: 1; }
+        #login-screen.active { 
+            opacity: 1; 
+            transform: translateY(0); 
+        }
         
         .login-logo { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; }
         .login-title { font-size: 24px; font-weight: 700; letter-spacing: 2px; margin-bottom: 25px; color: #ffffff; } 
@@ -406,14 +410,18 @@
         .attachment-menu.active { bottom: 0; }
         .attachment-menu-header { display: flex; justify-content: flex-start; align-items: center; padding: 15px 20px 10px 20px; position: relative; }
         .attachment-menu-header i.fa-times { font-size: 20px; color: #000; cursor: pointer; padding: 5px; transition: color 0.15s; }
-        .attachment-menu::before { content: ''; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 40px; height: 4px; background: #ddd; border-radius: 4px; }
+        
+        /* UPDATED PILL HANDLE (Thoda Dark & Lamba) */
+        .attachment-menu::before { content: ''; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 55px; height: 4px; background: #bbb; border-radius: 4px; transition: background-color 0.15s; }
+        body.dark-mode .attachment-menu::before { background: #555; }
+        
         .attachment-options-container { display: flex; justify-content: space-around; padding: 0 20px; margin-top: 10px; }
         
         .attachment-option { display: flex; flex-direction: column; align-items: center; gap: 12px; cursor: pointer; width: 30%; }
         
-        /* BLACK & WHITE LOGOS + NO SHADOW */
-        .attachment-option .icon-box { width: 85px; height: 85px; border: 1.5px solid #000000; border-radius: 20px; display: flex; justify-content: center; align-items: center; font-size: 32px; color: #000000; background: transparent; transition: 0.2s; box-shadow: none; }
-        .attachment-option:active .icon-box { background: rgba(0,0,0,0.05); } 
+        /* BLACK & WHITE LOGOS + SHADOW ADDED BACK */
+        .attachment-option .icon-box { width: 85px; height: 85px; border: 1.5px solid #000000; border-radius: 20px; display: flex; justify-content: center; align-items: center; font-size: 32px; color: #000000; background: #ffffff; transition: 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .attachment-option:active .icon-box { background: #f0f0f0; } 
         
         /* BLACK & WHITE ATTACHMENT TEXT */
         .attachment-option span { font-size: 14px; color: #000000; font-weight: 600; transition: color 0.15s; }
@@ -566,8 +574,8 @@
 
         /* DARK MODE FOR ATTACHMENT MENU */
         body.dark-mode .attachment-menu { background: #1a1a1a; }
-        body.dark-mode .attachment-option .icon-box { background: transparent; border-color: #ffffff; color: #ffffff; }
-        body.dark-mode .attachment-option:active .icon-box { background: rgba(255,255,255,0.05); }
+        body.dark-mode .attachment-option .icon-box { background: #1a1a1a; border-color: #ffffff; color: #ffffff; box-shadow: 0 4px 12px rgba(255,255,255,0.05); }
+        body.dark-mode .attachment-option:active .icon-box { background: #333; }
         
         body.dark-mode .settings-modal, body.dark-mode .lang-modal { background: #1a1a1a; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         body.dark-mode .settings-header, body.dark-mode .lang-modal-header { color: #fff; background: #1a1a1a; border-color:#333; }
@@ -786,7 +794,7 @@
                 </div>
             </div>
         </div>
-        <button class="profile-logout-btn" onclick="if(confirm('Are you sure you want to logout?')) window.logout()">
+        <button class="profile-logout-btn" onclick="window.logout()">
             <i class="fas fa-sign-out-alt"></i> Log out
         </button>
     </div>
@@ -1159,7 +1167,9 @@
             signInWithPopup(auth, appleProvider).catch(err => alert("Apple Sign-In requires developer config: " + err.message)); 
         };
         
+        // --- LOGOUT WITH SPLASH SCREEN ANIMATION ---
         window.logout = () => { 
+            if(!confirm('Are you sure you want to logout?')) return;
             signOut(auth); 
             document.getElementById('sidebar').classList.remove('active'); 
             document.getElementById('overlay').classList.remove('active'); 
@@ -1178,6 +1188,31 @@
             btn.innerText = "Sign Up";
             btn.style.marginTop = "5px";
             document.getElementById('auth-switch-text').innerHTML = `Already have an account?<b onclick="window.toggleAuthMode()">LOG IN</b>`;
+
+            document.getElementById('main-app-wrapper').style.display = 'none';
+            const loginScreen = document.getElementById('login-screen');
+            loginScreen.classList.remove('active'); 
+            loginScreen.style.display = 'none';
+
+            const splash = document.getElementById('splash-screen');
+            if(splash) {
+                splash.style.display = 'flex';
+                splash.style.opacity = '1';
+                splash.style.pointerEvents = 'auto';
+
+                setTimeout(() => {
+                    splash.style.opacity = '0';
+                    splash.style.pointerEvents = 'none';
+                    setTimeout(() => {
+                        splash.style.display = 'flex';
+                        loginScreen.style.display = 'flex';
+                        setTimeout(() => loginScreen.classList.add('active'), 50);
+                    }, 350); 
+                }, 1500);
+            } else {
+                loginScreen.style.display = 'flex';
+                setTimeout(() => loginScreen.classList.add('active'), 50);
+            }
         };
 
         let isAuthResolved = false;
@@ -1187,7 +1222,11 @@
             isSplashDone = true;
             checkAndShowUI();
             const spl = document.getElementById('splash-screen');
-            if(spl) { spl.style.pointerEvents = 'none'; spl.style.opacity = '0'; setTimeout(() => spl.remove(), 350); }
+            if(spl) { 
+                spl.style.pointerEvents = 'none'; 
+                spl.style.opacity = '0'; 
+                setTimeout(() => { spl.style.display = 'none'; }, 350); 
+            }
         }, 1500);
 
         function updateUserUI(user) {
@@ -1249,7 +1288,6 @@
                 if(window.currentUser) {
                     const loginScreen = document.getElementById('login-screen');
                     if (loginScreen.style.display === 'flex') {
-                        loginScreen.style.display = 'none';
                         loginScreen.classList.remove('active');
                         
                         const postSplash = document.getElementById('post-login-splash');
@@ -1260,9 +1298,10 @@
                             postSplash.style.opacity = '0';
                             setTimeout(() => {
                                 postSplash.style.display = 'none';
+                                loginScreen.style.display = 'none';
                                 document.getElementById('main-app-wrapper').style.display = 'flex';
-                            }, 150);
-                        }, 1500);
+                            }, 300);
+                        }, 1000); // Reduced delay for smoother entry
                         
                     } else {
                         document.getElementById('login-screen').style.display = 'none';
@@ -1592,14 +1631,14 @@
 
     window.currentAttachments = [];
 
-    // ====== TTS SYSTEM (100% BUG-FREE CUSTOM RESUME SYSTEM) ======
+    // ====== TTS SYSTEM (100% GLITCH-FREE SENTENCE ENGINE) ======
     let ttsUtterance = null;
     let ttsSegments = [];
     let currentSegmentIdx = 0;
     let isTtsPlaying = false;
     let isTtsPaused = false;
     let currentTtsBtn = null;
-    let currentTtsVoicePref = 'female'; // Always default female because Male is locked
+    let currentTtsVoicePref = 'female'; 
 
     function fullStopTTS() {
         isTtsPlaying = false;
@@ -1611,7 +1650,6 @@
             window.speechSynthesis.cancel(); 
         }
         
-        // Wapas Speaker Icon Default
         if (currentTtsBtn) {
             let icon = currentTtsBtn.querySelector('i');
             if (icon) icon.className = 'fas fa-volume-up'; 
@@ -1620,7 +1658,7 @@
     }
 
     function playNextTtsSegment() {
-        if (isTtsPaused) return; 
+        if (isTtsPaused) return; // User stopped it manually
 
         if (!isTtsPlaying || currentSegmentIdx >= ttsSegments.length || !currentTtsBtn) {
             if (currentSegmentIdx >= ttsSegments.length) fullStopTTS();
@@ -1628,36 +1666,37 @@
         }
 
         let textSegment = ttsSegments[currentSegmentIdx].trim();
-        if (!textSegment) { currentSegmentIdx++; playNextTtsSegment(); return; }
+        if (!textSegment) { 
+            currentSegmentIdx++; 
+            setTimeout(playNextTtsSegment, 10); 
+            return; 
+        }
 
         ttsUtterance = new SpeechSynthesisUtterance(textSegment);
         
         let voices = window.speechSynthesis.getVoices();
-        
         if(voices.length > 0) {
             // Find female or default google voices
             let selectedVoice = voices.find(v => v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('google'));
             if (!selectedVoice) selectedVoice = voices[0];
-
             ttsUtterance.voice = selectedVoice;
-            ttsUtterance.lang = selectedVoice.lang;
+            ttsUtterance.lang = selectedVoice.lang || 'en-US';
         }
 
-        // CHROME ORIGINAL DEFAULT VOICE PITCH
         ttsUtterance.pitch = 1.0; 
         ttsUtterance.rate = 1.0;  
 
         ttsUtterance.onend = () => { 
             if (isTtsPlaying && !isTtsPaused) { 
                 currentSegmentIdx++; 
-                playNextTtsSegment(); 
+                setTimeout(playNextTtsSegment, 30); // 30ms buffer to allow Chrome engine to breathe
             } 
         };
         
         ttsUtterance.onerror = (e) => { 
             if (isTtsPlaying && !isTtsPaused && e.error !== 'canceled') { 
                 currentSegmentIdx++; 
-                playNextTtsSegment(); 
+                setTimeout(playNextTtsSegment, 30); 
             } 
         };
         
@@ -1670,27 +1709,29 @@
 
         let icon = btn.querySelector('i');
 
-        // PAUSE / RESUME LOGIC (Ekdum Flawless)
+        // CUSTOM PLAY / STOP LOGIC (Exactly resumes from the current line)
         if (currentTtsBtn === btn) {
             if (isTtsPlaying && !isTtsPaused) {
-                // Pause kar diya -> Icon banega Play
+                // Pause it: Rok diya (Icon ban gaya Play)
                 isTtsPaused = true;
                 isTtsPlaying = false; 
-                window.speechSynthesis.cancel(); // Turant aawaz kaat dega
+                window.speechSynthesis.cancel(); 
                 icon.className = 'fas fa-play';
             } else if (isTtsPaused) {
-                // Resume kiya -> Icon banega Stop, and exact ussi line se wapas shuru
+                // Resume it: Start from exact sentence that was cut off
                 isTtsPaused = false;
                 isTtsPlaying = true;
                 icon.className = 'fas fa-stop';
-                playNextTtsSegment(); 
+                
+                // Chrome sometimes requires a tiny delay before speaking again after cancel
+                setTimeout(playNextTtsSegment, 50); 
             } else {
                 fullStopTTS();
             }
             return;
         }
         
-        // NAYA MESSAGE PADHNA SHURU KIYA
+        // START NEW TTS
         fullStopTTS(); 
         currentTtsBtn = btn; 
         
@@ -1701,7 +1742,7 @@
         let fullText = clone.textContent.trim().replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '');
         if (!fullText) return;
 
-        // Sentences mein tod diya taaki pause/resume safe rahe aur bug na aaye
+        // Split text by punctuation marks to create short sentences
         ttsSegments = fullText.replace(/([.!?।\n])\s*/g, "$1|").split("|").filter(s => s.trim().length > 0);
         if (ttsSegments.length === 0) ttsSegments = [fullText];
         
@@ -1709,10 +1750,9 @@
         isTtsPlaying = true; 
         isTtsPaused = false;
         
-        // Start hote hi icon Stop ban jayega
         icon.className = 'fas fa-stop'; 
         
-        playNextTtsSegment(); 
+        setTimeout(playNextTtsSegment, 50); 
     }
     // ====== END TTS SYSTEM ======
 
