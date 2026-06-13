@@ -85,7 +85,7 @@
             100% { opacity: 1; }
         }
 
-        /* --- LOGIN SCREEN CSS (SMOOTH SLIDE ANIMATION ADDED BACK) --- */
+        /* --- LOGIN SCREEN CSS --- */
         #login-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -1494,24 +1494,12 @@
         });
     }
 
-    // Aawaz (TTS) engine ko "Wake Up" karne ka global code
     document.addEventListener("DOMContentLoaded", () => {
         if(window.speechSynthesis) {
             window.speechSynthesis.onvoiceschanged = () => {
                 window.speechSynthesis.getVoices();
             };
         }
-        
-        // 100% TTS UNLOCKER FOR MOBILE BROWSERS
-        let ttsUnlocked = false;
-        document.addEventListener('click', function() {
-            if (!ttsUnlocked && window.speechSynthesis) {
-                let dummy = new SpeechSynthesisUtterance('');
-                dummy.volume = 0; // Silent play
-                window.speechSynthesis.speak(dummy);
-                ttsUnlocked = true;
-            }
-        }, { once: true });
         
         const savedTheme = localStorage.getItem('datex_theme');
         const fav = document.getElementById('dynamic-favicon');
@@ -1620,7 +1608,7 @@
         }, 250); 
     };
 
-    // UPDATE: New API Key
+    // UPDATE: New API Key added here
     const GROQ_API_KEY = "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"; 
     const TAVILY_API_KEY = "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"; 
 
@@ -1644,7 +1632,7 @@
 
     window.currentAttachments = [];
 
-    // ====== 100% FIXED YOUTUBE STYLE TTS ENGINE ======
+    // ====== 100% FIXED YOUTUBE STYLE TTS ENGINE (WITH SYNC WAKE-UP + 150ms DELAY) ======
     let ttsUtterance = null;
     let isTtsActive = false; 
     let isTtsPaused = false;
@@ -1702,47 +1690,56 @@
         let fullText = clone.textContent.trim().replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '');
         if (!fullText) return;
 
-        // Instant Invocation with GC protection
-        ttsUtterance = new SpeechSynthesisUtterance(fullText);
-        window.speechUtterances.push(ttsUtterance); // Prevent bug where voice drops out
+        // Bhaai ka rule: Pehle icon change hoga...
+        icon.className = 'fas fa-pause';
 
-        let voices = window.speechSynthesis.getVoices();
-        if(voices.length > 0) {
-            let selectedVoice = voices.find(v => v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('google'));
-            if (selectedVoice) {
-                ttsUtterance.voice = selectedVoice;
+        // ...aur ekdum SYNC (turant) mein ek silent aawaz bajegi taaki browser ka lock khul jaye
+        let wakeUp = new SpeechSynthesisUtterance('');
+        wakeUp.volume = 0; 
+        window.speechSynthesis.speak(wakeUp);
+
+        // 150ms DELAY ADDED HERE (Taaki actual aawaz thodi der baad natural tareeqe se shuru ho)
+        setTimeout(() => {
+            ttsUtterance = new SpeechSynthesisUtterance(fullText);
+            window.speechUtterances.push(ttsUtterance); // Prevent bug where voice drops out
+
+            let voices = window.speechSynthesis.getVoices();
+            if(voices.length > 0) {
+                let selectedVoice = voices.find(v => v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('google'));
+                if (selectedVoice) {
+                    ttsUtterance.voice = selectedVoice;
+                }
             }
-        }
 
-        ttsUtterance.volume = 1.0; 
-        ttsUtterance.pitch = 1.0; 
-        ttsUtterance.rate = 1.0;  
+            ttsUtterance.volume = 1.0; 
+            ttsUtterance.pitch = 1.0; 
+            ttsUtterance.rate = 1.0;  
 
-        ttsUtterance.onstart = () => {
-            isTtsActive = true;
-            isTtsPaused = false;
-            // Initially show Pause button
-            icon.className = 'fas fa-pause';
-        };
+            ttsUtterance.onstart = () => {
+                isTtsActive = true;
+                isTtsPaused = false;
+                icon.className = 'fas fa-pause';
+            };
 
-        ttsUtterance.onend = () => { 
-            // Completely done reading -> revert to Speaker icon
-            isTtsActive = false;
-            isTtsPaused = false;
-            icon.className = 'fas fa-volume-up';
-            currentTtsBtn = null;
-        };
-
-        ttsUtterance.onerror = (e) => { 
-            if (e.error !== 'canceled') {
+            ttsUtterance.onend = () => { 
+                // Completely done reading -> revert to Speaker icon
                 isTtsActive = false;
                 isTtsPaused = false;
                 icon.className = 'fas fa-volume-up';
                 currentTtsBtn = null;
-            }
-        };
+            };
 
-        window.speechSynthesis.speak(ttsUtterance);
+            ttsUtterance.onerror = (e) => { 
+                if (e.error !== 'canceled') {
+                    isTtsActive = false;
+                    isTtsPaused = false;
+                    icon.className = 'fas fa-volume-up';
+                    currentTtsBtn = null;
+                }
+            };
+
+            window.speechSynthesis.speak(ttsUtterance);
+        }, 150); 
     }
     // ====== END TTS SYSTEM ======
 
