@@ -1610,7 +1610,8 @@
         }, 250); 
     };
 
-    const GROQ_API_KEY = "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"; 
+    // UPDATE: New API Key added here
+    const GROQ_API_KEY = "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"; 
     const TAVILY_API_KEY = "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"; 
 
     let chatHistory = [];
@@ -1633,20 +1634,21 @@
 
     window.currentAttachments = [];
 
-    // ====== TTS SYSTEM (100% DIRECT USER ACTIVATION FIXED ENGINE) ======
+    // ====== YOUTUBE STYLE TTS ENGINE (PLAY/PAUSE/RESUME) ======
     let ttsUtterance = null;
-    let isTtsPlaying = false;
+    let isTtsActive = false; 
+    let isTtsPaused = false;
     let currentTtsBtn = null;
 
     function fullStopTTS() {
         if (window.speechSynthesis) {
             window.speechSynthesis.cancel();
         }
-        isTtsPlaying = false;
+        isTtsActive = false;
+        isTtsPaused = false;
         
         if (currentTtsBtn) {
             let icon = currentTtsBtn.querySelector('i');
-            // Revert back to speaker icon when stopped
             if (icon) icon.className = 'fas fa-volume-up'; 
             currentTtsBtn = null;
         }
@@ -1658,13 +1660,23 @@
 
         let icon = btn.querySelector('i');
 
-        // IF CLICKED ON THE SAME BUTTON WHILE PLAYING -> FULL STOP IT
-        if (currentTtsBtn === btn && isTtsPlaying) {
-            fullStopTTS();
+        // YOUTUBE STYLE: IF SAME BUTTON CLICKED, TOGGLE PLAY/PAUSE
+        if (currentTtsBtn === btn) {
+            if (isTtsActive && !isTtsPaused) {
+                // Pause it
+                window.speechSynthesis.pause();
+                isTtsPaused = true;
+                icon.className = 'fas fa-play'; // Show Play icon
+            } else if (isTtsActive && isTtsPaused) {
+                // Resume it
+                window.speechSynthesis.resume();
+                isTtsPaused = false;
+                icon.className = 'fas fa-pause'; // Show Pause icon
+            }
             return;
         }
 
-        // START NEW (Cancel any running TTS immediately)
+        // FRESH START FOR A NEW MESSAGE
         fullStopTTS();
         currentTtsBtn = btn;
 
@@ -1675,7 +1687,7 @@
         let fullText = clone.textContent.trim().replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '');
         if (!fullText) return;
 
-        // CRITICAL: Strict instant user context invocation without any timeout wrapper
+        // Instant Invocation to bypass browser limits
         ttsUtterance = new SpeechSynthesisUtterance(fullText);
 
         let voices = window.speechSynthesis.getVoices();
@@ -1690,26 +1702,29 @@
         ttsUtterance.rate = 1.0;  
 
         ttsUtterance.onstart = () => {
-            isTtsPlaying = true;
-            // SHOW THE PAUSE ICON (Two vertical lines) INSTEAD OF SQUARE STOP BOX
+            isTtsActive = true;
+            isTtsPaused = false;
+            // Initially show Pause button
             icon.className = 'fas fa-pause';
         };
 
         ttsUtterance.onend = () => { 
-            isTtsPlaying = false;
+            // Completely done reading -> revert to Speaker icon
+            isTtsActive = false;
+            isTtsPaused = false;
             icon.className = 'fas fa-volume-up';
             currentTtsBtn = null;
         };
 
         ttsUtterance.onerror = (e) => { 
             if (e.error !== 'canceled') {
-                isTtsPlaying = false;
+                isTtsActive = false;
+                isTtsPaused = false;
                 icon.className = 'fas fa-volume-up';
                 currentTtsBtn = null;
             }
         };
 
-        // This executes instantly on user click, bypassing any mobile autoplay blocks
         window.speechSynthesis.speak(ttsUtterance);
     }
     // ====== END TTS SYSTEM ======
@@ -1885,7 +1900,7 @@
     }
 
     function playAudioBubble(btn, url) {
-        if (window.speechSynthesis && (window.speechSynthesis.speaking || isTtsPlaying)) fullStopTTS();
+        if (window.speechSynthesis && (window.speechSynthesis.speaking || isTtsActive)) fullStopTTS();
         if(globalAudioPlayer && globalAudioPlayer.src !== url) {
             globalAudioPlayer.pause();
             cancelAnimationFrame(audioAnimFrame);
@@ -2501,7 +2516,10 @@
     }
 
     async function callDatexAPI(isRegenerate = false) {
-        fullStopTTS(); let message = ""; let attachmentsToSave = [];
+        // Stop TTS if user sends a new message while AI is speaking
+        fullStopTTS(); 
+        
+        let message = ""; let attachmentsToSave = [];
         
         if (!isRegenerate) {
             const input = document.getElementById('user-input'); message = input.value.trim();
