@@ -1167,7 +1167,7 @@
             signInWithPopup(auth, appleProvider).catch(err => alert("Apple Sign-In requires developer config: " + err.message)); 
         };
         
-        // --- PROPER LOGOUT ANIMATION & SPLASH SCREEN ---
+        // --- LOGOUT WITH PROPER SPLASH AND SLIDE UP FIX ---
         window.logout = () => { 
             if(!confirm('Are you sure you want to logout?')) return;
             signOut(auth); 
@@ -1189,36 +1189,31 @@
             btn.style.marginTop = "5px";
             document.getElementById('auth-switch-text').innerHTML = `Already have an account?<b onclick="window.toggleAuthMode()">LOG IN</b>`;
 
-            // Hide the app completely
             document.getElementById('main-app-wrapper').style.display = 'none';
             
-            // Reset login screen so it can slide up later
             const loginScreen = document.getElementById('login-screen');
             loginScreen.classList.remove('active'); 
             loginScreen.style.display = 'none';
 
-            // Show splash screen animation
             const splash = document.getElementById('splash-screen');
             if(splash) {
                 splash.style.display = 'flex';
                 splash.style.opacity = '1';
                 splash.style.pointerEvents = 'auto';
 
-                // Keep it visible for 1.5s, then fade out and slide up login screen
                 setTimeout(() => {
                     splash.style.opacity = '0';
                     splash.style.pointerEvents = 'none';
                     setTimeout(() => {
                         splash.style.display = 'none';
                         loginScreen.style.display = 'flex';
-                        // Trigger the smooth slide-up
-                        setTimeout(() => loginScreen.classList.add('active'), 50);
-                    }, 300); // Wait for splash to finish fading
+                        // Added 100ms buffer so display:flex applies before the animation class
+                        setTimeout(() => loginScreen.classList.add('active'), 100);
+                    }, 350); 
                 }, 1500);
             } else {
-                // Fallback if splash element is missing
                 loginScreen.style.display = 'flex';
-                setTimeout(() => loginScreen.classList.add('active'), 50);
+                setTimeout(() => loginScreen.classList.add('active'), 100);
             }
         };
 
@@ -1318,7 +1313,7 @@
                     document.getElementById('main-app-wrapper').style.display = 'none';
                     const loginScreen = document.getElementById('login-screen');
                     loginScreen.style.display = 'flex';
-                    setTimeout(() => loginScreen.classList.add('active'), 50);
+                    setTimeout(() => loginScreen.classList.add('active'), 100);
                 }
             }
         }
@@ -1679,40 +1674,43 @@
         let fullText = clone.textContent.trim().replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '');
         if (!fullText) return;
 
-        ttsUtterance = new SpeechSynthesisUtterance(fullText);
+        // Added 100ms buffer to safely let Chrome clear the TTS Cache before speaking
+        setTimeout(() => {
+            ttsUtterance = new SpeechSynthesisUtterance(fullText);
 
-        let voices = window.speechSynthesis.getVoices();
-        if(voices.length > 0) {
-            // Find female or default google voices
-            let selectedVoice = voices.find(v => v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('google'));
-            if (!selectedVoice) selectedVoice = voices[0];
-            ttsUtterance.voice = selectedVoice;
-            ttsUtterance.lang = selectedVoice.lang || 'en-US';
-        }
+            let voices = window.speechSynthesis.getVoices();
+            if(voices.length > 0) {
+                // Find female or default google voices
+                let selectedVoice = voices.find(v => v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('google'));
+                if (!selectedVoice) selectedVoice = voices[0];
+                ttsUtterance.voice = selectedVoice;
+                ttsUtterance.lang = selectedVoice.lang || 'en-US';
+            }
 
-        ttsUtterance.pitch = 1.0; 
-        ttsUtterance.rate = 1.0;  
+            ttsUtterance.pitch = 1.0; 
+            ttsUtterance.rate = 1.0;  
 
-        ttsUtterance.onstart = () => {
-            isTtsPlaying = true;
-            icon.className = 'fas fa-stop';
-        };
+            ttsUtterance.onstart = () => {
+                isTtsPlaying = true;
+                icon.className = 'fas fa-stop';
+            };
 
-        ttsUtterance.onend = () => { 
-            isTtsPlaying = false;
-            icon.className = 'fas fa-volume-up';
-            currentTtsBtn = null;
-        };
-
-        ttsUtterance.onerror = (e) => { 
-            if (e.error !== 'canceled') {
+            ttsUtterance.onend = () => { 
                 isTtsPlaying = false;
                 icon.className = 'fas fa-volume-up';
                 currentTtsBtn = null;
-            }
-        };
+            };
 
-        window.speechSynthesis.speak(ttsUtterance);
+            ttsUtterance.onerror = (e) => { 
+                if (e.error !== 'canceled') {
+                    isTtsPlaying = false;
+                    icon.className = 'fas fa-volume-up';
+                    currentTtsBtn = null;
+                }
+            };
+
+            window.speechSynthesis.speak(ttsUtterance);
+        }, 100); 
     }
     // ====== END TTS SYSTEM ======
 
@@ -2432,7 +2430,7 @@
                         codeTypingData = {
                             escapedContent: escapeHTML(codeContent),
                             index: 0,
-                            header: `<pre><button class="copy-code-btn" onclick="copyCode(this)"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button><code>`,
+                            header: `<pre><button class="copy-code-btn" onclick="copyCode(this)"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rotate="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button><code>`,
                             footer: `</code></pre>`
                         };
                         accumulatedHTML += codeTypingData.header;
