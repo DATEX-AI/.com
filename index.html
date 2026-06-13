@@ -1494,12 +1494,24 @@
         });
     }
 
+    // Aawaz (TTS) engine ko "Wake Up" karne ka global code
     document.addEventListener("DOMContentLoaded", () => {
         if(window.speechSynthesis) {
             window.speechSynthesis.onvoiceschanged = () => {
                 window.speechSynthesis.getVoices();
             };
         }
+        
+        // 100% TTS UNLOCKER FOR MOBILE BROWSERS (User touch karte hi background wake-up ho jayega)
+        let ttsUnlocked = false;
+        document.addEventListener('click', function() {
+            if (!ttsUnlocked && window.speechSynthesis) {
+                let dummy = new SpeechSynthesisUtterance('');
+                dummy.volume = 0; // Silent play
+                window.speechSynthesis.speak(dummy);
+                ttsUnlocked = true;
+            }
+        }, { once: true });
         
         const savedTheme = localStorage.getItem('datex_theme');
         const fav = document.getElementById('dynamic-favicon');
@@ -1608,7 +1620,6 @@
         }, 250); 
     };
 
-    // UPDATE: New API Key added here
     const GROQ_API_KEY = "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"; 
     const TAVILY_API_KEY = "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"; 
 
@@ -1638,7 +1649,7 @@
     let isTtsPaused = false;
     let currentTtsBtn = null;
     
-    // Global array to prevent Garbage Collection bug in Chrome making AI silent
+    // Global array to prevent Garbage Collection bug in Chrome making AI silent (Fixes previous chat bug)
     window.speechUtterances = window.speechUtterances || [];
 
     function fullStopTTS() {
@@ -1690,15 +1701,15 @@
         let fullText = clone.textContent.trim().replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '');
         if (!fullText) return;
 
-        // Bhaai ka rule: Pehle icon change hoga...
+        // Pehle icon change hoga...
         icon.className = 'fas fa-pause';
 
-        // ...aur ekdum SYNC (turant) mein ek silent aawaz bajegi taaki browser ka lock khul jaye
+        // ...aur ekdum SYNC (turant) mein ek silent aawaz bajegi taaki browser ka lock hamesha khula rahe!
         let wakeUp = new SpeechSynthesisUtterance('');
         wakeUp.volume = 0; 
         window.speechSynthesis.speak(wakeUp);
 
-        // 150ms DELAY ADDED HERE (Taaki actual aawaz thodi der baad natural tareeqe se shuru ho)
+        // 150ms DELAY ADDED HERE (Taaki actual aawaz thodi der baad natural tareeqe se shuru ho jaisa tune manga tha)
         setTimeout(() => {
             ttsUtterance = new SpeechSynthesisUtterance(fullText);
             window.speechUtterances.push(ttsUtterance); // Prevent bug where voice drops out
