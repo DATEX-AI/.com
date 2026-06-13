@@ -1633,7 +1633,7 @@
 
     window.currentAttachments = [];
 
-    // ====== TTS SYSTEM (RESTORED OLD STABLE WITH PAUSE ICON) ======
+    // ====== TTS SYSTEM (100% DIRECT USER ACTIVATION FIXED ENGINE) ======
     let ttsUtterance = null;
     let isTtsPlaying = false;
     let currentTtsBtn = null;
@@ -1663,7 +1663,7 @@
             return;
         }
 
-        // START NEW (Cancel any running TTS first)
+        // START NEW (Cancel any running TTS immediately)
         fullStopTTS();
         currentTtsBtn = btn;
 
@@ -1674,11 +1674,11 @@
         let fullText = clone.textContent.trim().replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '');
         if (!fullText) return;
 
+        // CRITICAL: Strict instant user context invocation without any timeout wrapper
         ttsUtterance = new SpeechSynthesisUtterance(fullText);
 
         let voices = window.speechSynthesis.getVoices();
         if(voices.length > 0) {
-            // Find female or default google voices
             let selectedVoice = voices.find(v => v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('google'));
             if (!selectedVoice) selectedVoice = voices[0];
             ttsUtterance.voice = selectedVoice;
@@ -1690,7 +1690,7 @@
 
         ttsUtterance.onstart = () => {
             isTtsPlaying = true;
-            // SHOW THE PAUSE ICON (Two vertical lines) INSTEAD OF SQUARE STOP
+            // SHOW THE PAUSE ICON (Two vertical lines) INSTEAD OF SQUARE STOP BOX
             icon.className = 'fas fa-pause';
         };
 
@@ -2377,7 +2377,7 @@
         segments.forEach(seg => {
             if (seg.startsWith("```") && seg.endsWith("```")) { 
                 let codeContent = seg.substring(3, seg.length - 3).trim(); 
-                finalHTML += `<pre><button class="copy-code-btn" onclick="copyCode(this)"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button><code>${escapeHTML(codeContent)}</code></pre>`; 
+                finalHTML += `<pre><button class="copy-code-btn" onclick="copyCode(this)"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rotate="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button><code>${escapeHTML(codeContent)}</code></pre>`; 
             } 
             else { let formattedSeg = formatLinksAndStyles(seg); finalHTML += formattedSeg.replace(/\n/g, "<br>"); }
         });
