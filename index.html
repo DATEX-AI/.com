@@ -401,18 +401,22 @@
         .tts-btn i { font-size: 12px !important; }
         body.dark-mode .tts-btn { background: #fff !important; color: #000 !important; }
 
+        /* ATTACHMENT MENU BOX STYLES */
         .attachment-menu { position: fixed; bottom: -350px; left: 0; width: 100%; background: #fff; border-top-left-radius: 20px; border-top-right-radius: 20px; box-shadow: 0 -5px 25px rgba(0,0,0,0.15); padding: 0 0 40px 0; transition: bottom 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); z-index: 2000; }
         .attachment-menu.active { bottom: 0; }
         .attachment-menu-header { display: flex; justify-content: flex-start; align-items: center; padding: 15px 20px 10px 20px; position: relative; }
         .attachment-menu-header i.fa-times { font-size: 20px; color: #000; cursor: pointer; padding: 5px; transition: color 0.15s; }
         .attachment-menu::before { content: ''; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 40px; height: 4px; background: #ddd; border-radius: 4px; }
         .attachment-options-container { display: flex; justify-content: space-around; padding: 0 20px; margin-top: 10px; }
-        .attachment-option { display: flex; flex-direction: column; align-items: center; gap: 12px; cursor: pointer; width: 30%; }
-        .attachment-option .icon-box { width: 85px; height: 85px; border: 1px solid #eee; border-radius: 20px; display: flex; justify-content: center; align-items: center; font-size: 32px; color: #444; background: #fdfdfd; transition: 0.2s; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
-        .attachment-option:active .icon-box { background: #eee; } 
         
-        /* BLACK & WHITE FOR ATTACHMENT MENU TEXT */
-        .attachment-option span { font-size: 14px; color: #000000; font-weight: 500; transition: color 0.15s; }
+        .attachment-option { display: flex; flex-direction: column; align-items: center; gap: 12px; cursor: pointer; width: 30%; }
+        
+        /* BLACK & WHITE LOGOS + NO SHADOW */
+        .attachment-option .icon-box { width: 85px; height: 85px; border: 1.5px solid #000000; border-radius: 20px; display: flex; justify-content: center; align-items: center; font-size: 32px; color: #000000; background: transparent; transition: 0.2s; box-shadow: none; }
+        .attachment-option:active .icon-box { background: rgba(0,0,0,0.05); } 
+        
+        /* BLACK & WHITE ATTACHMENT TEXT */
+        .attachment-option span { font-size: 14px; color: #000000; font-weight: 600; transition: color 0.15s; }
         body.dark-mode .attachment-option span { color: #ffffff; }
         
         .attachment-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); display: none; z-index: 1999; }
@@ -471,26 +475,31 @@
         .setting-section:last-child { margin-bottom: 0px; }
         .setting-section-title { font-size: 16px; font-weight: 700; color: #000000; display: flex; align-items: center; gap: 10px; margin-bottom: 8px; transition: color 0.15s;}
         
+        .radio-option { display: flex; justify-content: space-between; align-items: center; font-size: 15px; padding: 8px 5px 8px 10px; margin-bottom: 4px; transition: color 0.15s;}
+        
         /* BLACK TEXT FOR LABELS (Male, Female) */
         .radio-option span { color: #000000; font-weight: 600; transition: color 0.15s; }
         body.dark-mode .radio-option span { color: #ffffff; }
 
-        /* LOCK ICON AT RADIO DOT */
-        .disabled-option span { color: #000000; font-weight: 600; transition: color 0.15s; }
-        .lock-icon-radio { display: flex; justify-content: center; align-items: center; width: 20px; height: 20px; color: #000000; font-size: 14px; margin-right: 2px; transition: color 0.15s; }
+        /* DISABLED MALE OPTION - FULL VISIBILITY */
+        .disabled-option span { opacity: 1 !important; color: #000000; font-weight: 600; transition: color 0.15s; }
         body.dark-mode .disabled-option span { color: #ffffff; }
-        body.dark-mode .lock-icon-radio { color: #ffffff; }
 
-        .radio-option { display: flex; justify-content: space-between; align-items: center; font-size: 15px; padding: 8px 5px 8px 10px; margin-bottom: 4px; transition: color 0.15s;}
         .radio-label { cursor: pointer; display: flex; align-items: center; } 
         .radio-label input { display: none; }
         .custom-radio { width: 20px; height: 20px; border: 2px solid #aaa; border-radius: 50%; position: relative; transition: 0.15s; flex-shrink: 0; }
         .radio-label input:checked + .custom-radio { border-color: #000; }
         .radio-label input:checked + .custom-radio::after { content: ''; position: absolute; width: 10px; height: 10px; background: #000; border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); }
 
+        /* LOCK ICON DIRECTLY INSIDE RADIO CIRCLE */
+        .locked-radio { border-color: #000000 !important; display: flex; justify-content: center; align-items: center; background: transparent !important; }
+        .locked-radio i { font-size: 10px; color: #000000; }
+        body.dark-mode .locked-radio { border-color: #ffffff !important; }
+        body.dark-mode .locked-radio i { color: #ffffff !important; }
+
         /* BLACK TEXT FOR LANGUAGE BOXES */
         .select-wrapper { position: relative; width: 100%; margin-top: 12px; cursor: pointer; } 
-        .custom-select-btn { width: calc(100% - 10px); padding: 12px 40px 12px 15px; border-radius: 10px; background: #f5f5f5; border: 1.5px solid #000000; font-size: 14px; margin-left: 5px; color: #000000; font-weight: 600; display: flex; align-items: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: background-color 0.15s, border-color 0.15s, color 0.15s; }
+        .custom-select-btn { width: calc(100% - 10px); padding: 12px 40px 12px 15px; border-radius: 10px; background: transparent; border: 1.5px solid #000000; font-size: 14px; margin-left: 5px; color: #000000; font-weight: 600; display: flex; align-items: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: background-color 0.15s, border-color 0.15s, color 0.15s; }
         .select-arrow { position: absolute; right: 25px; top: 50%; transform: translateY(-70%) rotate(45deg); width: 8px; height: 8px; border-right: 2.5px solid #000; border-bottom: 2.5px solid #000; pointer-events: none; transition: border-color 0.15s; }
 
         /* Audio Bubble Dynamic Theme Styles */
@@ -555,8 +564,10 @@
         body.dark-mode .new-chat-btn { background: #ffffff; color: #000000; }
         body.dark-mode .new-chat-btn:hover { background: #e0e0e0; }
 
+        /* DARK MODE FOR ATTACHMENT MENU */
         body.dark-mode .attachment-menu { background: #1a1a1a; }
-        body.dark-mode .attachment-option .icon-box { background: #2c2c2c; border-color: #444; color: #ccc; }
+        body.dark-mode .attachment-option .icon-box { background: transparent; border-color: #ffffff; color: #ffffff; }
+        body.dark-mode .attachment-option:active .icon-box { background: rgba(255,255,255,0.05); }
         
         body.dark-mode .settings-modal, body.dark-mode .lang-modal { background: #1a1a1a; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         body.dark-mode .settings-header, body.dark-mode .lang-modal-header { color: #fff; background: #1a1a1a; border-color:#333; }
@@ -565,7 +576,7 @@
         body.dark-mode .setting-section-title svg { color: currentColor; } 
         body.dark-mode .radio-label input:checked + .custom-radio { border-color: #fff; }
         body.dark-mode .radio-label input:checked + .custom-radio::after { background: #fff; }
-        body.dark-mode .custom-select-btn { background: #2c2c2c; color: #ffffff; border-color: #ffffff; }
+        body.dark-mode .custom-select-btn { background: transparent; color: #ffffff; border-color: #ffffff; }
         body.dark-mode .select-arrow { border-color: #fff; }
         body.dark-mode pre { background: #000; border-color: #444; }
         body.dark-mode .user-expand-btn { background: #1e1e1e; color: #e0e0e0; box-shadow: 0 1px 4px rgba(0,0,0,0.4); }
@@ -814,12 +825,13 @@
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="10" x2="5" y2="14"></line><line x1="9" y1="6" x2="9" y2="18"></line><line x1="13" y1="3" x2="13" y2="21"></line><line x1="17" y1="6" x2="17" y2="18"></line><line x1="21" y1="10" x2="21" y2="14"></line></svg>
                     <span data-i18n="AI Voice">AI Voice</span>
                 </div>
-                <div class="radio-option disabled-option" style="opacity: 0.5;">
+                <div class="radio-option disabled-option">
                     <span data-i18n="Male">Male</span>
-                    <label class="radio-label" style="cursor: not-allowed; display: flex; align-items: center; gap: 8px;">
-                        <i class="fas fa-lock lock-icon-radio"></i>
+                    <label class="radio-label" style="cursor: not-allowed;">
                         <input type="radio" name="ai_voice" value="male" disabled>
-                        <div class="custom-radio" style="border-color: #aaa; background: #f0f0f0;"></div>
+                        <div class="custom-radio locked-radio">
+                            <i class="fas fa-lock"></i>
+                        </div>
                     </label>
                 </div>
                 <div class="radio-option">
@@ -1587,6 +1599,7 @@
     let isTtsPlaying = false;
     let isTtsPaused = false;
     let currentTtsBtn = null;
+    let currentTtsVoicePref = 'female'; // Always default female because Male is locked
 
     function fullStopTTS() {
         isTtsPlaying = false;
@@ -1598,7 +1611,7 @@
             window.speechSynthesis.cancel(); 
         }
         
-        // Revert to Default Speaker Icon
+        // Wapas Speaker Icon Default
         if (currentTtsBtn) {
             let icon = currentTtsBtn.querySelector('i');
             if (icon) icon.className = 'fas fa-volume-up'; 
@@ -1607,7 +1620,7 @@
     }
 
     function playNextTtsSegment() {
-        if (isTtsPaused) return; // Custom pause lock
+        if (isTtsPaused) return; 
 
         if (!isTtsPlaying || currentSegmentIdx >= ttsSegments.length || !currentTtsBtn) {
             if (currentSegmentIdx >= ttsSegments.length) fullStopTTS();
@@ -1622,7 +1635,7 @@
         let voices = window.speechSynthesis.getVoices();
         
         if(voices.length > 0) {
-            // Find female voices or google default
+            // Find female or default google voices
             let selectedVoice = voices.find(v => v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('google'));
             if (!selectedVoice) selectedVoice = voices[0];
 
@@ -1630,7 +1643,7 @@
             ttsUtterance.lang = selectedVoice.lang;
         }
 
-        // Default Chrome natural voice
+        // CHROME ORIGINAL DEFAULT VOICE PITCH
         ttsUtterance.pitch = 1.0; 
         ttsUtterance.rate = 1.0;  
 
@@ -1657,27 +1670,27 @@
 
         let icon = btn.querySelector('i');
 
-        // AGAR SAME BUTTON CLICK KIYA (CUSTOM PLAY/PAUSE LOGIC)
+        // PAUSE / RESUME LOGIC (Ekdum Flawless)
         if (currentTtsBtn === btn) {
             if (isTtsPlaying && !isTtsPaused) {
                 // Pause kar diya -> Icon banega Play
                 isTtsPaused = true;
                 isTtsPlaying = false; 
-                window.speechSynthesis.cancel(); // Force stop current chunk
+                window.speechSynthesis.cancel(); // Turant aawaz kaat dega
                 icon.className = 'fas fa-play';
             } else if (isTtsPaused) {
-                // Resume kiya -> Icon banega Stop
+                // Resume kiya -> Icon banega Stop, and exact ussi line se wapas shuru
                 isTtsPaused = false;
                 isTtsPlaying = true;
                 icon.className = 'fas fa-stop';
-                playNextTtsSegment(); // Start from exact paused segment!
+                playNextTtsSegment(); 
             } else {
                 fullStopTTS();
             }
             return;
         }
         
-        // AGAR NAYA MESSAGE PADHNA SHURU KIYA
+        // NAYA MESSAGE PADHNA SHURU KIYA
         fullStopTTS(); 
         currentTtsBtn = btn; 
         
@@ -1688,7 +1701,7 @@
         let fullText = clone.textContent.trim().replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '');
         if (!fullText) return;
 
-        // Custom Segmentation logic (Sentence by Sentence split)
+        // Sentences mein tod diya taaki pause/resume safe rahe aur bug na aaye
         ttsSegments = fullText.replace(/([.!?।\n])\s*/g, "$1|").split("|").filter(s => s.trim().length > 0);
         if (ttsSegments.length === 0) ttsSegments = [fullText];
         
@@ -1696,7 +1709,7 @@
         isTtsPlaying = true; 
         isTtsPaused = false;
         
-        // Start hote hi icon Stop (Pause option) ban jayega
+        // Start hote hi icon Stop ban jayega
         icon.className = 'fas fa-stop'; 
         
         playNextTtsSegment(); 
