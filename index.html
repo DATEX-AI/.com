@@ -1167,7 +1167,6 @@
             signInWithPopup(auth, appleProvider).catch(err => alert("Apple Sign-In requires developer config: " + err.message)); 
         };
         
-        // --- LOGOUT WITH PROPER SPLASH AND SLIDE UP FIX ---
         window.logout = () => { 
             if(!confirm('Are you sure you want to logout?')) return;
             signOut(auth); 
@@ -1207,7 +1206,6 @@
                     setTimeout(() => {
                         splash.style.display = 'none';
                         loginScreen.style.display = 'flex';
-                        // Added 100ms buffer so display:flex applies before the animation class
                         setTimeout(() => loginScreen.classList.add('active'), 100);
                     }, 350); 
                 }, 1500);
@@ -1496,12 +1494,24 @@
         });
     }
 
+    // Aawaz (TTS) engine ko "Wake Up" karne ka global code
     document.addEventListener("DOMContentLoaded", () => {
         if(window.speechSynthesis) {
             window.speechSynthesis.onvoiceschanged = () => {
                 window.speechSynthesis.getVoices();
             };
         }
+        
+        // 100% TTS UNLOCKER FOR MOBILE BROWSERS
+        let ttsUnlocked = false;
+        document.addEventListener('click', function() {
+            if (!ttsUnlocked && window.speechSynthesis) {
+                let dummy = new SpeechSynthesisUtterance('');
+                dummy.volume = 0; // Silent play
+                window.speechSynthesis.speak(dummy);
+                ttsUnlocked = true;
+            }
+        }, { once: true });
         
         const savedTheme = localStorage.getItem('datex_theme');
         const fav = document.getElementById('dynamic-favicon');
@@ -1610,7 +1620,7 @@
         }, 250); 
     };
 
-    // UPDATE: New API Key added here
+    // UPDATE: New API Key
     const GROQ_API_KEY = "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"; 
     const TAVILY_API_KEY = "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"; 
 
@@ -1634,11 +1644,14 @@
 
     window.currentAttachments = [];
 
-    // ====== YOUTUBE STYLE TTS ENGINE (PLAY/PAUSE/RESUME) ======
+    // ====== 100% FIXED YOUTUBE STYLE TTS ENGINE ======
     let ttsUtterance = null;
     let isTtsActive = false; 
     let isTtsPaused = false;
     let currentTtsBtn = null;
+    
+    // Global array to prevent Garbage Collection bug in Chrome making AI silent
+    window.speechUtterances = window.speechUtterances || [];
 
     function fullStopTTS() {
         if (window.speechSynthesis) {
@@ -1672,6 +1685,8 @@
                 window.speechSynthesis.resume();
                 isTtsPaused = false;
                 icon.className = 'fas fa-pause'; // Show Pause icon
+            } else {
+                fullStopTTS();
             }
             return;
         }
@@ -1687,17 +1702,19 @@
         let fullText = clone.textContent.trim().replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '');
         if (!fullText) return;
 
-        // Instant Invocation to bypass browser limits
+        // Instant Invocation with GC protection
         ttsUtterance = new SpeechSynthesisUtterance(fullText);
+        window.speechUtterances.push(ttsUtterance); // Prevent bug where voice drops out
 
         let voices = window.speechSynthesis.getVoices();
         if(voices.length > 0) {
             let selectedVoice = voices.find(v => v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('google'));
-            if (!selectedVoice) selectedVoice = voices[0];
-            ttsUtterance.voice = selectedVoice;
-            ttsUtterance.lang = selectedVoice.lang || 'en-US';
+            if (selectedVoice) {
+                ttsUtterance.voice = selectedVoice;
+            }
         }
 
+        ttsUtterance.volume = 1.0; 
         ttsUtterance.pitch = 1.0; 
         ttsUtterance.rate = 1.0;  
 
