@@ -97,7 +97,6 @@
             align-items: center;
             padding: 15px 0 0 0; 
             opacity: 0;
-            /* Transition completely hata diya taaki slide na ho */
             transition: none !important; 
             overflow: hidden; 
             scrollbar-width: none;
@@ -444,7 +443,7 @@
 
         .settings-modal.active, .lang-modal.active { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
         
-        /* FIX 3: TEXT COLOR IS #000000 */
+        /* Changed header colors to #000000 */
         .settings-header, .lang-modal-header { 
             display: flex; justify-content: space-between; align-items: center; 
             padding: 20px 25px 15px 25px; border-bottom: 1px solid #eee; 
@@ -1569,7 +1568,7 @@
 
     window.currentAttachments = [];
 
-    // ====== TTS SYSTEM (100% FIXED SPEAKER & VOICE BUGS) ======
+    // ====== TTS SYSTEM (100% BUG-FREE CUSTOM RESUME SYSTEM) ======
     let ttsUtterance = null;
     let ttsSegments = [];
     let currentSegmentIdx = 0;
@@ -1588,7 +1587,7 @@
             window.speechSynthesis.cancel(); 
         }
         
-        // Wapas default volume icon
+        // Revert to Default Speaker Icon
         if (currentTtsBtn) {
             let icon = currentTtsBtn.querySelector('i');
             if (icon) icon.className = 'fas fa-volume-up'; 
@@ -1597,8 +1596,7 @@
     }
 
     function playNextTtsSegment() {
-        // Agar pause hai, return ho jao (custom stop logic)
-        if (isTtsPaused) return;
+        if (isTtsPaused) return; // Custom pause lock
 
         if (!isTtsPlaying || currentSegmentIdx >= ttsSegments.length || !currentTtsBtn) {
             if (currentSegmentIdx >= ttsSegments.length) fullStopTTS();
@@ -1610,31 +1608,30 @@
 
         ttsUtterance = new SpeechSynthesisUtterance(textSegment);
         
-        // Setting ko session mein lock rakho
+        // Voice setting locked for current session
         let prefType = currentTtsVoicePref; 
         let voices = window.speechSynthesis.getVoices();
         
         if(voices.length > 0) {
             let selectedVoice = null;
-            // Target female voices
             if (prefType === 'girl') {
                 selectedVoice = voices.find(v => v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('samantha') || v.name.toLowerCase().includes('zira') || v.name.toLowerCase().includes('girl'));
             } else {
                 selectedVoice = voices.find(v => v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('google'));
             }
-            if (!selectedVoice) selectedVoice = voices[0];
+            if (!selectedVoice) selectedVoice = voices[0]; // Ultimate fallback
 
             ttsUtterance.voice = selectedVoice;
             ttsUtterance.lang = selectedVoice.lang;
         }
 
-        // Apply Pitch based on Girl / Women
+        // Apply Pitch based on Girl (patli aawaz) / Women (original aawaz)
         if (prefType === 'girl') {
-            ttsUtterance.pitch = 1.4; // Patli aawaz
-            ttsUtterance.rate = 1.05; // Fast
+            ttsUtterance.pitch = 1.4; 
+            ttsUtterance.rate = 1.05; 
         } else {
-            ttsUtterance.pitch = 1.0; // Original Chrome Normal Voice
-            ttsUtterance.rate = 1.0;  // Normal Pacing
+            ttsUtterance.pitch = 1.0; 
+            ttsUtterance.rate = 1.0;  
         }
 
         ttsUtterance.onend = () => { 
@@ -1645,7 +1642,6 @@
         };
         
         ttsUtterance.onerror = (e) => { 
-            // Pause karne pe 'canceled' error aata hai, ise ignore karna zaroori hai
             if (isTtsPlaying && !isTtsPaused && e.error !== 'canceled') { 
                 currentSegmentIdx++; 
                 playNextTtsSegment(); 
@@ -1661,20 +1657,20 @@
 
         let icon = btn.querySelector('i');
 
-        // AGAR SAME BUTTON CLICK KIYA (PAUSE / RESUME LOGIC)
+        // AGAR SAME BUTTON CLICK KIYA (CUSTOM PLAY/PAUSE LOGIC)
         if (currentTtsBtn === btn) {
             if (isTtsPlaying && !isTtsPaused) {
-                // Pause it: Rok do (Icon banega Play)
+                // Pause kar diya -> Icon banega Play
                 isTtsPaused = true;
                 isTtsPlaying = false; 
-                window.speechSynthesis.cancel(); // Native cancel se current line ruk jayegi
+                window.speechSynthesis.cancel(); // Force stop current chunk
                 icon.className = 'fas fa-play';
             } else if (isTtsPaused) {
-                // Resume it: Jahan ruka tha wahin se wapas start (Icon banega Stop)
+                // Resume kiya -> Icon banega Stop
                 isTtsPaused = false;
                 isTtsPlaying = true;
                 icon.className = 'fas fa-stop';
-                playNextTtsSegment(); 
+                playNextTtsSegment(); // Start from exact paused segment!
             } else {
                 fullStopTTS();
             }
@@ -1692,18 +1688,18 @@
         let fullText = clone.textContent.trim().replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '');
         if (!fullText) return;
 
-        // Custom Segmentation (Split to fix browser bugs)
+        // Custom Segmentation logic (Sentence by Sentence split)
         ttsSegments = fullText.replace(/([.!?।\n])\s*/g, "$1|").split("|").filter(s => s.trim().length > 0);
         if (ttsSegments.length === 0) ttsSegments = [fullText];
 
-        // Session Lock for Voice Preference
+        // Fetch User Choice only at the start of new text
         currentTtsVoicePref = localStorage.getItem('datex_voice_type') || 'women';
         
         currentSegmentIdx = 0; 
         isTtsPlaying = true; 
         isTtsPaused = false;
         
-        // Start hotey hi icon Stop ho jayega
+        // Start hote hi icon Stop (Pause option) ban jayega
         icon.className = 'fas fa-stop'; 
         
         playNextTtsSegment(); 
@@ -2223,7 +2219,8 @@
             
             html += `<button class="action-btn btn-black-icon" onclick="openMenu(event, this)"><i class="fas fa-ellipsis-v"></i></button>`;
             if (isStopped) { html += `<button class="action-btn btn-black-icon" onclick="regenerateMessage(this)"><i class="fas fa-redo"></i></button>`; }
-            // Speaker Icon Here
+            
+            // Speaker Icon - Default State
             html += `<button class="action-btn tts-btn" onclick="speakText(this)"><i class="fas fa-volume-up"></i></button></div>`;
             
             container.insertAdjacentHTML('beforeend', html);
