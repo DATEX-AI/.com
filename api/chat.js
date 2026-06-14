@@ -13,9 +13,12 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile", // Ye raha tera smart 70B model!
+        model: "llama-3.3-70b-versatile",
         messages: [
-          { role: "system", content: "Auto-detect the user's language and reply with the same language." },
+          { 
+            role: "system", 
+            content: "You are DATEX AI. Strictly follow these language rules: 1. Always auto-detect the user's language. 2. If the user says 'Hii', 'Hello' or types in English, reply ONLY in pure English. 3. If the user speaks/types in Hinglish or Hindi, reply in Hinglish/Hindi. 4. NEVER use Urdu language or Urdu script under any circumstances." 
+          },
           ...messages
         ]
       })
@@ -24,13 +27,13 @@ export default async function handler(req, res) {
     const data = await groqResponse.json();
 
     if (!groqResponse.ok) {
-      throw new Error(data.error?.message || 'Groq API se error aaya');
+      throw new Error(data.error?.message || 'Groq API error');
     }
 
     return res.status(200).json(data);
     
   } catch (error) {
     console.error('Chat API Error:', error);
-    return res.status(500).json({ error: 'Server mein kuch gadbad hui hai' });
+    return res.status(500).json({ error: 'Server error' });
   }
 }
