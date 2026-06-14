@@ -1990,6 +1990,7 @@
 
     let isDictating = false; 
     let sessionFinalText = ""; 
+    let userStoppedMic = false;
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     let recognition;
     
@@ -2000,14 +2001,23 @@
         
         recognition.onstart = () => { 
             isDictating = true; 
+            userStoppedMic = false; 
             sessionFinalText = document.getElementById('user-input').value; 
             if (sessionFinalText.length > 0 && !sessionFinalText.endsWith(" ")) { sessionFinalText += " "; } 
             document.getElementById('mike-btn').classList.add('recording'); 
         };
+        
         recognition.onend = () => { 
-            isDictating = false; 
-            document.getElementById('mike-btn').classList.remove('recording'); 
+            if (!userStoppedMic) {
+                try {
+                    recognition.start();
+                } catch(e) { }
+            } else {
+                isDictating = false; 
+                document.getElementById('mike-btn').classList.remove('recording'); 
+            }
         };
+        
         recognition.onresult = (e) => { 
             let finalTranscript = "";
             for (let i = 0; i < e.results.length; ++i) { 
@@ -2018,12 +2028,20 @@
             const input = document.getElementById('user-input');
             let space = (sessionFinalText.length > 0 && !sessionFinalText.endsWith(" ") && finalTranscript.length > 0 && !finalTranscript.startsWith(" ")) ? " " : "";
             input.value = sessionFinalText + space + finalTranscript; 
+            
+            sessionFinalText = input.value; 
+            
             autoGrow(input); 
             input.dispatchEvent(new Event('input', { bubbles: true }));
         };
+        
         recognition.onerror = (e) => { 
             console.error("Speech error: " + e.error); 
+            if (e.error === 'no-speech') {
+                return;
+            }
             isDictating = false; 
+            userStoppedMic = true; 
             document.getElementById('mike-btn').classList.remove('recording'); 
         }
     }
@@ -2032,12 +2050,16 @@
     document.getElementById('mike-btn').onclick = () => {
         if (ignoreNextClick) { ignoreNextClick = false; return; }
         if (!recognition) { alert("Speech recognition is not supported in this browser."); return; }
+        
         fullStopTTS(); stopVoiceNoteBubble();
+        
         if (isDictating) { 
+            userStoppedMic = true; 
             recognition.stop(); 
             isDictating = false;
             document.getElementById('mike-btn').classList.remove('recording');
         } else { 
+            userStoppedMic = false;
             recognition.start(); 
         }
     };
