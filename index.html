@@ -1502,7 +1502,7 @@
             };
         }
         
-        // 100% TTS UNLOCKER FOR MOBILE BROWSERS (User touch karte hi background wake-up ho jayega)
+        // 100% TTS UNLOCKER FOR MOBILE BROWSERS
         let ttsUnlocked = false;
         document.addEventListener('click', function() {
             if (!ttsUnlocked && window.speechSynthesis) {
@@ -1620,7 +1620,6 @@
         }, 250); 
     };
 
-    // Current API Key
     const GROQ_API_KEY = "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"; 
     const TAVILY_API_KEY = "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"; 
 
@@ -1644,13 +1643,15 @@
 
     window.currentAttachments = [];
 
-    // ====== 100% FIXED "SMART MEMORY CHUNK" TTS ENGINE ======
-    // Ye Android Chrome ke bug ko bypass karta hai
+    // ====== 100% FIXED "STRICT SESSION ISOLATION" TTS ENGINE ======
+    // Ye system overlapping event bugs ko bilkul zero kar deta hai
     let ttsState = {
         active: false,
         paused: false,
         btn: null,
-        text: ""
+        chunks: [],
+        currentIndex: 0,
+        sessionId: 0 // Ye Ensure karega ki purane events naye walo me na ghusen!
     };
     
     // Global array to prevent Garbage Collection bug making AI silent
@@ -1667,7 +1668,9 @@
         ttsState.active = false;
         ttsState.paused = false;
         ttsState.btn = null;
-        ttsState.text = "";
+        ttsState.chunks = [];
+        ttsState.currentIndex = 0;
+        ttsState.sessionId = 0; // Reset session
     }
 
     function speakText(btn) {
@@ -1676,28 +1679,33 @@
 
         let icon = btn.querySelector('i');
 
-        // YOUTUBE STYLE TOGGLE: SMART BYPASS
+        // YOUTUBE STYLE TOGGLE FOR THE EXACT SAME BUTTON
         if (ttsState.btn === btn) {
             if (ttsState.active && !ttsState.paused) {
-                // SIMULATE PAUSE: Native pause() bugged hai, isliye cancel karke text save karenge
+                // Pause it: Stop current chunk
                 ttsState.paused = true;
                 window.speechSynthesis.cancel(); 
-                icon.className = 'fas fa-play'; // Show Play icon
+                icon.className = 'fas fa-play'; 
             } else if (ttsState.paused) {
-                // SIMULATE RESUME: Puraane raste se nahi, new fresh chunk play karenge
+                // Resume it: Play exactly where it left off, using current session ID
                 ttsState.paused = false;
-                icon.className = 'fas fa-pause'; // Show Pause icon
-                playTTSChunk(ttsState.text); // Remaining text play karega!
+                icon.className = 'fas fa-pause'; 
+                playNextChunk(ttsState.sessionId); 
             } else {
                 fullStopTTS();
             }
             return;
         }
 
-        // FRESH START FOR A NEW MESSAGE
+        // FRESH START FOR A NEW OR DIFFERENT MESSAGE
         fullStopTTS();
         ttsState.btn = btn;
         ttsState.paused = false;
+        ttsState.currentIndex = 0;
+        
+        // UNIQUE SESSION ID: Ye lock kar dega kisi bhi purane event ko wapas aane se
+        ttsState.sessionId = Date.now(); 
+        const currentSession = ttsState.sessionId;
 
         const bubble = btn.closest('.bubble-container').querySelector('.bubble');
         let clone = bubble.cloneNode(true);
@@ -1706,26 +1714,38 @@
         let fullText = clone.textContent.trim().replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '');
         if (!fullText) return;
         
-        ttsState.text = fullText; // Starting mein full text save hoga
+        // Break by sentences for accurate resuming
+        let rawChunks = fullText.match(/[^.!?\n]+[.!?\n]*/g) || [fullText];
+        ttsState.chunks = rawChunks.map(c => c.trim()).filter(c => c.length > 0);
 
-        // Pehle icon change hoga...
+        // Pehle icon change hoga
         icon.className = 'fas fa-pause';
 
-        // ...aur ekdum SYNC (turant) mein ek silent aawaz bajegi (Wakeup bypass)
+        // Wakeup Call
         let wakeUp = new SpeechSynthesisUtterance('');
         wakeUp.volume = 0; 
         window.speechSynthesis.speak(wakeUp);
 
-        // 150ms DELAY ADDED HERE (Taaki actual aawaz thodi der baad start ho)
+        // 150ms Delay -> Start
         setTimeout(() => {
-            playTTSChunk(ttsState.text);
+            playNextChunk(currentSession);
         }, 150); 
     }
 
-    // NAYA FUNCTION: Chunk padhne ke liye aur position save karne ke liye
-    function playTTSChunk(textToSpeak) {
-        if (!textToSpeak) return;
+    function playNextChunk(sessionId) {
+        // ANTI-GLITCH GUARD: Agar ye event purane session ka hai, toh block kardo!
+        if (ttsState.sessionId !== sessionId) return; 
+        if (ttsState.paused) return; // Agar pause hai toh ruk jao
+        
+        // Agar saare sentences padh liye
+        if (ttsState.currentIndex >= ttsState.chunks.length) {
+            if (ttsState.btn) ttsState.btn.querySelector('i').className = 'fas fa-volume-up';
+            ttsState.active = false;
+            ttsState.btn = null;
+            return;
+        }
 
+        let textToSpeak = ttsState.chunks[ttsState.currentIndex];
         let utterance = new SpeechSynthesisUtterance(textToSpeak);
         window.speechUtterances.push(utterance); // GC Protection
 
@@ -1741,39 +1761,27 @@
         utterance.pitch = 1.0; 
         utterance.rate = 1.0;  
 
-        // Jab AI har ek word padhega, toh ye us bache hue text ko save karega (Memory)
-        utterance.onboundary = (e) => {
-            if (e.name === 'word') {
-                // CharIndex se bacha hua text nikal ke save karo taaki Play/Pause me use ho sake
-                ttsState.text = textToSpeak.substring(e.charIndex);
-            }
-        };
-
         utterance.onstart = () => {
+            if (ttsState.sessionId !== sessionId) return;
             ttsState.active = true;
         };
 
         utterance.onend = () => { 
-            // Agar automatically finish hua hai (Pause button press nahi kiya tha)
+            if (ttsState.sessionId !== sessionId) return;
+            // Agar next chunk jana hai (pause nahi hai)
             if (!ttsState.paused) {
-                if (ttsState.btn) {
-                    ttsState.btn.querySelector('i').className = 'fas fa-volume-up';
-                }
-                ttsState.active = false;
-                ttsState.btn = null;
-                ttsState.text = "";
+                ttsState.currentIndex++;
+                playNextChunk(sessionId);
             }
         };
 
         utterance.onerror = (e) => { 
-            // Canceled error aata hai jab hum manual pause karne ke liye window.speechSynthesis.cancel() dabate hain
+            if (ttsState.sessionId !== sessionId) return;
+            // Canceled error is expected when we pause. If random error, stop.
             if (!ttsState.paused && e.error !== 'canceled') {
-                if (ttsState.btn) {
-                    ttsState.btn.querySelector('i').className = 'fas fa-volume-up';
-                }
+                if (ttsState.btn) ttsState.btn.querySelector('i').className = 'fas fa-volume-up';
                 ttsState.active = false;
                 ttsState.btn = null;
-                ttsState.text = "";
             }
         };
 
