@@ -1502,7 +1502,6 @@
             };
         }
         
-        // 100% TTS UNLOCKER FOR MOBILE BROWSERS
         let ttsUnlocked = false;
         document.addEventListener('click', function() {
             if (!ttsUnlocked && window.speechSynthesis) {
@@ -1620,9 +1619,6 @@
         }, 250); 
     };
 
-    const GROQ_API_KEY = "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"; 
-    const TAVILY_API_KEY = "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"; 
-
     let chatHistory = [];
     try {
         chatHistory = JSON.parse(localStorage.getItem('datex_full_history')) || [];
@@ -1644,17 +1640,15 @@
     window.currentAttachments = [];
 
     // ====== 100% FIXED "STRICT SESSION ISOLATION" TTS ENGINE ======
-    // Ye system overlapping event bugs ko bilkul zero kar deta hai
     let ttsState = {
         active: false,
         paused: false,
         btn: null,
         chunks: [],
         currentIndex: 0,
-        sessionId: 0 // Ye Ensure karega ki purane events naye walo me na ghusen!
+        sessionId: 0 
     };
     
-    // Global array to prevent Garbage Collection bug making AI silent
     window.speechUtterances = window.speechUtterances || [];
 
     function fullStopTTS() {
@@ -1670,7 +1664,7 @@
         ttsState.btn = null;
         ttsState.chunks = [];
         ttsState.currentIndex = 0;
-        ttsState.sessionId = 0; // Reset session
+        ttsState.sessionId = 0; 
     }
 
     function speakText(btn) {
@@ -1679,15 +1673,12 @@
 
         let icon = btn.querySelector('i');
 
-        // YOUTUBE STYLE TOGGLE FOR THE EXACT SAME BUTTON
         if (ttsState.btn === btn) {
             if (ttsState.active && !ttsState.paused) {
-                // Pause it: Stop current chunk
                 ttsState.paused = true;
                 window.speechSynthesis.cancel(); 
                 icon.className = 'fas fa-play'; 
             } else if (ttsState.paused) {
-                // Resume it: Play exactly where it left off, using current session ID
                 ttsState.paused = false;
                 icon.className = 'fas fa-pause'; 
                 playNextChunk(ttsState.sessionId); 
@@ -1697,13 +1688,11 @@
             return;
         }
 
-        // FRESH START FOR A NEW OR DIFFERENT MESSAGE
         fullStopTTS();
         ttsState.btn = btn;
         ttsState.paused = false;
         ttsState.currentIndex = 0;
         
-        // UNIQUE SESSION ID: Ye lock kar dega kisi bhi purane event ko wapas aane se
         ttsState.sessionId = Date.now(); 
         const currentSession = ttsState.sessionId;
 
@@ -1714,30 +1703,24 @@
         let fullText = clone.textContent.trim().replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '');
         if (!fullText) return;
         
-        // Break by sentences for accurate resuming
         let rawChunks = fullText.match(/[^.!?\n]+[.!?\n]*/g) || [fullText];
         ttsState.chunks = rawChunks.map(c => c.trim()).filter(c => c.length > 0);
 
-        // Pehle icon change hoga
         icon.className = 'fas fa-pause';
 
-        // Wakeup Call
         let wakeUp = new SpeechSynthesisUtterance('');
         wakeUp.volume = 0; 
         window.speechSynthesis.speak(wakeUp);
 
-        // 150ms Delay -> Start
         setTimeout(() => {
             playNextChunk(currentSession);
         }, 150); 
     }
 
     function playNextChunk(sessionId) {
-        // ANTI-GLITCH GUARD: Agar ye event purane session ka hai, toh block kardo!
         if (ttsState.sessionId !== sessionId) return; 
-        if (ttsState.paused) return; // Agar pause hai toh ruk jao
+        if (ttsState.paused) return; 
         
-        // Agar saare sentences padh liye
         if (ttsState.currentIndex >= ttsState.chunks.length) {
             if (ttsState.btn) ttsState.btn.querySelector('i').className = 'fas fa-volume-up';
             ttsState.active = false;
@@ -1747,7 +1730,7 @@
 
         let textToSpeak = ttsState.chunks[ttsState.currentIndex];
         let utterance = new SpeechSynthesisUtterance(textToSpeak);
-        window.speechUtterances.push(utterance); // GC Protection
+        window.speechUtterances.push(utterance); 
 
         let voices = window.speechSynthesis.getVoices();
         if(voices.length > 0) {
@@ -1768,7 +1751,6 @@
 
         utterance.onend = () => { 
             if (ttsState.sessionId !== sessionId) return;
-            // Agar next chunk jana hai (pause nahi hai)
             if (!ttsState.paused) {
                 ttsState.currentIndex++;
                 playNextChunk(sessionId);
@@ -1777,7 +1759,6 @@
 
         utterance.onerror = (e) => { 
             if (ttsState.sessionId !== sessionId) return;
-            // Canceled error is expected when we pause. If random error, stop.
             if (!ttsState.paused && e.error !== 'canceled') {
                 if (ttsState.btn) ttsState.btn.querySelector('i').className = 'fas fa-volume-up';
                 ttsState.active = false;
@@ -2303,7 +2284,6 @@
             html += `<button class="action-btn btn-black-icon" onclick="openMenu(event, this)"><i class="fas fa-ellipsis-v"></i></button>`;
             if (isStopped) { html += `<button class="action-btn btn-black-icon" onclick="regenerateMessage(this)"><i class="fas fa-redo"></i></button>`; }
             
-            // Speaker Icon - Default State
             html += `<button class="action-btn tts-btn" onclick="speakText(this)"><i class="fas fa-volume-up"></i></button></div>`;
             
             container.insertAdjacentHTML('beforeend', html);
@@ -2576,7 +2556,6 @@
     }
 
     async function callDatexAPI(isRegenerate = false) {
-        // Stop TTS if user sends a new message while AI is speaking
         fullStopTTS(); 
         
         let message = ""; let attachmentsToSave = [];
@@ -2627,16 +2606,41 @@
         container.scrollTop = container.scrollHeight;
         updateThreeDotMenus();
 
+        // ✅ 100% SECURE VOICE NOTE TRANSCRIPTION (Sent to Vercel via Base64)
         if (attachmentsToSave.length > 0 && attachmentsToSave[0].type === 'audio' && !isRegenerate) {
             bubble.classList.remove('img-gen-bubble');
             bubble.innerText = "Transcribing voice note...";
             try {
-                const fd = new FormData(); fd.append('file', attachmentsToSave[0].data, 'voicenote.webm'); fd.append('model', 'whisper-large-v3'); fd.append('temperature', '0.0'); fd.append('prompt', 'Namaste, kaise ho? Please transcribe strictly in English or Hindi (Devanagari or Latin script). NO URDU SCRIPT.'); 
-                const wRes = await fetch("https://api.groq.com/openai/v1/audio/transcriptions", { method: 'POST', headers: { 'Authorization': `Bearer ${GROQ_API_KEY}` }, body: fd }); const wData = await wRes.json();
-                if (wData.text) { message = wData.text; chatHistory[requestChatIndex].messages[chatHistory[requestChatIndex].messages.length - 1].content = message; try { localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); } catch(e) {} } 
-                else { throw new Error("Empty audio"); }
+                // Convert Blob audio to Base64 to safely send to Vercel
+                const reader = new FileReader();
+                reader.readAsDataURL(attachmentsToSave[0].data);
+                
+                await new Promise((resolve, reject) => {
+                    reader.onloadend = async () => {
+                        try {
+                            const base64AudioData = reader.result.split(',')[1];
+                            
+                            const wRes = await fetch("/api/transcribe", { 
+                                method: 'POST', 
+                                headers: { 'Content-Type': 'application/json' }, 
+                                body: JSON.stringify({ audioBase64: base64AudioData }) 
+                            });
+                            
+                            const wData = await wRes.json();
+                            if (wData.text) { 
+                                message = wData.text; 
+                                chatHistory[requestChatIndex].messages[chatHistory[requestChatIndex].messages.length - 1].content = message; 
+                                try { localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); } catch(e) {} 
+                                resolve();
+                            } else { 
+                                throw new Error(wData.error || "Empty audio"); 
+                            }
+                        } catch(err) { reject(err); }
+                    };
+                    reader.onerror = reject;
+                });
             } catch(err) { 
-                bubble.innerText = "Error: Could not transcribe voice note. Please check your API key or connection."; 
+                bubble.innerText = "Error: Could not transcribe voice note. Please check your connection."; 
                 resetSendButton(); 
                 addAiActions(currentAiRow, true); 
                 updateThreeDotMenus();
@@ -2751,7 +2755,12 @@ Replace {fixedEncodeURIComponent(detailed_english_prompt)} with a highly detaile
             bubble.classList.remove('img-gen-bubble');
             bubble.innerText = "Searching the web...";
             try {
-                const tavilyRes = await fetch("https://api.tavily.com/search", { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ "api_key": TAVILY_API_KEY, "query": message, "search_depth": "basic", "max_results": 3 }) });
+                // ✅ SECURE BACKEND CALL FOR SEARCH
+                const tavilyRes = await fetch("/api/search", { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ "query": message }) 
+                });
                 const tavilyData = await tavilyRes.json();
                 if (tavilyData && tavilyData.results && tavilyData.results.length > 0) {
                     let searchResults = tavilyData.results.map(r => r.title + " (URL: " + r.url + ")\n" + r.content).join('\n\n');
@@ -2765,8 +2774,9 @@ Replace {fixedEncodeURIComponent(detailed_english_prompt)} with a highly detaile
         abortController = new AbortController();
 
         try {
-            const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                method: 'POST', headers: { 'Authorization': `Bearer ${GROQ_API_KEY}`, 'Content-Type': 'application/json' }, signal: abortController.signal,
+            // ✅ SECURE BACKEND CALL FOR CHAT
+            const res = await fetch("/api/chat", {
+                method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: abortController.signal,
                 body: JSON.stringify({ "messages": apiMessages, "model": selectedModel, "max_tokens": 4096 }) 
             });
             if (!res.ok) { const errData = await res.json(); throw new Error(errData.error?.message || `Server Error ${res.status}`); }
