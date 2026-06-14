@@ -1502,12 +1502,12 @@
             };
         }
         
-        // 100% TTS UNLOCKER FOR MOBILE BROWSERS (User touch karte hi background wake-up ho jayega)
+        // 100% TTS UNLOCKER FOR MOBILE BROWSERS
         let ttsUnlocked = false;
         document.addEventListener('click', function() {
             if (!ttsUnlocked && window.speechSynthesis) {
                 let dummy = new SpeechSynthesisUtterance('');
-                dummy.volume = 0; // Silent play
+                dummy.volume = 0; 
                 window.speechSynthesis.speak(dummy);
                 ttsUnlocked = true;
             }
@@ -1644,13 +1644,14 @@
 
     window.currentAttachments = [];
 
-    // ====== 100% FIXED "SMART MEMORY CHUNK" TTS ENGINE ======
-    // Ye Android Chrome ke bug ko bypass karta hai
+    // ====== 100% FIXED "SMART SENTENCE CHUNKER" TTS ENGINE ======
+    // Ye system text ko chote sentences me break karta hai taaki Resume par exactly wahi se start ho!
     let ttsState = {
         active: false,
         paused: false,
         btn: null,
-        text: ""
+        chunks: [],
+        currentIndex: 0
     };
     
     // Global array to prevent Garbage Collection bug making AI silent
@@ -1667,7 +1668,8 @@
         ttsState.active = false;
         ttsState.paused = false;
         ttsState.btn = null;
-        ttsState.text = "";
+        ttsState.chunks = [];
+        ttsState.currentIndex = 0;
     }
 
     function speakText(btn) {
@@ -1676,18 +1678,18 @@
 
         let icon = btn.querySelector('i');
 
-        // YOUTUBE STYLE TOGGLE: SMART BYPASS
+        // YOUTUBE STYLE TOGGLE
         if (ttsState.btn === btn) {
             if (ttsState.active && !ttsState.paused) {
-                // SIMULATE PAUSE: Native pause() bugged hai, isliye cancel karke text save karenge
+                // Pause it: Stop current chunk
                 ttsState.paused = true;
                 window.speechSynthesis.cancel(); 
-                icon.className = 'fas fa-play'; // Show Play icon
+                icon.className = 'fas fa-play'; 
             } else if (ttsState.paused) {
-                // SIMULATE RESUME: Puraane raste se nahi, new fresh chunk play karenge
+                // Resume it: Start from the current chunk/sentence
                 ttsState.paused = false;
-                icon.className = 'fas fa-pause'; // Show Pause icon
-                playTTSChunk(ttsState.text); // Remaining text play karega!
+                icon.className = 'fas fa-pause'; 
+                playNextChunk(); 
             } else {
                 fullStopTTS();
             }
@@ -1698,6 +1700,7 @@
         fullStopTTS();
         ttsState.btn = btn;
         ttsState.paused = false;
+        ttsState.currentIndex = 0;
 
         const bubble = btn.closest('.bubble-container').querySelector('.bubble');
         let clone = bubble.cloneNode(true);
@@ -1706,26 +1709,36 @@
         let fullText = clone.textContent.trim().replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '');
         if (!fullText) return;
         
-        ttsState.text = fullText; // Starting mein full text save hoga
+        // Smart Text Splitter: Break by sentences (., !, ?, \n) for accurate resuming
+        let rawChunks = fullText.match(/[^.!?\n]+[.!?\n]*/g) || [fullText];
+        ttsState.chunks = rawChunks.map(c => c.trim()).filter(c => c.length > 0);
 
         // Pehle icon change hoga...
         icon.className = 'fas fa-pause';
 
-        // ...aur ekdum SYNC (turant) mein ek silent aawaz bajegi (Wakeup bypass)
+        // Wakeup Call
         let wakeUp = new SpeechSynthesisUtterance('');
         wakeUp.volume = 0; 
         window.speechSynthesis.speak(wakeUp);
 
-        // 150ms DELAY ADDED HERE (Taaki actual aawaz thodi der baad start ho)
+        // 150ms Delay -> Start
         setTimeout(() => {
-            playTTSChunk(ttsState.text);
+            playNextChunk();
         }, 150); 
     }
 
-    // NAYA FUNCTION: Chunk padhne ke liye aur position save karne ke liye
-    function playTTSChunk(textToSpeak) {
-        if (!textToSpeak) return;
+    function playNextChunk() {
+        if (ttsState.paused) return; // Don't proceed if user paused
+        
+        // Agar saare sentences padh liye
+        if (ttsState.currentIndex >= ttsState.chunks.length) {
+            if (ttsState.btn) ttsState.btn.querySelector('i').className = 'fas fa-volume-up';
+            ttsState.active = false;
+            ttsState.btn = null;
+            return;
+        }
 
+        let textToSpeak = ttsState.chunks[ttsState.currentIndex];
         let utterance = new SpeechSynthesisUtterance(textToSpeak);
         window.speechUtterances.push(utterance); // GC Protection
 
@@ -1741,39 +1754,24 @@
         utterance.pitch = 1.0; 
         utterance.rate = 1.0;  
 
-        // Jab AI har ek word padhega, toh ye us bache hue text ko save karega (Memory)
-        utterance.onboundary = (e) => {
-            if (e.name === 'word') {
-                // CharIndex se bacha hua text nikal ke save karo taaki Play/Pause me use ho sake
-                ttsState.text = textToSpeak.substring(e.charIndex);
-            }
-        };
-
         utterance.onstart = () => {
             ttsState.active = true;
         };
 
         utterance.onend = () => { 
-            // Agar automatically finish hua hai (Pause button press nahi kiya tha)
+            // Agar next chunk jana hai (pause nahi hai)
             if (!ttsState.paused) {
-                if (ttsState.btn) {
-                    ttsState.btn.querySelector('i').className = 'fas fa-volume-up';
-                }
-                ttsState.active = false;
-                ttsState.btn = null;
-                ttsState.text = "";
+                ttsState.currentIndex++;
+                playNextChunk();
             }
         };
 
         utterance.onerror = (e) => { 
-            // Canceled error aata hai jab hum manual pause karne ke liye window.speechSynthesis.cancel() dabate hain
+            // Canceled error is expected when we pause. If random error, stop.
             if (!ttsState.paused && e.error !== 'canceled') {
-                if (ttsState.btn) {
-                    ttsState.btn.querySelector('i').className = 'fas fa-volume-up';
-                }
+                if (ttsState.btn) ttsState.btn.querySelector('i').className = 'fas fa-volume-up';
                 ttsState.active = false;
                 ttsState.btn = null;
-                ttsState.text = "";
             }
         };
 
