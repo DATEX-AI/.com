@@ -15,7 +15,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: "llama-3.3-70b-versatile", // Ye raha tera smart 70B model!
         messages: [
-          { role: "system", content: "Auto-detect and match the user's language." },
+          { role: "system", content: "Auto-detect the user's language and reply with the same language." },
           ...messages
         ]
       })
