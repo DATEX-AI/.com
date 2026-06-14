@@ -1995,9 +1995,8 @@
     
     if (SpeechRecognition) {
         recognition = new SpeechRecognition(); 
-        recognition.interimResults = true; // FIXED: Changed to true for better accuracy
-        recognition.continuous = true; // FIXED: Changed to true so mic doesn't turn off automatically
-        recognition.lang = 'hi-IN'; // FIXED: Added Indian language support
+        recognition.interimResults = false; 
+        recognition.continuous = true; 
         
         recognition.onstart = () => { 
             isDictating = true; 
