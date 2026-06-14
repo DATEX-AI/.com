@@ -27,7 +27,9 @@ export default async function handler(req, res) {
         fd.append('file', blob, 'voicenote.webm');
         fd.append('model', 'whisper-large-v3');
         fd.append('temperature', '0.0');
-        fd.append('prompt', 'Namaste, kaise ho? Please transcribe strictly in English or Hindi (Devanagari or Latin script). NO URDU SCRIPT.');
+        
+        // Jaisa tune bola, sirf Urdu ke liye mana kiya hai, baaki sab allowed hai
+        fd.append('prompt', 'Please transcribe the audio accurately. Do not use Urdu script under any circumstances.');
 
         const response = await fetch("https://api.groq.com/openai/v1/audio/transcriptions", {
             method: 'POST',
