@@ -2143,7 +2143,10 @@
         if(!confirm("Are you sure you want to delete this chat?")) return;
         
         if (isVoiceNoteActive) { cancelVoiceNoteRecord(); }
-        if (isDictating && recognition) { recognition.stop(); }
+        if (isDictating && recognition) { 
+            userStoppedMic = true; // BUG FIX YAHAN BHI LAGA DIYA
+            recognition.stop(); 
+        }
         fullStopTTS();
         
         if (isGenerating && activeChatIndex === index) stopGeneration(); 
@@ -2163,6 +2166,7 @@
         window.renderAttachmentPreviews();
         if (isVoiceNoteActive) cancelVoiceNoteRecord();
         if (isDictating && recognition) {
+            userStoppedMic = true; // BUG FIX YAHAN BHI LAGA DIYA
             recognition.stop();
             isDictating = false;
             document.getElementById('mike-btn').classList.remove('recording');
@@ -2191,6 +2195,7 @@
         window.renderAttachmentPreviews();
         if (isVoiceNoteActive) { cancelVoiceNoteRecord(); }
         if (isDictating && recognition) { 
+            userStoppedMic = true; // BUG FIX YAHAN BHI LAGA DIYA
             recognition.stop(); 
             isDictating = false;
             document.getElementById('mike-btn').classList.remove('recording');
@@ -2574,6 +2579,7 @@
 
     function handleSendClick() { 
         if (isDictating && recognition) { 
+            userStoppedMic = true; // BUG FIX YAHAN LAGA DIYA
             recognition.stop(); 
             isDictating = false;
             document.getElementById('mike-btn').classList.remove('recording');
