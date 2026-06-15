@@ -1990,9 +1990,9 @@
         }
     }
 
+    // ====== 🔥 TERA ORIGINAL SIMPLE MIC SETUP 🔥 ======
     let isDictating = false; 
     let sessionFinalText = ""; 
-    let userStoppedMic = false; // 🔥 YE FLAG HAR GLITCH KO ROKEGA
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     let recognition;
     
@@ -2009,16 +2009,8 @@
         };
         
         recognition.onend = () => { 
-            // Agar browser ne roka hai (userStoppedMic false hai), tabhi auto-restart karo
-            if (!userStoppedMic) {
-                try {
-                    recognition.start();
-                } catch(e) { }
-            } else {
-                isDictating = false; 
-                let mb = document.getElementById('mike-btn');
-                if(mb) mb.classList.remove('recording'); 
-            }
+            isDictating = false; 
+            document.getElementById('mike-btn').classList.remove('recording'); 
         };
         
         recognition.onresult = (e) => { 
@@ -2032,21 +2024,14 @@
             let space = (sessionFinalText.length > 0 && !sessionFinalText.endsWith(" ") && finalTranscript.length > 0 && !finalTranscript.startsWith(" ")) ? " " : "";
             input.value = sessionFinalText + space + finalTranscript; 
             
-            sessionFinalText = input.value; 
-            
             autoGrow(input); 
             input.dispatchEvent(new Event('input', { bubbles: true }));
         };
         
         recognition.onerror = (e) => { 
             console.error("Speech error: " + e.error); 
-            if (e.error === 'no-speech') {
-                return; // Silence ko ignore karke chalu rakho
-            }
             isDictating = false; 
-            userStoppedMic = true; 
-            let mb = document.getElementById('mike-btn');
-            if(mb) mb.classList.remove('recording'); 
+            document.getElementById('mike-btn').classList.remove('recording'); 
         }
     }
 
@@ -2057,18 +2042,15 @@
         
         fullStopTTS(); stopVoiceNoteBubble();
         
-        let mb = document.getElementById('mike-btn');
-        // Agar galti se mic onend mein phasa hai toh bhi ye use band kar dega
-        if (mb.classList.contains('recording') || isDictating) { 
-            userStoppedMic = true; 
-            try { recognition.stop(); } catch(e){} 
+        if (isDictating) { 
+            recognition.stop(); 
             isDictating = false;
-            mb.classList.remove('recording');
+            document.getElementById('mike-btn').classList.remove('recording');
         } else { 
-            userStoppedMic = false;
-            try { recognition.start(); } catch(e){} 
+            recognition.start(); 
         }
     };
+    // ===================================================
 
     let vnMediaRecorder; let vnAudioChunks = []; let isVoiceNoteActive = false; let isSendingAudio = false; let isCancelingAudio = false; let recTimerInterval; let recSeconds = 0;
     let vnPointerStartY = 0; let vnIsDragging = false; let vnHoldTimer = null;
@@ -2149,14 +2131,7 @@
         if(!confirm("Are you sure you want to delete this chat?")) return;
         
         if (isVoiceNoteActive) { cancelVoiceNoteRecord(); }
-        // 🔥 AGGRESSIVE MIC LOCK 🔥
-        userStoppedMic = true;
-        if (recognition) { 
-            try { recognition.stop(); } catch(e){} 
-            isDictating = false;
-            let mb = document.getElementById('mike-btn');
-            if(mb) mb.classList.remove('recording');
-        }
+        if (recognition && isDictating) { recognition.stop(); }
         fullStopTTS();
         
         if (isGenerating && activeChatIndex === index) stopGeneration(); 
@@ -2175,14 +2150,10 @@
         window.currentAttachments = [];
         window.renderAttachmentPreviews();
         if (isVoiceNoteActive) cancelVoiceNoteRecord();
-        
-        // 🔥 AGGRESSIVE MIC LOCK 🔥
-        userStoppedMic = true;
-        if (recognition) {
-            try { recognition.stop(); } catch(e){}
+        if (recognition && isDictating) {
+            recognition.stop();
             isDictating = false;
-            let mb = document.getElementById('mike-btn');
-            if(mb) mb.classList.remove('recording');
+            document.getElementById('mike-btn').classList.remove('recording');
         }
         
         activeChatIndex = index; isNewSession = false; editingMsgIdx = -1; 
@@ -2207,14 +2178,10 @@
         window.currentAttachments = [];
         window.renderAttachmentPreviews();
         if (isVoiceNoteActive) { cancelVoiceNoteRecord(); }
-        
-        // 🔥 AGGRESSIVE MIC LOCK 🔥
-        userStoppedMic = true;
-        if (recognition) { 
-            try { recognition.stop(); } catch(e){} 
+        if (recognition && isDictating) { 
+            recognition.stop(); 
             isDictating = false;
-            let mb = document.getElementById('mike-btn');
-            if(mb) mb.classList.remove('recording');
+            document.getElementById('mike-btn').classList.remove('recording');
         }
         
         if (isGenerating) stopGeneration(); 
@@ -2429,15 +2396,7 @@
 
     function deleteSelectedMsg() {
         if (isVoiceNoteActive) { cancelVoiceNoteRecord(); }
-        
-        // 🔥 AGGRESSIVE MIC LOCK 🔥
-        userStoppedMic = true;
-        if (recognition) { 
-            try { recognition.stop(); } catch(e){} 
-            isDictating = false;
-            let mb = document.getElementById('mike-btn');
-            if(mb) mb.classList.remove('recording');
-        }
+        if (recognition && isDictating) { recognition.stop(); }
         fullStopTTS(); 
         
         if(selectedMsgRow && activeChatIndex !== -1) {
@@ -2603,15 +2562,11 @@
     }
 
     function handleSendClick() { 
-        // 🔥 AGGRESSIVE MIC LOCK 🔥
-        userStoppedMic = true; 
-        if (recognition) { 
-            try { recognition.stop(); } catch(e){} 
+        if (recognition && isDictating) { 
+            recognition.stop(); 
             isDictating = false;
-            let mb = document.getElementById('mike-btn');
-            if(mb) mb.classList.remove('recording');
+            document.getElementById('mike-btn').classList.remove('recording');
         }
-
         if (isGenerating) { stopGeneration(); } 
         else if (isVoiceNoteActive) { isSendingAudio = true; if(vnMediaRecorder && vnMediaRecorder.state !== 'inactive') vnMediaRecorder.stop(); } 
         else { callDatexAPI(); } 
