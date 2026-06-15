@@ -19,7 +19,6 @@ export default async function handler(req, res) {
             throw new Error("No audio data provided");
         }
 
-        // Base64 ko wapas binary Buffer mein convert karna
         const buffer = Buffer.from(audioBase64, 'base64');
         const blob = new Blob([buffer], { type: 'audio/webm' });
         
@@ -28,13 +27,12 @@ export default async function handler(req, res) {
         fd.append('model', 'whisper-large-v3');
         fd.append('temperature', '0.0');
         
-        // Jaisa tune bola, sirf Urdu ke liye mana kiya hai, baaki sab allowed hai
-        fd.append('prompt', 'Please transcribe the audio accurately. Do not use Urdu script under any circumstances.');
+        fd.append('prompt', 'Hello. नमस्ते. Kya haal hai? مرحبا. Transcribe accurately in the original spoken language. If the spoken language is Arabic, use Arabic script. If the spoken language is Hindi, Urdu, or Hinglish, strictly use Devanagari or Latin letters and NEVER use Urdu script. For all other languages, use their native scripts.');
 
         const response = await fetch("https://api.groq.com/openai/v1/audio/transcriptions", {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${process.env.GROQ_API_KEY}` // Yahan teri Vercel wali chupi hui key use hogi
+                'Authorization': `Bearer ${process.env.GROQ_API_KEY}`
             },
             body: fd
         });
