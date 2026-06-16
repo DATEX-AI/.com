@@ -165,8 +165,7 @@
         .header-center { position: absolute; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
         .model-name { font-weight: 600; font-size: 18px; color: #000; margin-top: 6px; }
         
-        .version-pill { font-size: 11.5px; font-weight: 600; background: #f0f0f0; display: inline-flex; align-items: center; justify-content: center; padding: 4px 14px; border-radius: 14px; color: #000; border: 1.5px solid #000; margin-top: 8px; transition: transform 0.15s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.15s, border-color 0.15s, color 0.15s; cursor: pointer; }
-        .version-pill:active { transform: scale(0.95); background-color: #e0e0e0; }
+        .version-pill { font-size: 11.5px; font-weight: 600; background: #f0f0f0; display: inline-flex; align-items: center; justify-content: center; padding: 4px 14px; border-radius: 14px; color: #000; border: 1.5px solid #000; margin-top: 8px; transition: background-color 0.15s, border-color 0.15s, color 0.15s; cursor: pointer; }
         
         .logo-container { display: flex; align-items: center; margin-right: -2px; }
         .logo-container img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: none; }
@@ -183,19 +182,18 @@
         .model-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1005; display: none; background: transparent; }
         .model-overlay.active { display: block; }
         
-        .model-menu { position: fixed; top: 80px; left: 50%; width: 85%; max-width: 290px; background: #ffffff; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); z-index: 1006; display: flex; flex-direction: column; overflow: hidden; border: none; opacity: 0; visibility: hidden; transform-origin: top center; transform: translate(-50%, -10px) scale(0.95); transition: opacity 0.2s cubic-bezier(0,0,0.2,1), transform 0.2s cubic-bezier(0,0,0.2,1), visibility 0.2s; }
+        .model-menu { position: fixed; top: 80px; left: 50%; width: max-content; max-width: 90vw; background: #ffffff; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); z-index: 1006; display: flex; flex-direction: column; overflow: hidden; border: none; opacity: 0; visibility: hidden; transform-origin: top center; transform: translate(-50%, -10px) scale(0.95); transition: opacity 0.2s cubic-bezier(0,0,0.2,1), transform 0.2s cubic-bezier(0,0,0.2,1), visibility 0.2s; padding: 6px; }
         .model-menu.active { opacity: 1; visibility: visible; transform: translate(-50%, 0) scale(1); }
         
-        .model-option { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; cursor: pointer; transition: background-color 0.15s; }
+        .model-option { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; cursor: pointer; transition: background-color 0.15s; border-radius: 10px; margin-bottom: 2px; }
+        .model-option:last-child { margin-bottom: 0; }
         .model-option:active { background-color: #f5f5f5; }
+        .model-option.selected { background-color: #f0f4f9; }
         
         .model-info { display: flex; flex-direction: column; }
-        .model-title { font-size: 16px; font-weight: 700; color: #000000; display: flex; align-items: center; gap: 8px; }
+        .model-title { font-size: 15px; font-weight: 700; color: #000000; display: flex; align-items: center; gap: 8px; margin-bottom: 2px; }
         .model-badge { background-color: #e0e7ff; color: #1a73e8; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; border: none; }
-        .model-desc { font-size: 13px; color: #666666; margin-top: 8px; font-weight: 500; }
-        
-        .check-icon { display: none; color: #000000; font-size: 16px; flex-shrink: 0; margin-left: 15px; }
-        .model-option.selected .check-icon { display: block; }
+        .model-desc { font-size: 12px; color: #666666; font-weight: 500; white-space: nowrap; }
 
         .main-content { position: relative; flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 10px 20px 20px 20px; width: 100%; max-width: 800px; margin: 0 auto; touch-action: pan-y !important; -webkit-overflow-scrolling: touch !important; overscroll-behavior-y: contain !important; scrollbar-width: none; }
         .main-content::-webkit-scrollbar { display: none; }
@@ -282,11 +280,11 @@
 
         .input-bar { background: transparent; border: none; display: flex; align-items: flex-end; padding: 8px 64px 8px 10px; width: 100%; position: relative; }
         
-        .input-bar textarea { flex: 1; background: transparent; border: none; padding: 10px 12px 10px 0; font-size: 16px; outline: none; min-width: 0; color: #000000; resize: none; max-height: 150px; overflow-y: auto; line-height: 24px; height: 44px; scrollbar-width: thin; scrollbar-color: #888 transparent; -ms-overflow-style: auto; touch-action: pan-y; overscroll-behavior: none; }
-        .input-bar textarea::-webkit-scrollbar { width: 4px; display: block; }
-        .input-bar textarea::-webkit-scrollbar-track { background: transparent; }
-        .input-bar textarea::-webkit-scrollbar-thumb { background-color: #888; border-radius: 4px; }
-        body.dark-mode .input-bar textarea::-webkit-scrollbar-thumb { background-color: #666; }
+        .input-bar textarea { flex: 1; background: transparent; border: none; padding: 10px 12px 10px 0; font-size: 16px; outline: none; min-width: 0; color: #000000; resize: none; max-height: 150px; overflow-y: auto; line-height: 24px; height: 44px; scrollbar-width: thin; scrollbar-color: #c1c1c1 transparent; -ms-overflow-style: auto; touch-action: pan-y; overscroll-behavior: none; }
+        .input-bar textarea::-webkit-scrollbar { width: 3px; display: block; }
+        .input-bar textarea::-webkit-scrollbar-track { background: transparent; margin: 4px 0; }
+        .input-bar textarea::-webkit-scrollbar-thumb { background-color: #c1c1c1; border-radius: 2px; }
+        body.dark-mode .input-bar textarea::-webkit-scrollbar-thumb { background-color: #555; }
 
         .plus-btn-wrapper { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: background-color 0.15s; margin-left: -2px; margin-right: 8px; margin-bottom: 0px; flex-shrink: 0; }
         .plus-btn-wrapper:active { background-color: rgba(0, 0, 0, 0.1); }
@@ -527,8 +525,7 @@
         body.dark-mode .model-title { color: #ffffff; }
         body.dark-mode .model-badge { background-color: rgba(26, 115, 232, 0.15); color: #8ab4f8; }
         body.dark-mode .model-desc { color: #aaaaaa; }
-        body.dark-mode .check-icon { color: #ffffff; }
-
+        
         body.dark-mode .attachment-menu { background: #1a1a1a; }
         body.dark-mode .attachment-option .icon-box { background: #1a1a1a; border-color: #ffffff; color: #ffffff; box-shadow: 0 4px 12px rgba(255,255,255,0.05); }
         body.dark-mode .attachment-option:active .icon-box { background: #333; }
@@ -672,14 +669,12 @@
                     <div class="model-title">Kyro 2.5 <span class="model-badge">Free</span></div>
                     <div class="model-desc">For basic content and script writing</div>
                 </div>
-                <i class="fas fa-check check-icon"></i>
             </div>
             <div class="model-option" id="model-kyro-3-5" onclick="selectModel('3.5')">
                 <div class="model-info">
                     <div class="model-title">Kyro 3.5 <span class="model-badge">Pro</span></div>
                     <div class="model-desc">For advanced content and script writing</div>
                 </div>
-                <i class="fas fa-check check-icon"></i>
             </div>
         </div>
 
@@ -867,12 +862,21 @@
 
     <div id="msg-menu" class="msg-menu">
         <button id="copy-btn-ui" onclick="copyMsg()">
-            <svg class="copy-icon-svg" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
             <span data-i18n="Copy">Copy</span>
         </button>
-        <button id="edit-btn-ui" onclick="editMsg()"><i class="fas fa-pen"></i> <span data-i18n="Edit">Edit</span></button>
-        <button id="retry-btn-ui" onclick="regenerateUserMsg()" style="display: none !important;"><i class="fas fa-redo"></i> <span data-i18n="Retry">Retry</span></button>
-        <button id="delete-btn-ui" onclick="deleteSelectedMsg()" style="display: none !important;"><i class="fas fa-trash"></i> <span data-i18n="Delete">Delete</span></button>
+        <button id="edit-btn-ui" onclick="editMsg()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            <span data-i18n="Edit">Edit</span>
+        </button>
+        <button id="retry-btn-ui" onclick="regenerateUserMsg()" style="display: none !important;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+            <span data-i18n="Retry">Retry</span>
+        </button>
+        <button id="delete-btn-ui" onclick="deleteSelectedMsg()" style="display: none !important;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+            <span data-i18n="Delete">Delete</span>
+        </button>
     </div>
 
     <div class="attachment-menu" id="attachment-menu">
@@ -1534,7 +1538,7 @@
             document.body.classList.remove('dark-mode');
             const toggle = document.querySelector('input[name="app_theme"][value="light"]');
             if(toggle) toggle.checked = true;
-            if(fav) fav.href = 'light.logo.jpg';
+            if(fav) href = 'light.logo.jpg';
         }
         
         const savedVoice = localStorage.getItem('datex_voice_type') || 'female';
@@ -2626,7 +2630,7 @@
 
         let typingHTML = `<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
         
-        const container = document.getElementById('chat-container'); const aiRow = document.createElement('div'); aiRow.className = 'message-row ai-row';
+        const container = document.getElementById('chat-container'); const aiRow = document.createElement('div'); aiRow.className = 'message-row ai-row no-anim';
         aiRow.innerHTML = `<div class="avatar-container loading"><div class="avatar-spinner"></div><img src="light.logo.jpg" class="avatar logo-light-theme"><img src="dark.logo.jpg" class="avatar logo-dark-theme"></div><div class="bubble-container"><div class="bubble ai-bubble">${typingHTML}</div></div>`; 
         
         container.appendChild(aiRow); const bubble = aiRow.querySelector('.ai-bubble'); currentAiRow = aiRow;
