@@ -212,10 +212,10 @@
             100% { opacity: 1; transform: translateY(0); }
         }
 
-        .message-row { display: flex; width: 100%; margin: 15px 0; align-items: flex-start; gap: 12px; animation: slideUpMsg 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        .message-row { display: flex; width: 100%; margin: 15px 0; align-items: flex-start; gap: 12px; }
         .no-anim { animation: none !important; }
         
-        .user-row { flex-direction: row-reverse; }
+        .user-row { flex-direction: row-reverse; animation: slideUpMsg 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
         .ai-row { flex-direction: column; gap: 6px; } 
         
         .bubble-container { position: relative; max-width: 88%; display: flex; flex-direction: column; overflow: hidden; }
@@ -336,13 +336,16 @@
         .copy-code-btn { position: absolute; top: 12px; right: 12px; background: transparent; color: #a1a1aa; border: none; display: flex; justify-content: center; align-items: center; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; z-index: 10; transition: all 0.2s ease; }
         .copy-code-btn:hover { color: #e4e4e7; }
         .copy-code-btn.clicked { background: rgba(138, 180, 248, 0.2) !important; color: #8ab4f8 !important; }
+        .copy-code-btn svg { width: 18px; height: 18px; }
         
         .msg-menu { position: fixed; background: #ffffff; border: none; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.15); display: none; z-index: 2000; flex-direction: column; width: 140px; overflow: hidden; transition: background-color 0.15s; padding: 4px 0; }
         .msg-menu button { padding: 10px 14px; border: none; background: transparent; color: #000000; text-align: left; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 10px; width: 100%; transition: color 0.15s, background-color 0.15s; }
         .msg-menu button:active { background: #f5f5f5; }
+        .msg-menu button svg { width: 16px; height: 16px; color: #000000; }
 
         body.dark-mode .msg-menu { background: #000000; }
         body.dark-mode .msg-menu button { color: #ffffff; }
+        body.dark-mode .msg-menu button svg { color: #ffffff; }
         body.dark-mode .msg-menu button:active { background: #1a1a1a; }
 
         .ai-link { color: #1a73e8 !important; text-decoration: underline !important; word-break: break-word !important; cursor: pointer !important; pointer-events: auto !important; font-weight: 600 !important; }
@@ -2265,7 +2268,10 @@
             }
         }, 10);
         
-        userScrolledUp = false; container.scrollTop = container.scrollHeight;
+        if(!noAnim) {
+            userScrolledUp = false; 
+            container.scrollTop = container.scrollHeight;
+        }
         updateThreeDotMenus();
     }
 
@@ -2279,7 +2285,9 @@
         
         if(isNew) { typeEffect(bubble, text, 5, activeChatIndex); } 
         else { renderStoredContent(bubble, text); addAiActions(row, isStoppedStatus); }
-        container.scrollTop = container.scrollHeight;
+        if(!noAnim) {
+            container.scrollTop = container.scrollHeight;
+        }
     }
 
     function addAiActions(row, isStopped) {
