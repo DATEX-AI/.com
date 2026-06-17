@@ -124,7 +124,6 @@
         .profile-icon:active { background: transparent; } 
         .profile-icon span { font-size: 15px; font-weight: 700; color: #000; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        /* FEATURE 1: Sidebar Profile Icon with Ring & Gap */
         #sidebar-user-pfp { 
             width: 36px; 
             height: 36px; 
@@ -148,7 +147,6 @@
         
         .profile-modal-top { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; width: 100%; margin-bottom: 25px; }
         
-        /* FEATURE 1: Modal Pop-up Profile Icon with Ring & Gap */
         #modal-user-pfp { 
             width: 80px; 
             height: 80px; 
@@ -252,7 +250,6 @@
         .user-image-gallery { display: flex; gap: 8px; overflow-x: auto; max-width: 100%; justify-content: flex-start; scrollbar-width: none; -ms-overflow-style: none; }
         .user-image-gallery::-webkit-scrollbar { display: none; }
 
-        /* FEATURE 3: Clean Gemini box-shape for chat attachment previews without borders */
         .chat-attachment-img { 
             width: 120px; 
             height: 120px; 
@@ -337,17 +334,28 @@
 
         .input-bar { background: transparent; border: none; display: flex; align-items: flex-end; padding: 8px 64px 8px 10px; width: 100%; position: relative; }
         
-        .input-bar textarea { flex: 1; background: transparent; border: none; padding: 10px 12px 10px 0; font-size: 16px; outline: none; min-width: 0; color: #000000; resize: none; max-height: 150px; overflow-y: auto; line-height: 24px; height: 44px; scrollbar-width: thin; scrollbar-color: #c1c1c1 transparent; -ms-overflow-style: auto; touch-action: pan-y; overscroll-behavior: none; }
-        .input-bar textarea::-webkit-scrollbar { width: 3px; display: block; }
+        .input-bar textarea { flex: 1; background: transparent; border: none; padding: 10px 18px 10px 0; font-size: 16px; outline: none; min-width: 0; color: #000000; resize: none; max-height: 150px; overflow-y: auto; line-height: 24px; height: 44px; scrollbar-width: thin; scrollbar-color: #c1c1c1 transparent; -ms-overflow-style: auto; touch-action: pan-y; overscroll-behavior: none; }
         
-        /* FEATURE 2: Invisible wall to stop scrollbar line from overlapping the mic/send buttons */
+        /* THE INVISIBLE WALL FIX FOR SCROLLBAR */
+        .input-bar textarea::-webkit-scrollbar { 
+            width: 4px; 
+        }
         .input-bar textarea::-webkit-scrollbar-track { 
             background: transparent; 
-            margin-top: 4px; 
-            margin-bottom: 35px; 
+            border-bottom: 44px solid transparent; 
+            background-clip: padding-box;
         }
-        .input-bar textarea::-webkit-scrollbar-thumb { background-color: #c1c1c1; border-radius: 2px; }
-        body.dark-mode .input-bar textarea::-webkit-scrollbar-thumb { background-color: #555; }
+        .input-bar textarea::-webkit-scrollbar-thumb { 
+            background-color: #c1c1c1; 
+            border-radius: 4px; 
+            border-bottom: 44px solid transparent; 
+            background-clip: padding-box;
+        }
+        body.dark-mode .input-bar textarea::-webkit-scrollbar-thumb { 
+            background-color: #555; 
+            border-bottom: 44px solid transparent;
+            background-clip: padding-box;
+        }
 
         .plus-btn-wrapper { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: background-color 0.15s; margin-left: -2px; margin-right: 8px; margin-bottom: 0px; flex-shrink: 0; }
         .plus-btn-wrapper:active { background-color: rgba(0, 0, 0, 0.1); }
@@ -551,7 +559,6 @@
         body.dark-mode .profile-icon span { color: #ffffff; }
         body.dark-mode .profile-icon:active { background: transparent; }
         
-        /* FEATURE 1: Dark Mode Profile outlines */
         body.dark-mode #sidebar-user-pfp { outline-color: #ffffff !important; }
         body.dark-mode #modal-user-pfp { outline-color: #ffffff !important; }
         
@@ -592,7 +599,6 @@
         body.dark-mode .model-badge { background-color: rgba(26, 115, 232, 0.15); color: #8ab4f8; }
         body.dark-mode .model-desc { color: #aaaaaa; }
         
-        /* FEATURE 5: Dark mode picker contrast fix (Make text black when selected) */
         body.dark-mode .model-menu .model-option.selected { background-color: #f0f4f9 !important; }
         body.dark-mode .model-menu .model-option.selected .model-title { color: #000000 !important; }
         body.dark-mode .model-menu .model-option.selected .model-desc { color: #333333 !important; }
@@ -1008,7 +1014,6 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, OAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        // FEATURE 3: Firestore Imports
         import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
       
         const firebaseConfig = {
@@ -1023,7 +1028,7 @@
       
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getFirestore(app); // Firestore Init
+        const db = getFirestore(app);
         window.db = db;
         
         const googleProvider = new GoogleAuthProvider();
@@ -1032,7 +1037,6 @@
         let isLoginMode = false; 
         let signUpPhase = 1; 
 
-        // FEATURE 3: Check Limit Function
         window.checkUserLimitAndLock = async function() {
             if(!window.currentUser) return false;
             const uid = window.currentUser.uid;
@@ -1040,7 +1044,7 @@
             try {
                 const docSnap = await getDoc(userRef);
                 const now = Date.now();
-                const LIMIT = 25; // 25 interactions limit
+                const LIMIT = 25;
                 const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
 
                 if (docSnap.exists()) {
@@ -1094,7 +1098,6 @@
             document.getElementById('send-btn-ui').style.pointerEvents = 'none';
             document.getElementById('send-btn-ui').style.opacity = '0.5';
             
-            // Generate a clean professional error box inside chat container if not already there
             const container = document.getElementById('chat-container');
             const alertRow = document.createElement('div');
             alertRow.innerHTML = `<div style="text-align: center; color: #ff3333; font-weight: 600; font-size: 14px; margin-top: 20px; padding: 10px; background: #ffebeb; border-radius: 8px;">You have reached your daily limit of 25 messages. Please come back after 24 hours to continue exploring.</div>`;
@@ -1414,7 +1417,6 @@
                 translateUI(currentAppLang);
             }
             
-            // Check limits on UI update
             window.checkUserLimitAndLock();
         }
 
@@ -1846,6 +1848,17 @@
         if (!window.speechSynthesis) { return; }
         stopVoiceNoteBubble();
 
+        // BUG FIX 1 & 2: Stop STT (Mic) and Voice Note immediately if TTS is turned on
+        if (typeof recognition !== 'undefined' && isDictating) {
+            recognition.stop();
+            isDictating = false;
+            const mikeBtn = document.getElementById('mike-btn');
+            if(mikeBtn) mikeBtn.classList.remove('recording');
+        }
+        if (typeof isVoiceNoteActive !== 'undefined' && isVoiceNoteActive) {
+            cancelVoiceNoteRecord();
+        }
+
         let icon = btn.querySelector('i');
 
         if (ttsState.btn === btn) {
@@ -2030,7 +2043,6 @@
         container.scrollLeft = container.scrollWidth;
     };
 
-    // FEATURE 2: Image Compression Utility
     async function compressImage(file, maxWidth = 1024, maxHeight = 1024, quality = 0.7) {
         return new Promise((resolve) => {
             const reader = new FileReader();
@@ -2072,7 +2084,6 @@
                 if (file.type.startsWith('video/')) { continue; }
 
                 if (file.type.startsWith('image/')) {
-                    // Compress image before adding
                     const compressedDataUrl = await compressImage(file);
                     window.currentAttachments.push({ type: 'image', name: file.name, data: compressedDataUrl });
                     window.renderAttachmentPreviews();
@@ -2218,7 +2229,9 @@
         if (ignoreNextClick) { ignoreNextClick = false; return; }
         if (!recognition) { return; }
         
-        fullStopTTS(); stopVoiceNoteBubble();
+        // BUG FIX: Stop TTS immediately if STT (mic button) is clicked
+        fullStopTTS(); 
+        stopVoiceNoteBubble();
         
         if (isDictating) { 
             recognition.stop(); 
@@ -2235,6 +2248,10 @@
     const micBtn = document.getElementById('mike-btn'); const micBtnContainer = document.getElementById('mike-btn-container'); const txtArea = document.getElementById('user-input'); const recUi = document.getElementById('recording-ui'); const recTimerDisplay = document.getElementById('recording-timer'); const recWave = document.getElementById('rec-wave'); const dragLockUi = document.getElementById('drag-lock-ui');
 
     micBtn.addEventListener('pointerdown', (e) => {
+        // BUG FIX: Immediately stop TTS if user touches mic to record Voice Note
+        fullStopTTS(); 
+        stopVoiceNoteBubble();
+
         let isAudioAtt = window.currentAttachments.length > 0 && window.currentAttachments[0].type === 'audio';
         if (isVoiceNoteActive || isGenerating || isAudioAtt || isDictating) return;
         vnPointerStartY = e.clientY || (e.touches && e.touches[0].clientY); vnIsDragging = true; ignoreNextClick = false;
@@ -2341,7 +2358,7 @@
         chatHistory[index].messages.forEach((msg, msgIdx) => {
             if(msg.role === "user") { addUserMessageToUI(msg.content, false, msgIdx, msg.attachments || (msg.attachment ? [msg.attachment] : null), true); } 
             else { 
-                let isMsgStopped = (msg.content === "You stopped this response" || msg.content.startsWith("Server Error") || msg.content.startsWith("Error:")); 
+                let isMsgStopped = (msg.content === "You stopped this response" || msg.content.startsWith("Server Error") || msg.content.startsWith("Error:") || msg.content.includes("offline")); 
                 addAiMessageToUI(msg.content, false, msgIdx, isMsgStopped, true); 
             }
         });
@@ -2770,7 +2787,6 @@
     }
 
     async function handleSendClick() { 
-        // Pre-check Limit
         const canSend = await window.checkUserLimitAndLock();
         if(!canSend) return;
 
@@ -2824,7 +2840,6 @@
             if(lastUserMsg && lastUserMsg.role === 'user') { message = lastUserMsg.content; attachmentsToSave = lastUserMsg.attachments || (lastUserMsg.attachment ? [lastUserMsg.attachment] : []); }
         }
 
-        // FEATURE 3: Increment Limit Count in Database after User proceeds
         window.incrementUserLimit();
 
         const requestChatIndex = activeChatIndex; isGenerating = true; stopGenerationFlag = false;
@@ -3004,7 +3019,14 @@ CRITICAL INSTRUCTIONS:
             
             if (activeChatIndex === requestChatIndex) { aiRow.setAttribute('data-index', aiMsgIdx); bubble.innerHTML = ""; typeEffect(bubble, aiResponse, 5, requestChatIndex); }
         } catch (e) { 
-            let errText = (e.name === 'AbortError') ? "You stopped this response" : "Server Error: " + e.message; 
+            // FEATURE 3: Custom Error Message for Offline / Data Off
+            let errText = "";
+            if (!navigator.onLine || e.message.includes("Failed to fetch") || e.message.includes("NetworkError")) {
+                errText = "Oops! It seems you are offline. Please check your internet connection and try again.";
+            } else {
+                errText = (e.name === 'AbortError') ? "You stopped this response" : "Server Error: " + e.message; 
+            }
+            
             chatHistory[requestChatIndex].messages.push({ role: "assistant", content: errText });
             try { localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); } catch(err) {}
             if (activeChatIndex === requestChatIndex) { 
