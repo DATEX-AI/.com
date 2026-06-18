@@ -103,7 +103,9 @@
 
         .sidebar-top { display: flex; justify-content: space-between; align-items: center; padding: 20px 20px 10px 20px; font-size: 18px; font-weight: 500; color: #000; flex-shrink: 0; }
         .settings-group { display: flex; align-items: center; gap: 12px; }
-        .settings-group i.fa-cog { cursor: pointer; background: transparent; color: #000; width: 38px; height: 38px; border: 1.5px solid #000; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; transition: 0.2s; }
+        
+        /* SETTINGS ICON FIX: Increased size and margin right */
+        .settings-group i.fa-cog { cursor: pointer; background: transparent; color: #000; width: 42px; height: 42px; border: 1.5px solid #000; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 25px; transition: 0.2s; margin-right: 5px; }
         .close-sidebar-btn { cursor: pointer; color: #000; font-size: 20px; }
 
         .sidebar-header { padding: 35px 20px 15px 20px; flex-shrink: 0; background-color: #f9f9f9; z-index: 2; transition: background-color 0.15s; }
@@ -124,17 +126,8 @@
         .profile-icon:active { background: transparent; } 
         .profile-icon span { font-size: 15px; font-weight: 700; color: #000; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        #sidebar-user-pfp { 
-            width: 36px; 
-            height: 36px; 
-            border-radius: 50%; 
-            object-fit: cover; 
-            border: none !important; 
-            outline: 2px solid #000000; 
-            outline-offset: 2.5px; 
-            margin: 3px; 
-            flex-shrink: 0; 
-        }
+        /* PROFILE RING FIX */
+        #sidebar-user-pfp { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: none !important; outline: 2px solid #000000; outline-offset: 2.5px; margin: 3px; flex-shrink: 0; }
         
         .new-chat-btn { padding: 12px 15px; background: #000; color: #fff; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 15px; transition: 0.2s; display: flex; justify-content: center; align-items: center; flex-shrink: 0; width: 110px; }
         .new-chat-btn:hover { background: #333; }
@@ -147,16 +140,8 @@
         
         .profile-modal-top { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; width: 100%; margin-bottom: 25px; }
         
-        #modal-user-pfp { 
-            width: 80px; 
-            height: 80px; 
-            border-radius: 50%; 
-            border: none !important; 
-            outline: 3px solid #000000; 
-            outline-offset: 3px; 
-            object-fit: cover; 
-            flex-shrink: 0; 
-        }
+        /* PROFILE RING FIX */
+        #modal-user-pfp { width: 80px; height: 80px; border-radius: 50%; border: none !important; outline: 3px solid #000000; outline-offset: 3px; object-fit: cover; flex-shrink: 0; }
         
         .profile-modal-details { display: flex; flex-direction: column; gap: 6px; align-items: center; text-align: center; width: 100%; padding-top: 5px; }
         
@@ -250,44 +235,9 @@
         .user-image-gallery { display: flex; gap: 8px; overflow-x: auto; max-width: 100%; justify-content: flex-start; scrollbar-width: none; -ms-overflow-style: none; }
         .user-image-gallery::-webkit-scrollbar { display: none; }
 
-        .chat-attachment-img { 
-            width: 120px; 
-            height: 120px; 
-            border-radius: 8px; 
-            object-fit: cover; 
-            flex-shrink: 0; 
-            box-shadow: none; 
-            border: none !important; 
-            cursor: pointer; 
-        }
-        .chat-attachment-pdf { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            background: #f3f4f6; 
-            padding: 12px; 
-            border-radius: 8px; 
-            width: 120px; 
-            height: 120px; 
-            text-align: center; 
-            box-shadow: none; 
-            border: none !important; 
-            flex-shrink: 0; 
-        }
-        .ai-gen-img { 
-            width: 100%; 
-            max-width: 350px; 
-            aspect-ratio: 1/1; 
-            border-radius: 8px; 
-            margin: 10px 0; 
-            display: block; 
-            object-fit: cover; 
-            background: transparent; 
-            cursor: pointer; 
-            box-shadow: none; 
-            border: none !important; 
-        }
+        .chat-attachment-img { width: 120px; height: 120px; border-radius: 8px; object-fit: cover; flex-shrink: 0; box-shadow: none; border: none !important; cursor: pointer; }
+        .chat-attachment-pdf { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f3f4f6; padding: 12px; border-radius: 8px; width: 120px; height: 120px; text-align: center; box-shadow: none; border: none !important; flex-shrink: 0; }
+        .ai-gen-img { width: 100%; max-width: 350px; aspect-ratio: 1/1; border-radius: 8px; margin: 10px 0; display: block; object-fit: cover; background: transparent; cursor: pointer; box-shadow: none; border: none !important; }
 
         .user-msg-text { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; padding-bottom: 0px; transition: padding-bottom 0.2s; word-break: break-word; overflow-wrap: anywhere; }
         .user-msg-text.expanded { -webkit-line-clamp: unset; padding-bottom: 24px; }
@@ -336,26 +286,11 @@
         
         .input-bar textarea { flex: 1; background: transparent; border: none; padding: 10px 18px 10px 0; font-size: 16px; outline: none; min-width: 0; color: #000000; resize: none; max-height: 150px; overflow-y: auto; line-height: 24px; height: 44px; scrollbar-width: thin; scrollbar-color: #c1c1c1 transparent; -ms-overflow-style: auto; touch-action: pan-y; overscroll-behavior: none; }
         
-        /* THE INVISIBLE WALL FIX FOR SCROLLBAR */
-        .input-bar textarea::-webkit-scrollbar { 
-            width: 4px; 
-        }
-        .input-bar textarea::-webkit-scrollbar-track { 
-            background: transparent; 
-            border-bottom: 44px solid transparent; 
-            background-clip: padding-box;
-        }
-        .input-bar textarea::-webkit-scrollbar-thumb { 
-            background-color: #c1c1c1; 
-            border-radius: 4px; 
-            border-bottom: 44px solid transparent; 
-            background-clip: padding-box;
-        }
-        body.dark-mode .input-bar textarea::-webkit-scrollbar-thumb { 
-            background-color: #555; 
-            border-bottom: 44px solid transparent;
-            background-clip: padding-box;
-        }
+        /* SCROLLBAR INVISIBLE WALL FIX */
+        .input-bar textarea::-webkit-scrollbar { width: 4px; }
+        .input-bar textarea::-webkit-scrollbar-track { background: transparent; border-bottom: 44px solid transparent; background-clip: padding-box; }
+        .input-bar textarea::-webkit-scrollbar-thumb { background-color: #c1c1c1; border-radius: 4px; border-bottom: 44px solid transparent; background-clip: padding-box; }
+        body.dark-mode .input-bar textarea::-webkit-scrollbar-thumb { background-color: #555; border-bottom: 44px solid transparent; background-clip: padding-box; }
 
         .plus-btn-wrapper { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: background-color 0.15s; margin-left: -2px; margin-right: 8px; margin-bottom: 0px; flex-shrink: 0; }
         .plus-btn-wrapper:active { background-color: rgba(0, 0, 0, 0.1); }
@@ -604,6 +539,11 @@
         body.dark-mode .model-menu .model-option.selected .model-desc { color: #333333 !important; }
         body.dark-mode .model-menu .model-option.selected .model-badge { background-color: #e0e7ff !important; color: #1a73e8 !important; }
         
+        /* MODEL MENU KYRO 3.5 FIXES */
+        body.dark-mode #model-kyro-3-5 .model-title { color: #ffffff !important; }
+        body.dark-mode #model-kyro-3-5 .model-desc { color: #888888 !important; }
+        body.dark-mode #model-kyro-3-5 .model-badge { background-color: rgba(26, 115, 232, 0.15) !important; color: #8ab4f8 !important; }
+
         body.dark-mode .attachment-menu { background: #1a1a1a; }
         body.dark-mode .attachment-option .icon-box { background: #1a1a1a; border-color: #ffffff; color: #ffffff; box-shadow: 0 4px 12px rgba(255,255,255,0.05); }
         body.dark-mode .attachment-option:active .icon-box { background: #333; }
@@ -748,9 +688,9 @@
                     <div class="model-desc">For basic content and script writing</div>
                 </div>
             </div>
-            <div class="model-option" id="model-kyro-3-5" style="cursor: not-allowed; opacity: 0.7;">
+            <div class="model-option" id="model-kyro-3-5" style="cursor: not-allowed; opacity: 0.8;">
                 <div class="model-info" style="width: 100%;">
-                    <div class="model-title" style="width: 100%;">Kyro 3.5 <span class="model-badge" style="background-color: #334155; color: #cbd5e1;">Pro</span> <span style="margin-left: auto; font-size: 11px; font-weight: 700; color: #888;">Coming Soon</span></div>
+                    <div class="model-title" style="width: 100%;">Kyro 3.5 <span class="model-badge" style="background-color: #e0e7ff; color: #1a73e8;">Pro</span> <span class="model-badge" style="margin-left: auto; background-color: #f1f5f9; color: #64748b;">Coming Soon</span></div>
                     <div class="model-desc">For advanced content and script writing</div>
                 </div>
             </div>
@@ -1044,27 +984,27 @@
             try {
                 const docSnap = await getDoc(userRef);
                 const now = Date.now();
-                const LIMIT = 25;
+                const LIMIT = 6000; // 6000 Tokens Daily Limit
                 const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
 
                 if (docSnap.exists()) {
                     let data = docSnap.data();
                     let lastReset = data.last_reset_time || 0;
-                    let count = data.interaction_count || 0;
+                    let tokens = data.used_tokens || 0;
 
                     if (now - lastReset >= TWENTY_FOUR_HOURS) {
-                        await updateDoc(userRef, { interaction_count: 0, last_reset_time: now });
+                        await updateDoc(userRef, { used_tokens: 0, last_reset_time: now });
                         window.unlockUI();
                         return true;
-                    } else if (count >= LIMIT) {
-                        window.lockUIForLimit();
+                    } else if (tokens >= LIMIT) {
+                        window.lockUIForLimit(lastReset + TWENTY_FOUR_HOURS);
                         return false;
                     } else {
                         window.unlockUI();
                         return true;
                     }
                 } else {
-                    await setDoc(userRef, { interaction_count: 0, last_reset_time: now });
+                    await setDoc(userRef, { used_tokens: 0, last_reset_time: now });
                     window.unlockUI();
                     return true;
                 }
@@ -1074,23 +1014,28 @@
             }
         };
 
-        window.incrementUserLimit = async function() {
+        window.incrementUserLimit = async function(estimatedTokens) {
             if(!window.currentUser) return;
             const uid = window.currentUser.uid;
             const userRef = doc(window.db, "users", uid);
             try {
                 const docSnap = await getDoc(userRef);
                 if (docSnap.exists()) {
-                    let count = docSnap.data().interaction_count || 0;
-                    await updateDoc(userRef, { interaction_count: count + 1 });
+                    let tokens = docSnap.data().used_tokens || 0;
+                    await updateDoc(userRef, { used_tokens: tokens + estimatedTokens });
                 }
             } catch(e) {}
         };
 
-        window.lockUIForLimit = function() {
+        window.lockUIForLimit = function(resetTimeMs) {
+            let dateObj = new Date(resetTimeMs);
+            let timeString = dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            let msg = `Your daily limit has reached please comes tomorrow ${timeString}`;
+            
             const input = document.getElementById('user-input');
             input.disabled = true;
-            input.placeholder = "Daily limit reached (25/25). Try again tomorrow.";
+            input.placeholder = msg;
+            
             document.getElementById('mike-btn-container').style.pointerEvents = 'none';
             document.getElementById('mike-btn-container').style.opacity = '0.5';
             document.getElementById('plus-btn-wrapper').style.pointerEvents = 'none';
@@ -1099,8 +1044,12 @@
             document.getElementById('send-btn-ui').style.opacity = '0.5';
             
             const container = document.getElementById('chat-container');
+            let existingAlert = document.getElementById('limit-alert');
+            if(existingAlert) existingAlert.remove();
+
             const alertRow = document.createElement('div');
-            alertRow.innerHTML = `<div style="text-align: center; color: #ff3333; font-weight: 600; font-size: 14px; margin-top: 20px; padding: 10px; background: #ffebeb; border-radius: 8px;">You have reached your daily limit of 25 messages. Please come back after 24 hours to continue exploring.</div>`;
+            alertRow.id = 'limit-alert';
+            alertRow.innerHTML = `<div style="text-align: center; color: #ff3333; font-weight: 600; font-size: 14px; margin-top: 20px; padding: 10px; background: #ffebeb; border-radius: 8px;">${msg}</div>`;
             container.appendChild(alertRow);
             container.scrollTop = container.scrollHeight;
         };
@@ -1116,6 +1065,9 @@
             document.getElementById('plus-btn-wrapper').style.opacity = '1';
             document.getElementById('send-btn-ui').style.pointerEvents = 'auto';
             document.getElementById('send-btn-ui').style.opacity = '1';
+            
+            let existingAlert = document.getElementById('limit-alert');
+            if(existingAlert) existingAlert.remove();
         };
 
         window.truncateText = function(text, limit) {
@@ -2229,7 +2181,6 @@
         if (ignoreNextClick) { ignoreNextClick = false; return; }
         if (!recognition) { return; }
         
-        // BUG FIX: Stop TTS immediately if STT (mic button) is clicked
         fullStopTTS(); 
         stopVoiceNoteBubble();
         
@@ -2248,7 +2199,6 @@
     const micBtn = document.getElementById('mike-btn'); const micBtnContainer = document.getElementById('mike-btn-container'); const txtArea = document.getElementById('user-input'); const recUi = document.getElementById('recording-ui'); const recTimerDisplay = document.getElementById('recording-timer'); const recWave = document.getElementById('rec-wave'); const dragLockUi = document.getElementById('drag-lock-ui');
 
     micBtn.addEventListener('pointerdown', (e) => {
-        // BUG FIX: Immediately stop TTS if user touches mic to record Voice Note
         fullStopTTS(); 
         stopVoiceNoteBubble();
 
@@ -2840,7 +2790,8 @@
             if(lastUserMsg && lastUserMsg.role === 'user') { message = lastUserMsg.content; attachmentsToSave = lastUserMsg.attachments || (lastUserMsg.attachment ? [lastUserMsg.attachment] : []); }
         }
 
-        window.incrementUserLimit();
+        // Estimating prompt tokens for user limit mapping
+        let estimatedTokens = 150 + Math.ceil(message.length / 4);
 
         const requestChatIndex = activeChatIndex; isGenerating = true; stopGenerationFlag = false;
         const sendBtn = document.querySelector('.send-btn'); sendBtn.innerHTML = '<i class="fas fa-stop" style="font-size: 18px;"></i>';
@@ -2977,7 +2928,8 @@ CRITICAL INSTRUCTIONS:
             } else { apiMessages.push({ role: 'assistant', content: msg.content }); }
         });
 
-        const selectedModel = useVision ? "meta-llama/llama-4-scout-17b-16e-instruct" : "llama-3.3-70b-versatile";
+        // Vision model Bug Fix applied here 
+        const selectedModel = useVision ? "llama-3.2-11b-vision-preview" : "llama-3.3-70b-versatile";
         const isDeepResearchOn = localStorage.getItem('datex_deep_research') === 'true';
         const searchKeywords = ['aaj', 'ajj', 'today', 'news', 'khabar', 'price', 'match', 'ipl', 'score', 'latest', 'update', 'weather', 'mausam', 'kal', 'yesterday', 'current', 'stock', 'who won', 'kaun jeeta', 'batao', 'search', 'link', 'youtube', 'video', 'channel', 'instagram', 'linkedin', 'facebook', 'twitter', 'website', 'profile', 'account', 'url', 'site', 'browser', 'google'];
         
@@ -3014,19 +2966,21 @@ CRITICAL INSTRUCTIONS:
             
             const aiResponse = data.choices[0].message.content; const aiMsgIdx = chatHistory[requestChatIndex].messages.length;
             
+            // Add the output tokens to estimation 
+            estimatedTokens += Math.ceil(aiResponse.length / 4);
+            window.incrementUserLimit(estimatedTokens);
+
             chatHistory[requestChatIndex].messages.push({ role: "assistant", content: aiResponse }); 
             try { localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); } catch(e) {}
             
             if (activeChatIndex === requestChatIndex) { aiRow.setAttribute('data-index', aiMsgIdx); bubble.innerHTML = ""; typeEffect(bubble, aiResponse, 5, requestChatIndex); }
         } catch (e) { 
-            // FEATURE 3: Custom Error Message for Offline / Data Off
             let errText = "";
             if (!navigator.onLine || e.message.includes("Failed to fetch") || e.message.includes("NetworkError")) {
                 errText = "Oops! It seems you are offline. Please check your internet connection and try again.";
             } else {
                 errText = (e.name === 'AbortError') ? "You stopped this response" : "Server Error: " + e.message; 
             }
-            
             chatHistory[requestChatIndex].messages.push({ role: "assistant", content: errText });
             try { localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); } catch(err) {}
             if (activeChatIndex === requestChatIndex) { 
