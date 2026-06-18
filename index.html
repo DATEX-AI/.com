@@ -102,10 +102,8 @@
         .sidebar.active { left: 0; }
 
         .sidebar-top { display: flex; justify-content: space-between; align-items: center; padding: 20px 20px 10px 20px; font-size: 18px; font-weight: 500; color: #000; flex-shrink: 0; }
-        
-        .settings-group { display: flex; align-items: center; gap: 8px; }
-        .settings-group i.fa-cog { cursor: pointer; background: transparent; color: #000; width: 42px; height: 42px; border: 1.5px solid #000; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; transition: 0.2s; margin-left: 6px; }
-        
+        .settings-group { display: flex; align-items: center; gap: 12px; }
+        .settings-group i.fa-cog { cursor: pointer; background: transparent; color: #000; width: 38px; height: 38px; border: 1.5px solid #000; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; transition: 0.2s; }
         .close-sidebar-btn { cursor: pointer; color: #000; font-size: 20px; }
 
         .sidebar-header { padding: 35px 20px 15px 20px; flex-shrink: 0; background-color: #f9f9f9; z-index: 2; transition: background-color 0.15s; }
@@ -338,6 +336,7 @@
         
         .input-bar textarea { flex: 1; background: transparent; border: none; padding: 10px 18px 10px 0; font-size: 16px; outline: none; min-width: 0; color: #000000; resize: none; max-height: 150px; overflow-y: auto; line-height: 24px; height: 44px; scrollbar-width: thin; scrollbar-color: #c1c1c1 transparent; -ms-overflow-style: auto; touch-action: pan-y; overscroll-behavior: none; }
         
+        /* THE INVISIBLE WALL FIX FOR SCROLLBAR */
         .input-bar textarea::-webkit-scrollbar { 
             width: 4px; 
         }
@@ -605,10 +604,6 @@
         body.dark-mode .model-menu .model-option.selected .model-desc { color: #333333 !important; }
         body.dark-mode .model-menu .model-option.selected .model-badge { background-color: #e0e7ff !important; color: #1a73e8 !important; }
         
-        body.dark-mode #model-kyro-3-5 .model-title { color: #ffffff !important; }
-        body.dark-mode #model-kyro-3-5 .model-desc { color: #888888 !important; }
-        body.dark-mode #model-kyro-3-5 .coming-soon-badge { background-color: #334155 !important; color: #cbd5e1 !important; }
-        
         body.dark-mode .attachment-menu { background: #1a1a1a; }
         body.dark-mode .attachment-option .icon-box { background: #1a1a1a; border-color: #ffffff; color: #ffffff; box-shadow: 0 4px 12px rgba(255,255,255,0.05); }
         body.dark-mode .attachment-option:active .icon-box { background: #333; }
@@ -753,9 +748,9 @@
                     <div class="model-desc">For basic content and script writing</div>
                 </div>
             </div>
-            <div class="model-option" id="model-kyro-3-5" style="cursor: not-allowed; opacity: 0.8;">
+            <div class="model-option" id="model-kyro-3-5" style="cursor: not-allowed; opacity: 0.7;">
                 <div class="model-info" style="width: 100%;">
-                    <div class="model-title" style="width: 100%;">Kyro 3.5 <span class="model-badge" style="background-color: #e0e7ff; color: #1a73e8;">Pro</span> <span class="model-badge coming-soon-badge" style="margin-left: auto; background-color: #f1f5f9; color: #64748b;">Coming Soon</span></div>
+                    <div class="model-title" style="width: 100%;">Kyro 3.5 <span class="model-badge" style="background-color: #334155; color: #cbd5e1;">Pro</span> <span style="margin-left: auto; font-size: 11px; font-weight: 700; color: #888;">Coming Soon</span></div>
                     <div class="model-desc">For advanced content and script writing</div>
                 </div>
             </div>
@@ -1042,6 +1037,7 @@
         let isLoginMode = false; 
         let signUpPhase = 1; 
 
+        // 6000 Token limit and exact 24-hour lock logic
         window.checkUserLimitAndLock = async function() {
             if(!window.currentUser) return false;
             const uid = window.currentUser.uid;
@@ -1049,56 +1045,67 @@
             try {
                 const docSnap = await getDoc(userRef);
                 const now = Date.now();
-                const LIMIT = 6000; 
+                const LIMIT = 6000;
                 const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
 
                 if (docSnap.exists()) {
                     let data = docSnap.data();
-                    let lastReset = data.last_reset_time || 0;
-                    let tokens = data.used_tokens || 0;
+                    let count = data.token_count || 0;
+                    let lockoutTime = data.lockout_time || 0;
 
-                    if (now - lastReset >= TWENTY_FOUR_HOURS) {
-                        await updateDoc(userRef, { used_tokens: 0, last_reset_time: now });
+                    // Check if 24 hours have passed since the exact lockout time
+                    if (lockoutTime > 0 && (now - lockoutTime >= TWENTY_FOUR_HOURS)) {
+                        await updateDoc(userRef, { token_count: 0, lockout_time: 0 });
                         window.unlockUI();
                         return true;
-                    } else if (tokens >= LIMIT) {
-                        window.lockUIForLimit(lastReset + TWENTY_FOUR_HOURS);
+                    } else if (count >= LIMIT) {
+                        window.lockUIForLimit(lockoutTime);
                         return false;
                     } else {
                         window.unlockUI();
                         return true;
                     }
                 } else {
-                    await setDoc(userRef, { used_tokens: 0, last_reset_time: now });
+                    await setDoc(userRef, { token_count: 0, lockout_time: 0 });
                     window.unlockUI();
                     return true;
                 }
             } catch (err) {
+                console.error("Error checking limits:", err);
                 return true; 
             }
         };
 
-        window.incrementUserLimit = async function(estimatedTokens) {
+        window.incrementUserLimit = async function(estimatedTokens = 150) {
             if(!window.currentUser) return;
             const uid = window.currentUser.uid;
             const userRef = doc(window.db, "users", uid);
             try {
                 const docSnap = await getDoc(userRef);
                 if (docSnap.exists()) {
-                    let tokens = docSnap.data().used_tokens || 0;
-                    await updateDoc(userRef, { used_tokens: tokens + estimatedTokens });
+                    let count = docSnap.data().token_count || 0;
+                    let newCount = count + estimatedTokens;
+                    let updates = { token_count: newCount };
+                    
+                    // If they just crossed the 6000 mark, record the exact current time
+                    if (newCount >= 6000 && count < 6000) {
+                        updates.lockout_time = Date.now();
+                    }
+                    
+                    await updateDoc(userRef, updates);
                 }
             } catch(e) {}
         };
 
-        window.lockUIForLimit = function(resetTimeMs) {
-            let dateObj = new Date(resetTimeMs);
-            let timeString = dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-            let msg = `Your daily limit has reached please comes tomorrow ${timeString}`;
-            
+        window.lockUIForLimit = function(lockoutTimestamp) {
             const input = document.getElementById('user-input');
             input.disabled = true;
-            input.placeholder = msg;
+            
+            // Calculate exact unlock time
+            let unlockDate = new Date(lockoutTimestamp + (24 * 60 * 60 * 1000));
+            let timeString = unlockDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            
+            input.placeholder = `Your daily limit has reached please comes tomorrow ${timeString}`;
             
             document.getElementById('mike-btn-container').style.pointerEvents = 'none';
             document.getElementById('mike-btn-container').style.opacity = '0.5';
@@ -1107,15 +1114,7 @@
             document.getElementById('send-btn-ui').style.pointerEvents = 'none';
             document.getElementById('send-btn-ui').style.opacity = '0.5';
             
-            const container = document.getElementById('chat-container');
-            let existingAlert = document.getElementById('limit-alert');
-            if(existingAlert) existingAlert.remove();
-
-            const alertRow = document.createElement('div');
-            alertRow.id = 'limit-alert';
-            alertRow.innerHTML = `<div style="text-align: center; color: #ff3333; font-weight: 600; font-size: 14px; margin-top: 20px; padding: 10px; background: #ffebeb; border-radius: 8px;">${msg}</div>`;
-            container.appendChild(alertRow);
-            container.scrollTop = container.scrollHeight;
+            // Red alert message has been removed completely as requested
         };
 
         window.unlockUI = function() {
@@ -1129,9 +1128,6 @@
             document.getElementById('plus-btn-wrapper').style.opacity = '1';
             document.getElementById('send-btn-ui').style.pointerEvents = 'auto';
             document.getElementById('send-btn-ui').style.opacity = '1';
-            
-            let existingAlert = document.getElementById('limit-alert');
-            if(existingAlert) existingAlert.remove();
         };
 
         window.truncateText = function(text, limit) {
@@ -1315,6 +1311,7 @@
             document.getElementById('email-error-msg').classList.remove('show');
             document.getElementById('password-error-msg').classList.remove('show');
             signInWithPopup(auth, googleProvider).catch(err => {
+                console.error(err);
             }); 
         };
         
@@ -1665,6 +1662,7 @@
                 });
                 localStorage.setItem('datex_ui_trans_v3_' + isoCode, JSON.stringify(translationMap));
             } catch(e) {
+                console.error(e);
                 return; 
             }
         }
@@ -2056,7 +2054,8 @@
         container.scrollLeft = container.scrollWidth;
     };
 
-    async function compressImage(file, maxWidth = 1280, maxHeight = 1280, quality = 0.7) {
+    // Modified to 720p maximum bound to save tokens significantly
+    async function compressImage(file, maxWidth = 720, maxHeight = 720, quality = 0.7) {
         return new Promise((resolve) => {
             const reader = new FileReader();
             reader.readAsDataURL(file);
@@ -2069,9 +2068,11 @@
                     
                     if (width > maxWidth || height > maxHeight) {
                         if (width > height) {
-                            if (width > maxWidth) { height = Math.round(height * maxWidth / width); width = maxWidth; }
+                            height = Math.round(height * maxWidth / width); 
+                            width = maxWidth; 
                         } else {
-                            if (height > maxHeight) { width = Math.round(width * maxHeight / height); height = maxHeight; }
+                            width = Math.round(width * maxHeight / height); 
+                            height = maxHeight; 
                         }
                     }
                     
@@ -2420,6 +2421,7 @@
     }
 
     function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
+
     function addUserMessageToUI(text, isTyping, msgIdx, attachments = null, noAnim = false) {
         const container = document.getElementById('chat-container');
         
@@ -2467,18 +2469,12 @@
         }
         
         let bubbleStyle = (text || (!hasImageOrFile && attachments && attachments.length>0)) ? 'display: flex; flex-direction: column;' : 'display: none;';
-        
-        let displayObj = text ? text : '';
-        if (hasImageOrFile && !text) {
-            displayObj = `<span style="font-style: italic; color: #555;">[Image Uploaded]</span>`;
-            bubbleStyle = 'display: flex; flex-direction: column;';
-        }
 
         row.innerHTML = `<div class="bubble-container" style="align-items: flex-end;">
             ${hasImageOrFile ? attachmentHTML : ''}
             <div class="bubble user-bubble" style="${bubbleStyle}">
                 ${!hasImageOrFile ? attachmentHTML : ''}
-                <div class="user-msg-text" style="${isAudio ? 'display:none !important;' : ''}">${displayObj}</div>
+                <div class="user-msg-text" style="${isAudio ? 'display:none !important;' : ''}">${text ? text : ''}</div>
             </div>
             <div class="action-bar user-action-bar"><button class="action-btn btn-black-icon" onclick="openMenu(event, this)"><i class="fas fa-ellipsis-v"></i></button></div>
         </div>`;
@@ -2567,7 +2563,7 @@
             let allUserRows = Array.from(document.querySelectorAll('.message-row.user-row')); 
             let isLastUserMsg = (selectedMsgRow === allUserRows[allUserRows.length - 1]);
             let textDiv = selectedMsgRow.querySelector('.user-msg-text');
-            let hasText = textDiv && textDiv.textContent.trim().length > 0 && !textDiv.textContent.includes("[Image Uploaded]");
+            let hasText = textDiv && textDiv.textContent.trim().length > 0;
             
             deleteBtn.style.display = 'none'; 
 
@@ -2617,8 +2613,7 @@
     function editMsg() { 
         fullStopTTS(); if(!selectedMsgRow) return; editingMsgIdx = parseInt(selectedMsgRow.getAttribute('data-index')); 
         const msgObj = chatHistory[activeChatIndex].messages[editingMsgIdx]; const input = document.getElementById('user-input'); 
-        let currentContent = msgObj.content || "";
-        input.value = currentContent; autoGrow(input); input.focus(); 
+        input.value = msgObj.content || ""; autoGrow(input); input.focus(); 
         
         let attsToLoad = [];
         if (msgObj.attachments && msgObj.attachments.length > 0) {
@@ -2861,8 +2856,6 @@
             if(lastUserMsg && lastUserMsg.role === 'user') { message = lastUserMsg.content; attachmentsToSave = lastUserMsg.attachments || (lastUserMsg.attachment ? [lastUserMsg.attachment] : []); }
         }
 
-        let estimatedTokens = 150 + Math.ceil(message.length / 4);
-
         const requestChatIndex = activeChatIndex; isGenerating = true; stopGenerationFlag = false;
         const sendBtn = document.querySelector('.send-btn'); sendBtn.innerHTML = '<i class="fas fa-stop" style="font-size: 18px;"></i>';
 
@@ -2998,6 +2991,7 @@ CRITICAL INSTRUCTIONS:
             } else { apiMessages.push({ role: 'assistant', content: msg.content }); }
         });
 
+        // Vision model implemented here as requested
         const selectedModel = useVision ? "meta-llama/llama-4-scout-17b-16e-instruct" : "llama-3.3-70b-versatile";
         
         const isDeepResearchOn = localStorage.getItem('datex_deep_research') === 'true';
@@ -3034,11 +3028,15 @@ CRITICAL INSTRUCTIONS:
             const data = await res.json();
             if (data.error || !data.choices || data.choices.length === 0) { throw new Error("API Limit Reached or Internal Error"); }
             
+            // Updating Token usage in Firebase exact limits based on actual API returned tokens
+            let tokensUsed = 150; // Fallback
+            if (data.usage && data.usage.total_tokens) {
+                tokensUsed = data.usage.total_tokens;
+            }
+            window.incrementUserLimit(tokensUsed);
+
             const aiResponse = data.choices[0].message.content; const aiMsgIdx = chatHistory[requestChatIndex].messages.length;
             
-            estimatedTokens += Math.ceil(aiResponse.length / 4);
-            window.incrementUserLimit(estimatedTokens);
-
             chatHistory[requestChatIndex].messages.push({ role: "assistant", content: aiResponse }); 
             try { localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); } catch(e) {}
             
