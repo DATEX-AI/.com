@@ -101,9 +101,9 @@
         .sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: #f9f9f9; border-right: 1px solid #eee; transition: 0.3s; z-index: 1001; display: flex; flex-direction: column; }
         .sidebar.active { left: 0; }
 
-        .sidebar-top { display: flex; justify-content: space-between; align-items: center; padding: 20px 20px 10px 20px; font-size: 18px; font-weight: 500; color: #000; flex-shrink: 0; }
-        .settings-group { display: flex; align-items: center; gap: 12px; }
-        .settings-group i.fa-cog { cursor: pointer; background: transparent; color: #000; width: 38px; height: 38px; border: 1.5px solid #000; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; transition: 0.2s; }
+        .sidebar-top { display: flex; justify-content: space-between; align-items: center; padding: 25px 20px 10px 20px; font-size: 18px; font-weight: 500; color: #000; flex-shrink: 0; }
+        .settings-group { display: flex; align-items: center; gap: 14px; margin-left: 6px; }
+        .settings-group i.fa-cog { cursor: pointer; background: transparent; color: #000; width: 44px; height: 44px; border: 1.5px solid #000; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 26px; transition: 0.2s; }
         .close-sidebar-btn { cursor: pointer; color: #000; font-size: 20px; }
 
         .sidebar-header { padding: 35px 20px 15px 20px; flex-shrink: 0; background-color: #f9f9f9; z-index: 2; transition: background-color 0.15s; }
@@ -1053,7 +1053,6 @@
                     let count = data.token_count || 0;
                     let lockoutTime = data.lockout_time || 0;
 
-                    // Check if 24 hours have passed since the exact lockout time
                     if (lockoutTime > 0 && (now - lockoutTime >= TWENTY_FOUR_HOURS)) {
                         await updateDoc(userRef, { token_count: 0, lockout_time: 0 });
                         window.unlockUI();
@@ -1087,7 +1086,6 @@
                     let newCount = count + estimatedTokens;
                     let updates = { token_count: newCount };
                     
-                    // If they just crossed the 6000 mark, record the exact current time
                     if (newCount >= 6000 && count < 6000) {
                         updates.lockout_time = Date.now();
                     }
@@ -1101,7 +1099,6 @@
             const input = document.getElementById('user-input');
             input.disabled = true;
             
-            // Calculate exact unlock time
             let unlockDate = new Date(lockoutTimestamp + (24 * 60 * 60 * 1000));
             let timeString = unlockDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
             
@@ -1113,8 +1110,6 @@
             document.getElementById('plus-btn-wrapper').style.opacity = '0.5';
             document.getElementById('send-btn-ui').style.pointerEvents = 'none';
             document.getElementById('send-btn-ui').style.opacity = '0.5';
-            
-            // Red alert message has been removed completely as requested
         };
 
         window.unlockUI = function() {
@@ -2329,11 +2324,20 @@
 
     window.onload = () => { try { renderChatList(); if(chatHistory.length === 0) createNewChat(); } catch(err) { } };
 
+    // BUG FIX: Automatically clean up corrupt or empty chats so empty pills don't appear
     function renderChatList() {
-        const listElement = document.getElementById('chat-list'); listElement.innerHTML = "";
+        const listElement = document.getElementById('chat-list'); 
+        listElement.innerHTML = "";
+        
+        chatHistory = chatHistory.filter(chat => chat && chat.title && chat.title.trim() !== "");
+        try { localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); } catch(e) {}
+
         chatHistory.slice().reverse().forEach((chatObj, index) => {
-            const actualIndex = chatHistory.length - 1 - index; const wrap = document.createElement('div'); wrap.className = "chat-item-wrapper";
+            const actualIndex = chatHistory.length - 1 - index; 
+            const wrap = document.createElement('div'); 
+            wrap.className = "chat-item-wrapper";
             const activeHighlightClass = (actualIndex === activeChatIndex) ? "selected-active" : "";
+            
             wrap.innerHTML = `<div class="chat-item ${activeHighlightClass}" onclick="loadSelectedChat(${actualIndex}, true)">${chatObj.title}</div><i class="fas fa-trash delete-chat-btn" onclick="deleteHistoryItem(event, ${actualIndex})"></i>`;
             listElement.appendChild(wrap);
         });
@@ -2991,7 +2995,6 @@ CRITICAL INSTRUCTIONS:
             } else { apiMessages.push({ role: 'assistant', content: msg.content }); }
         });
 
-        // Vision model implemented here as requested
         const selectedModel = useVision ? "meta-llama/llama-4-scout-17b-16e-instruct" : "llama-3.3-70b-versatile";
         
         const isDeepResearchOn = localStorage.getItem('datex_deep_research') === 'true';
@@ -3028,8 +3031,7 @@ CRITICAL INSTRUCTIONS:
             const data = await res.json();
             if (data.error || !data.choices || data.choices.length === 0) { throw new Error("API Limit Reached or Internal Error"); }
             
-            // Updating Token usage in Firebase exact limits based on actual API returned tokens
-            let tokensUsed = 150; // Fallback
+            let tokensUsed = 150; 
             if (data.usage && data.usage.total_tokens) {
                 tokensUsed = data.usage.total_tokens;
             }
