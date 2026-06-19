@@ -102,12 +102,12 @@
         .sidebar.active { left: 0; }
 
         .sidebar-top { display: flex; justify-content: space-between; align-items: center; padding: 25px 20px 10px 20px; font-size: 18px; font-weight: 500; color: #000; flex-shrink: 0; }
-        .settings-group { display: flex; align-items: center; gap: 8px; margin-left: 0px; }
-        .settings-group i.fa-cog { cursor: pointer; background: transparent; color: #000; width: 40px; height: 40px; border: 1.5px solid #000; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 22px; transition: 0.2s; }
+        .settings-group { display: flex; align-items: center; gap: 14px; margin-left: 6px; }
+        .settings-group i.fa-cog { cursor: pointer; background: transparent; color: #000; width: 44px; height: 44px; border: 1.5px solid #000; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 26px; transition: 0.2s; }
         .close-sidebar-btn { cursor: pointer; color: #000; font-size: 20px; }
 
         .sidebar-header { padding: 35px 20px 15px 20px; flex-shrink: 0; background-color: #f9f9f9; z-index: 2; transition: background-color 0.15s; }
-        .sidebar h2 { margin: 0; font-size: 12px; color: #000; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .sidebar h2 { margin: 0 0 10px 0; font-size: 12px; color: #000; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
 
         .sidebar-content { padding: 0 20px 20px 20px; flex: 1; overflow-y: auto; touch-action: pan-y !important; -webkit-overflow-scrolling: touch !important; overscroll-behavior-y: contain !important; }
         .chat-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
@@ -120,19 +120,19 @@
         .delete-chat-btn:hover { opacity: 0.7; }
 
         .sidebar-footer { padding: 15px 20px 20px 20px; display: flex; justify-content: space-between; align-items: center; gap: 8px; background: transparent; flex-shrink: 0; }
-        .profile-icon { display: flex; align-items: center; gap: 8px; cursor: pointer; transition: opacity 0.2s; padding: 4px; border-radius: 12px; flex: 1; min-width: 0; }
+        .profile-icon { display: flex; align-items: center; gap: 10px; cursor: pointer; transition: opacity 0.2s; padding: 5px; border-radius: 12px; flex: 1; min-width: 0; }
         .profile-icon:active { background: transparent; } 
-        .profile-icon span { font-size: 14px; font-weight: 700; color: #000; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .profile-icon span { font-size: 15px; font-weight: 700; color: #000; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
         #sidebar-user-pfp { 
-            width: 32px; 
-            height: 32px; 
+            width: 36px; 
+            height: 36px; 
             border-radius: 50%; 
             object-fit: cover; 
             border: none !important; 
             outline: 2px solid #000000; 
-            outline-offset: 2px; 
-            margin: 2px; 
+            outline-offset: 2.5px; 
+            margin: 3px; 
             flex-shrink: 0; 
         }
         
@@ -336,6 +336,7 @@
         
         .input-bar textarea { flex: 1; background: transparent; border: none; padding: 10px 18px 10px 0; font-size: 16px; outline: none; min-width: 0; color: #000000; resize: none; max-height: 150px; overflow-y: auto; line-height: 24px; height: 44px; scrollbar-width: thin; scrollbar-color: #c1c1c1 transparent; -ms-overflow-style: auto; touch-action: pan-y; overscroll-behavior: none; }
         
+        /* THE INVISIBLE WALL FIX FOR SCROLLBAR */
         .input-bar textarea::-webkit-scrollbar { 
             width: 4px; 
         }
@@ -1036,38 +1037,7 @@
         let isLoginMode = false; 
         let signUpPhase = 1; 
 
-        async function compressImage(file, maxWidth = 720, maxHeight = 720, quality = 0.8) {
-            return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = event => {
-                    const img = new Image();
-                    img.src = event.target.result;
-                    img.onload = () => {
-                        let width = img.width;
-                        let height = img.height;
-                        
-                        if (width > maxWidth || height > maxHeight) {
-                            if (width > height) {
-                                height = Math.round(height * maxWidth / width);
-                                width = maxWidth;
-                            } else {
-                                width = Math.round(width * maxHeight / height);
-                                height = maxHeight;
-                            }
-                        }
-                        
-                        const canvas = document.createElement('canvas');
-                        canvas.width = width;
-                        canvas.height = height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, width, height);
-                        resolve(canvas.toDataURL('image/jpeg', quality));
-                    };
-                };
-            });
-        }
-
+        // 6000 Token limit and exact 24-hour lock logic
         window.checkUserLimitAndLock = async function() {
             if(!window.currentUser) return false;
             const uid = window.currentUser.uid;
@@ -1101,7 +1071,7 @@
                 }
             } catch (err) {
                 console.error("Error checking limits:", err);
-                return true;
+                return true; 
             }
         };
 
@@ -1167,7 +1137,7 @@
 
         window.toggleAuthMode = () => {
             isLoginMode = !isLoginMode;
-            signUpPhase = 1;
+            signUpPhase = 1; 
             
             document.getElementById('email-error-msg').classList.remove('show');
             document.getElementById('password-error-msg').classList.remove('show');
@@ -1739,7 +1709,7 @@
             document.body.classList.remove('dark-mode');
             const toggle = document.querySelector('input[name="app_theme"][value="light"]');
             if(toggle) toggle.checked = true;
-            if(fav) fav.href = 'light.logo.jpg';
+            if(fav) href = 'light.logo.jpg';
         }
         
         const savedVoice = localStorage.getItem('datex_voice_type') || 'female';
@@ -2079,7 +2049,8 @@
         container.scrollLeft = container.scrollWidth;
     };
 
-    async function compressImage(file, maxWidth = 720, maxHeight = 720, quality = 0.8) {
+    // Modified to 720p maximum bound to save tokens significantly
+    async function compressImage(file, maxWidth = 720, maxHeight = 720, quality = 0.7) {
         return new Promise((resolve) => {
             const reader = new FileReader();
             reader.readAsDataURL(file);
@@ -2353,6 +2324,7 @@
 
     window.onload = () => { try { renderChatList(); if(chatHistory.length === 0) createNewChat(); } catch(err) { } };
 
+    // BUG FIX: Automatically clean up corrupt or empty chats so empty pills don't appear
     function renderChatList() {
         const listElement = document.getElementById('chat-list'); 
         listElement.innerHTML = "";
@@ -3055,18 +3027,9 @@ CRITICAL INSTRUCTIONS:
                 method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: abortController.signal,
                 body: JSON.stringify({ "messages": apiMessages, "model": selectedModel, "max_tokens": 8192 }) 
             });
-            if (!res.ok) { 
-                let errMsg = "";
-                if (res.status === 429) {
-                    errMsg = "Our AI is currently busy. Please wait a moment and try again.";
-                } else {
-                    const errData = await res.json();
-                    errMsg = errData.error?.message || `Server Error ${res.status}`;
-                }
-                throw new Error(errMsg);
-            }
+            if (!res.ok) { const errData = await res.json(); throw new Error(errData.error?.message || `Server Error ${res.status}`); }
             const data = await res.json();
-            if (data.error || !data.choices || data.choices.length === 0) { throw new Error("AI is busy right now. Please try again in a moment."); }
+            if (data.error || !data.choices || data.choices.length === 0) { throw new Error("API Limit Reached or Internal Error"); }
             
             let tokensUsed = 150; 
             if (data.usage && data.usage.total_tokens) {
@@ -3085,7 +3048,7 @@ CRITICAL INSTRUCTIONS:
             if (!navigator.onLine || e.message.includes("Failed to fetch") || e.message.includes("NetworkError")) {
                 errText = "Oops! It seems you are offline. Please check your internet connection and try again.";
             } else {
-                errText = (e.name === 'AbortError') ? "You stopped this response" : e.message; 
+                errText = (e.name === 'AbortError') ? "You stopped this response" : "Server Error: " + e.message; 
             }
             
             chatHistory[requestChatIndex].messages.push({ role: "assistant", content: errText });
