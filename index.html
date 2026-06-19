@@ -102,21 +102,22 @@
         .sidebar.active { left: 0; }
 
         .sidebar-top { display: flex; justify-content: space-between; align-items: center; padding: 25px 20px 10px 20px; font-size: 18px; font-weight: 500; color: #000; flex-shrink: 0; }
-        .settings-group { display: flex; align-items: center; gap: 14px; margin-left: 6px; }
-        .settings-group i.fa-cog { cursor: pointer; background: transparent; color: #000; width: 44px; height: 44px; border: 1.5px solid #000; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 26px; transition: 0.2s; }
+        .settings-group { display: flex; align-items: center; gap: 6px; margin-left: 6px; }
+        .settings-group i.fa-cog { cursor: pointer; background: transparent; color: #000; width: 48px; height: 48px; border: 1.5px solid #000; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 32px; transition: 0.2s; }
+        .settings-group span { margin-left: 2px; }
         .close-sidebar-btn { cursor: pointer; color: #000; font-size: 20px; }
 
         .sidebar-header { padding: 35px 20px 15px 20px; flex-shrink: 0; background-color: #f9f9f9; z-index: 2; transition: background-color 0.15s; }
         .sidebar h2 { margin: 0 0 10px 0; font-size: 12px; color: #000; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
 
         .sidebar-content { padding: 0 20px 20px 20px; flex: 1; overflow-y: auto; touch-action: pan-y !important; -webkit-overflow-scrolling: touch !important; overscroll-behavior-y: contain !important; }
-        .chat-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
-        .chat-item-wrapper { display: flex; align-items: center; gap: 12px; }
-        .chat-item { flex: 1; padding: 10px 15px; cursor: pointer; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background: transparent; border: 1.5px solid #000; border-radius: 20px; text-align: left; color: #000; transition: 0.2s; }
+        .chat-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+        .chat-item-wrapper { display: flex; align-items: center; gap: 10px; }
+        .chat-item { flex: 1; padding: 10px 14px; cursor: pointer; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background: transparent; border: 1.5px solid #000; border-radius: 18px; text-align: left; color: #000; transition: 0.2s; }
         .chat-item:hover { background: #eee; }
         
         .chat-item.selected-active { background: #e5e7eb !important; border-color: #555 !important; font-weight: 600 !important; }
-        .delete-chat-btn { color: #000; cursor: pointer; font-size: 18px; transition: color 0.15s, opacity 0.2s; padding: 5px; flex-shrink: 0; }
+        .delete-chat-btn { color: #000; cursor: pointer; font-size: 16px; transition: color 0.15s, opacity 0.2s; padding: 5px; flex-shrink: 0; }
         .delete-chat-btn:hover { opacity: 0.7; }
 
         .sidebar-footer { padding: 15px 20px 20px 20px; display: flex; justify-content: space-between; align-items: center; gap: 8px; background: transparent; flex-shrink: 0; }
@@ -336,7 +337,6 @@
         
         .input-bar textarea { flex: 1; background: transparent; border: none; padding: 10px 18px 10px 0; font-size: 16px; outline: none; min-width: 0; color: #000000; resize: none; max-height: 150px; overflow-y: auto; line-height: 24px; height: 44px; scrollbar-width: thin; scrollbar-color: #c1c1c1 transparent; -ms-overflow-style: auto; touch-action: pan-y; overscroll-behavior: none; }
         
-        /* THE INVISIBLE WALL FIX FOR SCROLLBAR */
         .input-bar textarea::-webkit-scrollbar { 
             width: 4px; 
         }
@@ -1037,7 +1037,6 @@
         let isLoginMode = false; 
         let signUpPhase = 1; 
 
-        // 6000 Token limit and exact 24-hour lock logic
         window.checkUserLimitAndLock = async function() {
             if(!window.currentUser) return false;
             const uid = window.currentUser.uid;
@@ -1100,9 +1099,14 @@
             input.disabled = true;
             
             let unlockDate = new Date(lockoutTimestamp + (24 * 60 * 60 * 1000));
-            let timeString = unlockDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            let hours = unlockDate.getHours();
+            let minutes = unlockDate.getMinutes();
+            let ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+            let timeString = hours + ':' + (minutes < 10 ? '0' : '') + minutes + ' ' + ampm;
             
-            input.placeholder = `Your daily limit has reached please comes tomorrow ${timeString}`;
+            input.placeholder = `Your daily limit has been reached. Please come back tomorrow at ${timeString}`;
             
             document.getElementById('mike-btn-container').style.pointerEvents = 'none';
             document.getElementById('mike-btn-container').style.opacity = '0.5';
@@ -1812,6 +1816,8 @@
         chatHistory = [];
     }
     
+    chatHistory = chatHistory.filter(chat => chat && chat.title && chat.title.trim() !== "");
+    
     let isNewSession = true;
     let selectedMsgRow = null;
     let activeChatIndex = -1;
@@ -2049,7 +2055,6 @@
         container.scrollLeft = container.scrollWidth;
     };
 
-    // Modified to 720p maximum bound to save tokens significantly
     async function compressImage(file, maxWidth = 720, maxHeight = 720, quality = 0.7) {
         return new Promise((resolve) => {
             const reader = new FileReader();
@@ -2324,7 +2329,6 @@
 
     window.onload = () => { try { renderChatList(); if(chatHistory.length === 0) createNewChat(); } catch(err) { } };
 
-    // BUG FIX: Automatically clean up corrupt or empty chats so empty pills don't appear
     function renderChatList() {
         const listElement = document.getElementById('chat-list'); 
         listElement.innerHTML = "";
@@ -3027,7 +3031,13 @@ CRITICAL INSTRUCTIONS:
                 method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: abortController.signal,
                 body: JSON.stringify({ "messages": apiMessages, "model": selectedModel, "max_tokens": 8192 }) 
             });
-            if (!res.ok) { const errData = await res.json(); throw new Error(errData.error?.message || `Server Error ${res.status}`); }
+            if (!res.ok) { 
+                const errData = await res.json();
+                if (res.status === 429) {
+                    throw new Error("RATE_LIMIT");
+                }
+                throw new Error(errData.error?.message || `Server Error ${res.status}`); 
+            }
             const data = await res.json();
             if (data.error || !data.choices || data.choices.length === 0) { throw new Error("API Limit Reached or Internal Error"); }
             
@@ -3045,7 +3055,9 @@ CRITICAL INSTRUCTIONS:
             if (activeChatIndex === requestChatIndex) { aiRow.setAttribute('data-index', aiMsgIdx); bubble.innerHTML = ""; typeEffect(bubble, aiResponse, 5, requestChatIndex); }
         } catch (e) { 
             let errText = "";
-            if (!navigator.onLine || e.message.includes("Failed to fetch") || e.message.includes("NetworkError")) {
+            if (e.message === "RATE_LIMIT") {
+                errText = "Rate limit exceeded. Please try again later.";
+            } else if (!navigator.onLine || e.message.includes("Failed to fetch") || e.message.includes("NetworkError")) {
                 errText = "Oops! It seems you are offline. Please check your internet connection and try again.";
             } else {
                 errText = (e.name === 'AbortError') ? "You stopped this response" : "Server Error: " + e.message; 
