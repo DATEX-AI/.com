@@ -650,6 +650,66 @@
         body.dark-mode .chat-attachment-pdf i { color: #ccc !important; }
         body.dark-mode .chat-attachment-pdf span { color: #ccc !important; }
         body.dark-mode .ai-gen-img { border-color: transparent !important; }
+
+        /* ===== RESPONSIVE FIX - har screen par fit ===== */
+        img { max-width: 100%; }
+        .ai-gen-img { max-width: 100%; height: auto; }
+
+        @media (max-width: 480px) {
+            header { padding: 10px 12px; }
+            .menu-btn-container { width: 36px; height: 36px; margin-left: 0; padding-left: 8px; }
+            .line-1 { width: 16px; } .line-2 { width: 12px; } .line-3 { width: 8px; }
+            .logo-container img { width: 45px; height: 45px; }
+            .model-name { font-size: 16px; }
+            .version-pill { font-size: 10.5px; padding: 3px 10px; }
+            .main-content { padding: 10px 12px 16px 12px; }
+            .welcome-screen span { font-size: 28px !important; letter-spacing: 2px !important; }
+            .bubble { font-size: 15px; padding: 12px 16px; }
+            .bubble-container { max-width: 92%; }
+            .chat-attachment-img { width: 100px; height: 100px; }
+            .chat-attachment-pdf { width: 100px; height: 100px; }
+            .ai-gen-img { max-width: 100%; }
+            .bottom-container { padding: 8px 12px 12px 12px; }
+            .input-bar { padding: 6px 60px 6px 6px; }
+            .plus-btn-wrapper { width: 40px; height: 40px; margin-right: 4px; }
+            #mike-btn, .send-btn { width: 40px; height: 40px; }
+            .send-btn-container { right: 8px; bottom: 6px; }
+            .scroll-bottom-btn { right: 12px; }
+            .sidebar { width: 85vw; max-width: 280px; left: -90vw; }
+            .sidebar.active { left: 0; }
+            .sidebar-top { padding: 20px 15px 8px 15px; }
+            .sidebar-header { padding: 25px 15px 12px 15px; }
+            .sidebar-content { padding: 0 15px 15px 15px; }
+            .sidebar-footer { padding: 12px 15px 15px 15px; }
+            .new-chat-btn { width: 95px; font-size: 14px; }
+            .settings-modal, .lang-modal { width: 92%; height: auto; min-height: 300px; max-height: 88vh; }
+            .profile-modal { width: 92%; }
+            .model-menu { max-width: 92vw; }
+            .model-desc { white-space: normal; }
+            .attachment-option .icon-box { width: 70px; height: 70px; font-size: 26px; }
+            .auth-container { padding: 30px 18px 20px 18px; }
+            .login-logo { width: 100px; height: 100px; }
+            pre { font-size: 13px; }
+        }
+
+        @media (min-width: 481px) and (max-width: 768px) {
+            .main-content { padding: 10px 16px 18px 16px; max-width: 100%; }
+            .input-bar-wrapper { max-width: 100%; }
+            .welcome-screen span { font-size: 32px !important; }
+            .logo-container img { width: 52px; height: 52px; }
+            .settings-modal, .lang-modal { max-height: 88vh; }
+            .model-menu { max-width: 92vw; }
+            .model-desc { white-space: normal; }
+            .ai-gen-img { max-width: 100%; }
+        }
+
+        @media (min-width: 1024px) {
+            .main-content { max-width: 800px; }
+            .input-bar-wrapper { max-width: 720px; }
+            .attachment-options-container { width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; }
+            .attachment-menu { display: flex; flex-direction: column; align-items: center; }
+            .attachment-menu-header { width: 100%; max-width: 600px; }
+        }
     </style>
 </head>
 <body>
@@ -1244,32 +1304,24 @@
             };
 
             if(isLoginMode) {
-                if(signUpPhase === 1) {
-                    if(!email || !emailRegex.test(email)) { emailErr.innerText = "Invalid email"; emailErr.classList.add('show'); hasError = true; }
-                    if(!password) { pwdErr.innerText = "Invalid password"; pwdErr.classList.add('show'); hasError = true; }
-                    if(hasError) return;
-                    
-                    signUpPhase = 2;
-                    document.getElementById('email-input-container').style.display = 'none';
-                    document.getElementById('password-input-container').style.display = 'none';
-                    document.getElementById('name-input-container').style.display = 'block';
-                    btn.innerText = "Log In";
-                    btn.style.marginTop = "40px";
-                } else if(signUpPhase === 2) {
-                    if(!name) { nameErr.innerText = "Please enter your name"; nameErr.classList.add('show'); hasError = true; }
-                    if(hasError) return;
+                if(!email || !emailRegex.test(email)) { emailErr.innerText = "Invalid email"; emailErr.classList.add('show'); hasError = true; }
+                if(!password) { pwdErr.innerText = "Invalid password"; pwdErr.classList.add('show'); hasError = true; }
+                if(hasError) return;
 
-                    signInWithEmailAndPassword(auth, email, password)
-                        .then((userCredential) => {
-                            return updateProfile(userCredential.user, {
-                                displayName: name
-                            }).then(() => {
-                                window.currentUser = auth.currentUser;
-                                updateUserUI(auth.currentUser);
-                            });
-                        })
-                        .catch(handleError);
-                }
+                btn.disabled = true;
+                btn.innerText = "Logging in...";
+                signInWithEmailAndPassword(auth, email, password)
+                    .then((userCredential) => {
+                        btn.disabled = false;
+                        btn.innerText = "Log In";
+                        window.currentUser = auth.currentUser;
+                        updateUserUI(auth.currentUser);
+                    })
+                    .catch((err) => {
+                        btn.disabled = false;
+                        btn.innerText = "Log In";
+                        handleError(err);
+                    });
             } else {
                 if(signUpPhase === 1) {
                     if(!email || !emailRegex.test(email)) { emailErr.innerText = "Invalid email"; emailErr.classList.add('show'); hasError = true; }
@@ -2042,7 +2094,16 @@
     chatContainerEl.addEventListener('wheel', () => { userScrolledUp = true; }, {passive: true});
     window.addEventListener('scroll', hideMsgMenu);
 
+    function setPlusDisabled(disabled) {
+        const w = document.getElementById('plus-btn-wrapper');
+        if (!w) return;
+        const icon = w.querySelector('.plus-icon-btn');
+        if (disabled) { w.style.pointerEvents = 'none'; w.style.opacity = '0.5'; if (icon) icon.style.color = '#999'; }
+        else { w.style.pointerEvents = 'auto'; w.style.opacity = '1'; if (icon) icon.style.color = ''; }
+    }
+
     function toggleAttachmentMenu(e) {
+        try { if ((typeof isDictating !== 'undefined' && isDictating) || (typeof isVoiceNoteActive !== 'undefined' && isVoiceNoteActive)) return; } catch(_) {}
         if(e) e.stopPropagation();
         const menu = document.getElementById('attachment-menu');
         const overlay = document.getElementById('attachment-overlay');
@@ -2259,11 +2320,13 @@
             sessionFinalText = document.getElementById('user-input').value; 
             if (sessionFinalText.length > 0 && !sessionFinalText.endsWith(" ")) { sessionFinalText += " "; } 
             document.getElementById('mike-btn').classList.add('recording'); 
+            setPlusDisabled(true);
         };
         
         recognition.onend = () => { 
             isDictating = false; 
             document.getElementById('mike-btn').classList.remove('recording'); 
+            setPlusDisabled(false);
         };
         
         recognition.onresult = (e) => { 
@@ -2284,6 +2347,7 @@
         recognition.onerror = (e) => { 
             isDictating = false; 
             document.getElementById('mike-btn').classList.remove('recording'); 
+            setPlusDisabled(false);
         }
     }
 
@@ -2342,6 +2406,7 @@
             
             isVoiceNoteActive = true; isSendingAudio = false; isCancelingAudio = false; 
             txtArea.style.display = 'none'; micBtnContainer.style.display = 'none'; recUi.classList.add('active'); 
+            setPlusDisabled(true);
             
             const actionBtn = document.getElementById('rec-action-btn');
             actionBtn.innerHTML = '<i class="fas fa-stop" style="font-size: 18px;"></i>';
@@ -2352,13 +2417,14 @@
             recTimerInterval = setInterval(() => { recSeconds++; let m = Math.floor(recSeconds / 60); let s = recSeconds % 60; recTimerDisplay.innerText = `${m}:${s < 10 ? '0' : ''}${s}`; }, 1000);
 
             vnMediaRecorder.onstop = () => {
-                if (isCancelingAudio) { isVoiceNoteActive = false; clearInterval(recTimerInterval); recWave.classList.remove('playing'); document.getElementById('rec-action-btn').style.display = 'none'; window.currentAttachments = []; return; }
+                if (isCancelingAudio) { isVoiceNoteActive = false; clearInterval(recTimerInterval); recWave.classList.remove('playing'); document.getElementById('rec-action-btn').style.display = 'none'; window.currentAttachments = []; setPlusDisabled(false); return; }
                 const audioBlob = new Blob(vnAudioChunks, { type: 'audio/webm' }); const audioUrl = URL.createObjectURL(audioBlob);
                 window.currentAttachments = [{ type: 'audio', name: 'Voice Note', data: audioBlob, url: audioUrl, duration: recTimerDisplay.innerText }];
                 if (isSendingAudio) { callDatexAPI(); resetVoiceNoteUI(); } 
                 else { 
                     isVoiceNoteActive = false; clearInterval(recTimerInterval); recWave.classList.remove('playing'); 
                     document.getElementById('rec-action-btn').innerHTML = '<i class="fas fa-trash" style="font-size: 16px;"></i>';
+                    setPlusDisabled(false);
                 }
             };
             vnMediaRecorder.start();
@@ -2373,7 +2439,7 @@
         else { cancelVoiceNoteRecord(); }
     }
 
-    function resetVoiceNoteUI() { isVoiceNoteActive = false; clearInterval(recTimerInterval); txtArea.style.display = 'block'; micBtnContainer.style.display = 'flex'; recUi.classList.remove('active'); dragLockUi.classList.remove('active'); document.getElementById('rec-action-btn').style.display = 'none'; }
+    function resetVoiceNoteUI() { isVoiceNoteActive = false; clearInterval(recTimerInterval); txtArea.style.display = 'block'; micBtnContainer.style.display = 'flex'; recUi.classList.remove('active'); dragLockUi.classList.remove('active'); document.getElementById('rec-action-btn').style.display = 'none'; setPlusDisabled(false); }
 
     window.onload = () => { try { renderChatList(); if(chatHistory.length === 0) createNewChat(); } catch(err) { } };
 
@@ -2901,7 +2967,7 @@
         
         if (!isRegenerate) {
             const input = document.getElementById('user-input'); message = input.value.trim();
-            if (window.currentAttachments.length > 0) { attachmentsToSave = [...window.currentAttachments]; window.currentAttachments = []; window.renderAttachmentPreviews(); }
+            if (window.currentAttachments.length > 0) { attachmentsToSave = [...window.currentAttachments]; window.currentAttachments = []; window.renderAttachmentPreviews(); if (attachmentsToSave.length > 0 && attachmentsToSave[0].type === 'audio') { resetVoiceNoteUI(); } }
             if (!message && attachmentsToSave.length === 0) return;
             input.value = ""; input.style.height = "44px"; 
 
