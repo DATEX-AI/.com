@@ -4,7 +4,10 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { messages } = req.body;
+    const { messages, model, max_tokens } = req.body;
+
+    const allowedModels = ["llama-3.3-70b-versatile", "meta-llama/llama-4-scout-17b-16e-instruct"];
+    const selectedModel = allowedModels.includes(model) ? model : "llama-3.3-70b-versatile";
 
     const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
@@ -13,7 +16,8 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
+        model: selectedModel,
+        max_tokens: max_tokens || 8192,
         messages: [
           { 
             role: "system", 
@@ -27,13 +31,16 @@ export default async function handler(req, res) {
     const data = await groqResponse.json();
 
     if (!groqResponse.ok) {
-      throw new Error(data.error?.message || 'Groq API error');
+      const status = groqResponse.status || 500;
+      return res.status(status).json({ error: data.error?.message || 'Groq API error', isRateLimit: status === 429 });
     }
 
     return res.status(200).json(data);
     
   } catch (error) {
     console.error('Chat API Error:', error);
-    return res.status(500).json({ error: 'Server error' });
+    const msg = error.message || 'Server error';
+    const isRate = msg.includes('429') || msg.toLowerCase().includes('rate limit') || msg.toLowerCase().includes('too many requests');
+    return res.status(isRate ? 429 : 500).json({ error: 'Server error', isRateLimit: isRate });
   }
 }
