@@ -1835,6 +1835,7 @@
     let chatHistory = [];
     try {
         chatHistory = JSON.parse(localStorage.getItem('datex_full_history')) || [];
+        chatHistory = chatHistory.filter(chat => chat && chat.title && chat.title.trim() !== "");
     } catch(e) {
         chatHistory = [];
     }
@@ -2393,6 +2394,14 @@
             
             wrap.innerHTML = `<div class="chat-item ${activeHighlightClass}" onclick="loadSelectedChat(${actualIndex}, true)">${chatObj.title}</div><i class="fas fa-trash delete-chat-btn" onclick="deleteHistoryItem(event, ${actualIndex})"></i>`;
             listElement.appendChild(wrap);
+        });
+
+        Array.from(listElement.querySelectorAll('.chat-item')).forEach(el => {
+            if (!el.textContent || el.textContent.trim() === "") {
+                const w = el.closest('.chat-item-wrapper');
+                if (w) w.remove();
+                else el.remove();
+            }
         });
     }
 
