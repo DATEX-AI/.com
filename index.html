@@ -905,13 +905,11 @@
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="10" x2="5" y2="14"></line><line x1="9" y1="6" x2="9" y2="18"></line><line x1="13" y1="3" x2="13" y2="21"></line><line x1="17" y1="6" x2="17" y2="18"></line><line x1="21" y1="10" x2="21" y2="14"></line></svg>
                     <span data-i18n="AI Voice">AI Voice</span>
                 </div>
-                <div class="radio-option disabled-option">
+                <div class="radio-option">
                     <span data-i18n="Male">Male</span>
-                    <label class="radio-label" style="cursor: not-allowed;">
-                        <input type="radio" name="ai_voice" value="male" disabled>
-                        <div class="custom-radio locked-radio">
-                            <i class="fas fa-lock"></i>
-                        </div>
+                    <label class="radio-label">
+                        <input type="radio" name="ai_voice" value="male" onchange="saveVoiceSettings()">
+                        <div class="custom-radio"></div>
                     </label>
                 </div>
                 <div class="radio-option">
@@ -1040,7 +1038,7 @@
     </div>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, OAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, updateProfile, sendEmailVerification, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider, OAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, updateProfile, sendEmailVerification, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
       
         const firebaseConfig = {
@@ -1137,13 +1135,17 @@
                 btn.disabled = false;
                 btn.innerText = btnIdleText;
                 otpLock = false;
-                emailErr.innerText = 'OTP email failed. Check connection and retry.';
+                emailErr.innerText = 'Server not reachable. Static localhost pe API nahi chalti — "vercel dev" ya deployed site pe kholo.';
                 emailErr.classList.add('show');
                 return;
             }
             if (!otpRes.ok) {
                 let msg = 'OTP email failed.';
-                try { const d = await otpRes.json(); if (d.error) msg = d.error; } catch (e) {}
+                if (otpRes.status === 404) {
+                    msg = 'Server not reachable (API missing). "vercel dev" ya deployed site pe kholo.';
+                } else {
+                    try { const d = await otpRes.json(); if (d.error) msg = d.error; } catch (e) {}
+                }
                 try { await signOut(auth); } catch (e) {}
                 btn.disabled = false;
                 btn.innerText = btnIdleText;
@@ -1178,7 +1180,11 @@
                 });
                 if (!r.ok) {
                     let msg = 'Resend failed.';
-                    try { const d = await r.json(); if (d.error) msg = d.error; } catch (e) {}
+                    if (r.status === 404) {
+                        msg = 'Server not reachable (API missing). "vercel dev" ya deployed site pe kholo.';
+                    } else {
+                        try { const d = await r.json(); if (d.error) msg = d.error; } catch (e) {}
+                    }
                     otpErr.innerText = msg;
                     otpErr.classList.add('show');
                     resendEl.classList.remove('disabled');
@@ -1230,7 +1236,7 @@
                 const d = await r.json().catch(() => ({}));
                 if (!r.ok || !d.ok) {
                     registerOtpFail();
-                    otpErr.innerText = otpBlocked ? 'Too many wrong attempts. Tap Resend OTP for a new code.' : ((d && d.error) ? d.error : 'Invalid OTP');
+                    otpErr.innerText = otpBlocked ? 'Too many wrong attempts. Tap Resend OTP for a new code.' : (r.status === 404 ? 'Server not reachable (API missing). "vercel dev" ya deployed site pe kholo.' : ((d && d.error) ? d.error : 'Invalid OTP'));
                     otpErr.classList.add('show');
                     confirmBtn.disabled = false;
                     confirmBtn.innerText = 'Confirm';
@@ -1643,15 +1649,47 @@
             document.getElementById('email-error-msg').classList.remove('show');
             document.getElementById('password-error-msg').classList.remove('show');
             signInWithPopup(auth, googleProvider).catch(err => {
-                console.error(err);
+                console.error("Google login error:", err);
+                if (err.code === 'auth/popup-blocked' || err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request' || err.code === 'auth/operation-not-supported-in-this-environment') {
+                    try { signInWithRedirect(auth, googleProvider); } catch(e2) { window.showProviderError(err); }
+                    return;
+                }
+                window.showProviderError(err);
             }); 
+        };
+
+        window.showProviderError = (err) => {
+            console.error(err);
+            const emailErr = document.getElementById('email-error-msg');
+            let msg = "Google login failed. Try again.";
+            if (err.code === 'auth/unauthorized-domain') {
+                msg = "This domain is not allowed. Add it in Firebase Console > Authentication > Settings > Authorized domains.";
+            } else if (err.code === 'auth/popup-closed-by-user') {
+                msg = "Popup closed. Tap Continue with Google again.";
+            } else if (err.code === 'auth/popup-blocked') {
+                msg = "Popup blocked. Allow popups and try again.";
+            } else if (err.code === 'auth/network-request-failed') {
+                msg = "Network error. Check connection and retry.";
+            } else if (err.code === 'auth/account-exists-with-different-credential') {
+                msg = "This email already uses another login method. Try email login.";
+            } else if (err.message) {
+                msg = "Google login failed: " + err.message;
+            }
+            if (emailErr) { emailErr.innerText = msg; emailErr.classList.add('show'); }
         };
         
         window.loginWithApple = () => { 
             try { window.hideOtpUI(); } catch(e) { otpLock = false; pendingOtp = null; }
             document.getElementById('email-error-msg').classList.remove('show');
             document.getElementById('password-error-msg').classList.remove('show');
-            signInWithPopup(auth, appleProvider).catch(err => alert("Apple Sign-In requires developer config: " + err.message)); 
+            signInWithPopup(auth, appleProvider).catch(err => {
+                console.error("Apple login error:", err);
+                if (err.code === 'auth/popup-blocked' || err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request' || err.code === 'auth/operation-not-supported-in-this-environment') {
+                    try { signInWithRedirect(auth, appleProvider); } catch(e2) { alert("Apple Sign-In requires developer config: " + err.message); }
+                    return;
+                }
+                alert("Apple Sign-In requires developer config: " + err.message);
+            }); 
         };
         
         window.logout = () => { 
@@ -1782,6 +1820,13 @@
             updateUserUI(user);
             checkAndShowUI();
         });
+
+        // Redirect login (mobile/popup-block fallback) ka result yahin complete hoga
+        try {
+            getRedirectResult(auth).catch(err => {
+                if (err) window.showProviderError(err);
+            });
+        } catch(e) {}
 
         function checkAndShowUI() {
             if(isSplashDone && isAuthResolved) {
@@ -2185,7 +2230,64 @@
     
     window.speechUtterances = window.speechUtterances || [];
 
+    let hdState = { audio: null, btn: null, url: null, busy: false };
+
+    function stopHD() {
+        try { if (hdState.audio) { hdState.audio.pause(); hdState.audio.removeAttribute('src'); } } catch(e) {}
+        try { if (hdState.url) URL.revokeObjectURL(hdState.url); } catch(e) {}
+        if (hdState.btn) { try { const ic = hdState.btn.querySelector('i'); if (ic) ic.className = 'fas fa-volume-up'; } catch(e) {} }
+        hdState.audio = null; hdState.url = null; hdState.btn = null; hdState.busy = false;
+    }
+
+    function getBubbleSpeakText(btn) {
+        try {
+            const container = btn.closest('.bubble-container');
+            if (!container) return "";
+            const bubble = container.querySelector('.bubble');
+            if (!bubble) return "";
+            let clone = bubble.cloneNode(true);
+            let preTags = clone.querySelectorAll('pre'); preTags.forEach(p => p.remove());
+            return clone.textContent.trim().replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '');
+        } catch(e) { return ""; }
+    }
+
+    async function tryHDSpeak(btn) {
+        let text = getBubbleSpeakText(btn);
+        if (!text) return false;
+        text = text.slice(0, 1000);
+        const voice = localStorage.getItem('datex_voice_type') || 'female';
+        const icon = btn.querySelector('i');
+        hdState.busy = true;
+        try {
+            const ctrl = new AbortController();
+            const timer = setTimeout(() => { try { ctrl.abort(); } catch(e) {} }, 25000);
+            const r = await fetch('/api/speak', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: text, voice: voice }),
+                signal: ctrl.signal
+            });
+            clearTimeout(timer);
+            if (!r.ok) throw new Error('hd-fail');
+            const blob = await r.blob();
+            if (!blob || blob.size < 100) throw new Error('hd-fail');
+            if (hdState.btn !== btn) return false;
+            const url = URL.createObjectURL(blob);
+            const audio = new Audio(url);
+            hdState.audio = audio; hdState.url = url; hdState.busy = false;
+            if (icon) icon.className = 'fas fa-pause';
+            audio.onended = () => { if (hdState.btn === btn) stopHD(); };
+            audio.onerror = () => { if (hdState.btn === btn) stopHD(); };
+            await audio.play();
+            return true;
+        } catch(e) {
+            hdState.busy = false;
+            return false;
+        }
+    }
+
     function fullStopTTS() {
+        stopHD();
         if (window.speechSynthesis) {
             window.speechSynthesis.cancel();
         }
@@ -2201,8 +2303,7 @@
         ttsState.sessionId = 0; 
     }
 
-    function speakText(btn) {
-        if (!window.speechSynthesis) { return; }
+    async function speakText(btn) {
         stopVoiceNoteBubble();
 
         if (typeof recognition !== 'undefined' && isDictating) {
@@ -2232,7 +2333,21 @@
             return;
         }
 
+        if (hdState.btn === btn) {
+            stopHD();
+            return;
+        }
+
         fullStopTTS();
+        hdState.btn = btn;
+
+        let hdOk = false;
+        try { hdOk = await tryHDSpeak(btn); } catch(e) { hdOk = false; }
+        if (hdState.btn !== btn) return;
+        if (hdOk) return;
+        hdState.btn = null;
+
+        if (!window.speechSynthesis) { return; }
         ttsState.btn = btn;
         ttsState.paused = false;
         ttsState.currentIndex = 0;
@@ -2240,11 +2355,7 @@
         ttsState.sessionId = Date.now(); 
         const currentSession = ttsState.sessionId;
 
-        const bubble = btn.closest('.bubble-container').querySelector('.bubble');
-        let clone = bubble.cloneNode(true);
-        let preTags = clone.querySelectorAll('pre'); preTags.forEach(p => p.remove()); 
-
-        let fullText = clone.textContent.trim().replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '');
+        let fullText = getBubbleSpeakText(btn);
         if (!fullText) return;
         
         let rawChunks = fullText.match(/[^.!?\n]+[.!?\n]*/g) || [fullText];
@@ -2395,6 +2506,7 @@
         container.style.display = 'flex';
         
         window.currentAttachments.forEach((att, index) => {
+            if (att.type === 'audio') return;
             const div = document.createElement('div');
             div.className = 'attachment-item';
             
@@ -2404,12 +2516,15 @@
                 let rawPrevName = String(att.name || "file");
                 let shortName = rawPrevName.length > 10 ? rawPrevName.substring(0, 6) + ".." + rawPrevName.substring(rawPrevName.lastIndexOf('.')) : rawPrevName;
                 div.innerHTML = `<i class="fas fa-file-alt" style="font-size: 24px; color: #333; margin-bottom: 4px;"></i><span style="font-size: 9px; color: #555; font-weight: 500; max-width: 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHTML(shortName)}</span><div class="remove-btn" onclick="window.removeAttachment(event, ${index})"><i class="fas fa-times"></i></div>`;
-            } else if (att.type === 'audio') {
-                let dur = escapeHTML(att.duration || "0:00");
-                div.innerHTML = `<i class="fas fa-microphone" style="font-size: 24px; color: #333; margin-bottom: 4px;"></i><span style="font-size: 9px; color: #555; font-weight: 500; max-width: 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${dur}</span><div class="remove-btn" onclick="window.removeAttachment(event, ${index})"><i class="fas fa-times"></i></div>`;
+            } else {
+                return;
             }
             container.appendChild(div);
         });
+        if (!container.hasChildNodes()) {
+            container.style.display = 'none';
+            return;
+        }
         container.scrollLeft = container.scrollWidth;
     };
 
