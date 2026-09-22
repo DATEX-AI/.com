@@ -48,14 +48,14 @@
         #splash-screen img, #post-login-splash img { width: 200px; height: 200px; border-radius: 50%; object-fit: cover; animation: splashPop 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
         @keyframes splashPop { 0% { opacity: 0; } 100% { opacity: 1; } }
 
-        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000000; color: #ffffff; z-index: 99998; display: none; flex-direction: column; align-items: center; padding: 15px 0 0 0; opacity: 0; transform: translateY(100vh); transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease-out; overflow: hidden; scrollbar-width: none; }
+        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000000; color: #ffffff; z-index: 99998; display: none; flex-direction: column; align-items: center; padding: 15px 0 0 0; opacity: 0; transform: translateY(100vh); transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease-out; overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch; scroll-behavior: smooth; scrollbar-width: none; }
         #login-screen::-webkit-scrollbar { display: none; }
         #login-screen.active { opacity: 1; transform: translateY(0); }
         
         .login-logo { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; }
         .login-title { font-size: 24px; font-weight: 700; letter-spacing: 2px; margin-bottom: 25px; color: #ffffff; } 
 
-        .auth-container { width: 100%; flex: 1; background: #ffffff; border-radius: 40px 40px 0 0; padding: 40px 25px 20px 25px; display: flex; flex-direction: column; align-items: center; }
+        .auth-container { width: 100%; flex: 1; background: #ffffff; border-radius: 40px 40px 0 0; padding: 30px 25px 20px 25px; display: flex; flex-direction: column; align-items: center; }
         .auth-inner-wrapper { width: 100%; max-width: 400px; display: flex; flex-direction: column; }
 
         .auth-provider-btn { width: 100%; height: 54px; border-radius: 27px; display: flex; justify-content: center; align-items: center; font-size: 15px; font-weight: 600; cursor: pointer; margin-bottom: 12px; transition: transform 0.1s, opacity 0.15s; border: none; }
@@ -67,7 +67,7 @@
         .apple-btn { background-color: #000000; color: #ffffff; border: 1.5px solid #000000; margin-bottom: 0; } 
         .apple-btn i { font-size: 22px; margin-right: 10px; margin-bottom: 3px; }
 
-        .auth-divider { display: flex; align-items: center; width: 100%; margin: 26px 0; color: #000000; font-size: 13px; font-weight: 500; }
+        .auth-divider { display: flex; align-items: center; width: 100%; margin: 18px 0; color: #000000; font-size: 13px; font-weight: 500; }
         .auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: #000000; }
         .auth-divider span { padding: 0 15px; }
 
@@ -76,9 +76,9 @@
         .auth-input::placeholder { color: #888; } 
 
         .name-wrapper { position: relative; width: 100%; margin-bottom: 18px; }
-        .email-wrapper { position: relative; width: 100%; margin-bottom: 18px; }
+        .email-wrapper { position: relative; width: 100%; margin-bottom: 22px; }
         
-        .password-wrapper { position: relative; width: 100%; margin-bottom: 15px; }
+        .password-wrapper { position: relative; width: 100%; margin-bottom: 22px; }
         .password-wrapper .auth-input { padding-right: 45px; }
         
         .toggle-password { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #000000; font-size: 18px; padding: 10px; z-index: 10; -webkit-tap-highlight-color: transparent; }
@@ -88,11 +88,11 @@
         
         .char-limit-text { position: absolute; right: 5px; top: 100%; margin-top: 4px; font-size: 11px; color: #888; font-weight: 500; }
 
-        .forgot-pwd-container { width: 100%; display: flex; justify-content: flex-end; margin-bottom: 20px; }
+        .forgot-pwd-container { width: 100%; display: flex; justify-content: flex-end; margin-bottom: 14px; }
         .forgot-pwd-container span { color: #000000; font-weight: 600; font-size: 12px; cursor: pointer; transition: opacity 0.15s; }
         .forgot-pwd-container span:hover { opacity: 0.7; }
 
-        .auth-confirm-btn { width: 100%; height: 50px; background-color: #000000; color: #ffffff; border-radius: 25px; border: none; font-size: 16px; font-weight: 700; cursor: pointer; transition: transform 0.1s; margin-top: 5px; margin-bottom: 25px; } 
+        .auth-confirm-btn { width: 100%; height: 50px; background-color: #000000; color: #ffffff; border-radius: 25px; border: none; font-size: 16px; font-weight: 700; cursor: pointer; transition: transform 0.1s; margin-top: 5px; margin-bottom: 18px; } 
         .auth-confirm-btn:active { transform: scale(0.97); }
 
         .auth-switch { font-size: 13px; color: #000000; font-weight: 500; text-align: center; width: 100%; }
@@ -1574,6 +1574,28 @@
             if(el.classList.contains('show')) el.classList.remove('show');
         });
 
+        // Keyboard open hone pe focused field keyboard ke upar adjust ho jaye
+        ['auth-name', 'auth-email', 'auth-password', 'otp-input'].forEach(function(id) {
+            const field = document.getElementById(id);
+            if (!field) return;
+            field.addEventListener('focus', function() {
+                setTimeout(function() {
+                    try {
+                        const loginScreen = document.getElementById('login-screen');
+                        const target = document.getElementById(id === 'auth-name' ? 'name-input-container' : (id === 'auth-email' ? 'email-input-container' : (id === 'auth-password' ? 'password-input-container' : 'otp-container')));
+                        if (loginScreen && target) {
+                            const screenRect = loginScreen.getBoundingClientRect();
+                            const targetRect = target.getBoundingClientRect();
+                            const offset = (targetRect.top - screenRect.top) - (loginScreen.clientHeight * 0.35);
+                            if (offset > 0) loginScreen.scrollTo({ top: loginScreen.scrollTop + offset, behavior: 'smooth' });
+                        } else {
+                            field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    } catch(e) { try { field.scrollIntoView({ block: 'center' }); } catch(_){} }
+                }, 350);
+            });
+        });
+
         window.togglePasswordVisibility = () => {
             const pwdInput = document.getElementById('auth-password');
             const icon = document.getElementById('togglePassword');
@@ -2832,7 +2854,7 @@
 
             if (images.length > 0) {
                 hasImageOrFile = true;
-                attachmentHTML += `<div class="user-image-gallery" style="margin-bottom: ${text ? '8px' : '0'}; display: flex; gap: 8px; flex-wrap: nowrap; overflow-x: auto; max-width: 250px; justify-content: flex-start; scrollbar-width: none;">`;
+                attachmentHTML += `<div class="user-image-gallery" style="margin-bottom: ${(text || audios.length > 0) ? '8px' : '0'}; display: flex; gap: 8px; flex-wrap: nowrap; overflow-x: auto; max-width: 250px; justify-content: flex-start; scrollbar-width: none;">`;
                 images.forEach(img => {
                     attachmentHTML += `<img src="${img.data}" onclick="openImageModal(this.src)" class="chat-attachment-img">`;
                 });
@@ -2841,7 +2863,7 @@
 
             if (files.length > 0) {
                 hasImageOrFile = true;
-                attachmentHTML += `<div style="display: flex; gap: 8px; flex-wrap: nowrap; overflow-x: auto; max-width: 250px; justify-content: flex-start; scrollbar-width: none; margin-bottom: ${text ? '8px' : '0'};">`;
+                attachmentHTML += `<div style="display: flex; gap: 8px; flex-wrap: nowrap; overflow-x: auto; max-width: 250px; justify-content: flex-start; scrollbar-width: none; margin-bottom: ${(text || audios.length > 0) ? '8px' : '0'};">`;
                 files.forEach(file => {
                     let rawName = String(file.name || "file");
                     let shortName = rawName.length > 15 ? rawName.substring(0, 10) + ".." + rawName.substring(rawName.lastIndexOf('.')) : rawName;
