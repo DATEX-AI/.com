@@ -1016,7 +1016,7 @@
     </div>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, OAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, OAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, updateProfile, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
       
         const firebaseConfig = {
@@ -1039,6 +1039,46 @@
 
         let isLoginMode = false; 
         let signUpPhase = 1; 
+        let awaitingVerification = false;
+
+        window.guessNameFromEmail = function(email) {
+            try {
+                let prefix = (email || "").split('@')[0] || "";
+                let first = prefix.split(/[._\-+]+/)[0] || prefix;
+                first = first.replace(/[0-9]+/g, '');
+                first = first.trim();
+                if (!first) return "User";
+                return first.charAt(0).toUpperCase() + first.slice(1);
+            } catch(e) { return "User"; }
+        };
+
+        window.checkVerificationAndContinue = async function() {
+            const btn = document.getElementById('auth-confirm-btn');
+            const emailErr = document.getElementById('email-error-msg');
+            const user = auth.currentUser;
+            if (!user) { awaitingVerification = false; return; }
+            btn.disabled = true;
+            btn.innerText = "Checking...";
+            try {
+                await user.reload();
+                if (auth.currentUser && auth.currentUser.emailVerified) {
+                    awaitingVerification = false;
+                    btn.disabled = false;
+                    window.currentUser = auth.currentUser;
+                    updateUserUI(auth.currentUser);
+                    checkAndShowUI();
+                } else {
+                    try { await sendEmailVerification(auth.currentUser); } catch(e) {}
+                    emailErr.innerText = "Email not verified yet. New link sent. Verify karke fir Continue dabao.";
+                    emailErr.classList.add('show');
+                    btn.disabled = false;
+                    btn.innerText = "Continue";
+                }
+            } catch(e) {
+                btn.disabled = false;
+                btn.innerText = "Continue";
+            }
+        };
 
         // 6000 Token limit and exact 24-hour lock logic
         window.checkUserLimitAndLock = async function() {
@@ -1166,6 +1206,7 @@
         window.toggleAuthMode = () => {
             isLoginMode = !isLoginMode;
             signUpPhase = 1; 
+            awaitingVerification = false;
             
             document.getElementById('email-error-msg').classList.remove('show');
             document.getElementById('password-error-msg').classList.remove('show');
@@ -1175,6 +1216,7 @@
             const emailContainer = document.getElementById('email-input-container');
             const pwdContainer = document.getElementById('password-input-container');
             const btn = document.getElementById('auth-confirm-btn');
+            btn.disabled = false;
 
             if(isLoginMode) {
                 nameContainer.style.display = 'none';
@@ -1194,7 +1236,10 @@
         };
 
         window.handleEmailAuth = () => {
-            const nameInput = document.getElementById('auth-name');
+            if (awaitingVerification) {
+                window.checkVerificationAndContinue();
+                return;
+            }
             const emailInput = document.getElementById('auth-email');
             const passwordInput = document.getElementById('auth-password');
             const btn = document.getElementById('auth-confirm-btn');
@@ -1203,27 +1248,17 @@
             const emailErr = document.getElementById('email-error-msg');
             const pwdErr = document.getElementById('password-error-msg');
 
-            nameErr.classList.remove('show');
+            if (nameErr) nameErr.classList.remove('show');
             emailErr.classList.remove('show');
             pwdErr.classList.remove('show');
 
             const email = emailInput.value.trim();
             const password = passwordInput.value;
-            const name = nameInput.value.trim();
 
             let hasError = false;
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
             const handleError = (err) => {
-                if (signUpPhase === 2 && (err.code === 'auth/email-already-in-use' || err.code === 'auth/invalid-email' || err.code === 'auth/weak-password' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found')) {
-                    signUpPhase = 1;
-                    document.getElementById('name-input-container').style.display = 'none';
-                    document.getElementById('email-input-container').style.display = 'block';
-                    document.getElementById('password-input-container').style.display = 'block';
-                    btn.innerText = isLoginMode ? "Log In" : "Sign Up";
-                    btn.style.marginTop = "5px";
-                }
-
                 if(err.code === 'auth/invalid-email' || err.code === 'auth/user-not-found') {
                     emailErr.innerText = "Invalid email";
                     emailErr.classList.add('show');
@@ -1252,11 +1287,25 @@
                 btn.disabled = true;
                 btn.innerText = "Logging in...";
                 signInWithEmailAndPassword(auth, email, password)
-                    .then((userCredential) => {
+                    .then(async (userCredential) => {
+                        const u = userCredential.user;
+                        try { await u.reload(); } catch(e) {}
+                        const fresh = auth.currentUser;
+                        const isPwdUser = fresh && fresh.providerData && fresh.providerData.some(p => p.providerId === 'password');
+                        if (isPwdUser && !fresh.emailVerified) {
+                            try { await sendEmailVerification(fresh); } catch(e) {}
+                            await signOut(auth);
+                            btn.disabled = false;
+                            btn.innerText = "Log In";
+                            emailErr.innerText = "Email not verified. Link sent again. Verify karke fir Log In karo.";
+                            emailErr.classList.add('show');
+                            return;
+                        }
                         btn.disabled = false;
                         btn.innerText = "Log In";
                         window.currentUser = auth.currentUser;
                         updateUserUI(auth.currentUser);
+                        checkAndShowUI();
                     })
                     .catch((err) => {
                         btn.disabled = false;
@@ -1264,33 +1313,32 @@
                         handleError(err);
                     });
             } else {
-                if(signUpPhase === 1) {
-                    if(!email || !emailRegex.test(email)) { emailErr.innerText = "Invalid email"; emailErr.classList.add('show'); hasError = true; }
-                    if(!password || password.length < 6) { pwdErr.innerText = "Password must be at least 6 chars"; pwdErr.classList.add('show'); hasError = true; }
-                    if(hasError) return;
+                if(!email || !emailRegex.test(email)) { emailErr.innerText = "Invalid email"; emailErr.classList.add('show'); hasError = true; }
+                if(!password || password.length < 6) { pwdErr.innerText = "Password must be at least 6 chars"; pwdErr.classList.add('show'); hasError = true; }
+                if(hasError) return;
 
-                    signUpPhase = 2;
-                    document.getElementById('email-input-container').style.display = 'none';
-                    document.getElementById('password-input-container').style.display = 'none';
-                    document.getElementById('name-input-container').style.display = 'block';
-                    btn.innerText = "Sign Up";
-                    btn.style.marginTop = "40px"; 
-                    
-                } else if(signUpPhase === 2) {
-                    if(!name) { nameErr.innerText = "Please enter your name"; nameErr.classList.add('show'); hasError = true; }
-                    if(hasError) return;
-
-                    createUserWithEmailAndPassword(auth, email, password)
-                        .then((userCredential) => {
-                            return updateProfile(userCredential.user, {
-                                displayName: name
-                            }).then(() => {
-                                window.currentUser = auth.currentUser;
-                                updateUserUI(auth.currentUser);
-                            });
-                        })
-                        .catch(handleError);
-                }
+                btn.disabled = true;
+                btn.innerText = "Creating...";
+                createUserWithEmailAndPassword(auth, email, password)
+                    .then(async (userCredential) => {
+                        const u = userCredential.user;
+                        const autoName = window.guessNameFromEmail(email);
+                        try { await updateProfile(u, { displayName: autoName }); } catch(e) {}
+                        try { await sendEmailVerification(u); } catch(e) {}
+                        window.currentUser = auth.currentUser;
+                        updateUserUI(auth.currentUser);
+                        awaitingVerification = true;
+                        btn.disabled = false;
+                        btn.innerText = "Continue";
+                        emailErr.innerText = "Verification email sent! Email verify karke Continue dabao.";
+                        emailErr.classList.add('show');
+                        checkAndShowUI();
+                    })
+                    .catch((err) => {
+                        btn.disabled = false;
+                        btn.innerText = "Sign Up";
+                        handleError(err);
+                    });
             }
         };
 
@@ -1346,6 +1394,7 @@
             
             isLoginMode = false;
             signUpPhase = 1;
+            awaitingVerification = false;
             document.getElementById('auth-email').value = "";
             document.getElementById('auth-password').value = "";
             document.getElementById('auth-name').value = "";
@@ -1354,6 +1403,7 @@
             document.getElementById('password-input-container').style.display = 'block';
             const btn = document.getElementById('auth-confirm-btn');
             btn.innerText = "Sign Up";
+            btn.disabled = false;
             btn.style.marginTop = "5px";
             document.getElementById('auth-switch-text').innerHTML = `Already have an account?<b onclick="window.toggleAuthMode()">LOG IN</b>`;
 
@@ -1447,16 +1497,41 @@
             window.checkUserLimitAndLock();
         }
 
+        window.isPasswordUnverified = function(user) {
+            try {
+                return user && user.providerData && user.providerData.some(p => p.providerId === 'password') && !user.emailVerified;
+            } catch(e) { return false; }
+        };
+
+        window.showVerifyPendingUI = function() {
+            awaitingVerification = true;
+            document.getElementById('name-input-container').style.display = 'none';
+            document.getElementById('email-input-container').style.display = 'block';
+            document.getElementById('password-input-container').style.display = 'block';
+            const btn = document.getElementById('auth-confirm-btn');
+            btn.innerText = "Continue";
+            btn.disabled = false;
+            btn.style.marginTop = "5px";
+            const emailErr = document.getElementById('email-error-msg');
+            emailErr.innerText = "Verification email sent! Email verify karke Continue dabao.";
+            emailErr.classList.add('show');
+        };
+
         onAuthStateChanged(auth, (user) => {
             isAuthResolved = true;
             window.currentUser = user;
-            updateUserUI(user);
+            if (user && window.isPasswordUnverified(user)) {
+                window.showVerifyPendingUI();
+            } else {
+                if (awaitingVerification && !user) awaitingVerification = false;
+                updateUserUI(user);
+            }
             checkAndShowUI();
         });
 
         function checkAndShowUI() {
             if(isSplashDone && isAuthResolved) {
-                if(window.currentUser) {
+                if(window.currentUser && !window.isPasswordUnverified(window.currentUser)) {
                     const loginScreen = document.getElementById('login-screen');
                     if (loginScreen.style.display === 'flex') {
                         loginScreen.classList.remove('active');
