@@ -100,6 +100,14 @@
 
         .otp-wrapper { position: relative; width: 100%; margin-bottom: 15px; }
         #otp-input { text-align: center; letter-spacing: 6px; font-weight: 700; font-size: 18px; }
+        .otp-box-row { display: flex; gap: 8px; justify-content: space-between; width: 100%; margin-top: 14px; margin-bottom: 8px; }
+        .otp-box { flex: 1; min-width: 0; height: 56px; border: 1.5px solid #000000; border-radius: 14px; text-align: center; font-size: 22px; font-weight: 700; outline: none; background: transparent; color: #000000; padding: 0; }
+        .otp-box:focus { box-shadow: 0 0 0 2px rgba(0,0,0,0.12); }
+        #otp-error-msg.otp-box-error { position: static; display: block; min-height: 18px; text-align: center; margin: 2px 0 4px 0; }
+        #otp-error-msg.otp-box-error.show { opacity: 1; visibility: visible; }
+        .otp-help-text { text-align: center; font-size: 13px; color: #000000; font-weight: 500; line-height: 1.5; margin-bottom: 16px; word-break: break-word; }
+        .otp-back-btn { width: 100%; height: 50px; background-color: #ffffff; color: #000000; border: 1.5px solid #000000; border-radius: 25px; font-size: 16px; font-weight: 700; cursor: pointer; transition: transform 0.1s; margin-bottom: 12px; }
+        .otp-back-btn:active { transform: scale(0.97); }
         .otp-timer-row { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; font-weight: 600; color: #000000; margin-bottom: 15px; }
         #otp-resend-link { cursor: pointer; font-weight: 800; }
         #otp-resend-link.disabled { opacity: 0.4; pointer-events: none; }
@@ -724,16 +732,23 @@
                 </div>
 
                 <div id="otp-container" style="display: none; width: 100%;">
-                    <div class="otp-wrapper">
-                        <input type="text" id="otp-input" class="auth-input" placeholder="6-digit OTP" inputmode="numeric" maxlength="6" autocomplete="one-time-code" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
-                        <div id="otp-error-msg" class="auth-inline-error">Invalid OTP</div>
+                    <div class="otp-box-row" id="otp-box-row">
+                        <input type="text" id="otp-box-0" class="otp-box" inputmode="numeric" maxlength="1" autocomplete="one-time-code">
+                        <input type="text" id="otp-box-1" class="otp-box" inputmode="numeric" maxlength="1" autocomplete="one-time-code">
+                        <input type="text" id="otp-box-2" class="otp-box" inputmode="numeric" maxlength="1" autocomplete="one-time-code">
+                        <input type="text" id="otp-box-3" class="otp-box" inputmode="numeric" maxlength="1" autocomplete="one-time-code">
+                        <input type="text" id="otp-box-4" class="otp-box" inputmode="numeric" maxlength="1" autocomplete="one-time-code">
+                        <input type="text" id="otp-box-5" class="otp-box" inputmode="numeric" maxlength="1" autocomplete="one-time-code">
                     </div>
+                    <div id="otp-error-msg" class="auth-inline-error otp-box-error">Invalid OTP</div>
                     <div class="otp-timer-row">
                         <i class="fas fa-clock"></i>
                         <span id="otp-timer">0:30</span>
                         <span style="margin: 0 4px;">|</span>
                         <span id="otp-resend-link" class="disabled" onclick="window.resendOtp()">Resend OTP</span>
                     </div>
+                    <div class="otp-help-text">Enter the 6-digit OTP sent to<br><b id="otp-email-text">your email</b></div>
+                    <button type="button" class="otp-back-btn" onclick="window.backToLogin()">Back</button>
                     <button type="button" class="auth-confirm-btn" id="otp-confirm-btn" onclick="window.confirmOtp()">Confirm</button>
                 </div>
 
@@ -1082,14 +1097,22 @@
             const divider = document.querySelector('.auth-divider');
             if (divider) divider.style.display = 'none';
             document.getElementById('otp-container').style.display = 'block';
-            document.getElementById('otp-input').value = '';
+            document.querySelectorAll('.otp-box').forEach(b => { b.value = ''; });
+            try {
+                const em = document.getElementById('otp-email-text');
+                if (em) em.textContent = (pendingOtp && pendingOtp.email) ? pendingOtp.email : 'your email';
+            } catch(e) {}
             document.getElementById('otp-error-msg').classList.remove('show');
+            setTimeout(function() { try { document.getElementById('otp-box-0').focus({ preventScroll: true }); } catch(e) {} }, 400);
         };
 
         window.hideOtpUI = function() {
             if (otpTimerInterval) { clearInterval(otpTimerInterval); otpTimerInterval = null; }
             pendingOtp = null;
             otpLock = false;
+            otpAttempts = 0;
+            otpBlocked = false;
+            try { document.querySelectorAll('.otp-box').forEach(b => { b.value = ''; }); } catch(e) {}
             document.getElementById('otp-container').style.display = 'none';
             document.getElementById('email-input-container').style.display = 'block';
             document.getElementById('password-input-container').style.display = 'block';
@@ -1202,12 +1225,46 @@
             }
         };
 
+        window.backToLogin = function() {
+            try { window.hideOtpUI(); } catch(e) { otpLock = false; pendingOtp = null; otpAttempts = 0; otpBlocked = false; }
+            try {
+                const btn = document.getElementById('auth-confirm-btn');
+                if (btn) { btn.disabled = false; }
+            } catch(e) {}
+        };
+
+        window.setupOtpBoxes = function() {
+            const boxes = Array.from(document.querySelectorAll('.otp-box'));
+            if (!boxes.length) return;
+            boxes.forEach((box, i) => {
+                box.addEventListener('input', () => {
+                    box.value = (box.value || '').replace(/[^0-9]/g, '').slice(-1);
+                    const err = document.getElementById('otp-error-msg');
+                    if (err) err.classList.remove('show');
+                    if (box.value && i < boxes.length - 1) boxes[i + 1].focus();
+                });
+                box.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && !box.value && i > 0) boxes[i - 1].focus();
+                });
+                box.addEventListener('paste', (e) => {
+                    e.preventDefault();
+                    let pasted = '';
+                    try { pasted = ((e.clipboardData || window.clipboardData).getData('text') || ''); } catch(_){}
+                    pasted = pasted.replace(/[^0-9]/g, '').slice(0, 6);
+                    pasted.split('').forEach((d, j) => { if (boxes[j]) boxes[j].value = d; });
+                    if (pasted.length > 0) boxes[Math.min(pasted.length, 5)].focus();
+                    const err = document.getElementById('otp-error-msg');
+                    if (err) err.classList.remove('show');
+                });
+            });
+        };
+        try { window.setupOtpBoxes(); } catch(e) {}
+
         window.confirmOtp = async function() {
             if (!pendingOtp) return;
-            const otpInput = document.getElementById('otp-input');
             const otpErr = document.getElementById('otp-error-msg');
             const confirmBtn = document.getElementById('otp-confirm-btn');
-            const code = (otpInput.value || '').trim();
+            const code = Array.from(document.querySelectorAll('.otp-box')).map(b => (b.value || '').trim()).join('');
             otpErr.classList.remove('show');
             if (otpBlocked) {
                 otpErr.innerText = 'Too many wrong attempts. Tap Resend OTP for a new code.';
@@ -1581,7 +1638,7 @@
         });
 
         // Keyboard open hone pe focused field keyboard ke upar adjust ho jaye
-        ['auth-name', 'auth-email', 'auth-password', 'otp-input'].forEach(function(id) {
+        ['auth-name', 'auth-email', 'auth-password', 'otp-box-0', 'otp-box-1', 'otp-box-2', 'otp-box-3', 'otp-box-4', 'otp-box-5'].forEach(function(id) {
             const field = document.getElementById(id);
             if (!field) return;
             field.addEventListener('focus', function() {
