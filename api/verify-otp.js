@@ -19,6 +19,9 @@ export default async function handler(req, res) {
     if (!token || typeof token !== 'string' || !token.includes('.')) {
       return res.status(401).json({ error: 'Invalid OTP' });
     }
+    if (token.length > 2000) {
+      return res.status(401).json({ error: 'Invalid OTP' });
+    }
 
     const secret = process.env.OTP_SECRET;
     if (!secret) {
