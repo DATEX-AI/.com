@@ -105,9 +105,11 @@
         .otp-box:focus { box-shadow: 0 0 0 2px rgba(0,0,0,0.12); }
         #otp-error-msg.otp-box-error { position: static; display: block; min-height: 18px; text-align: center; margin: 2px 0 4px 0; }
         #otp-error-msg.otp-box-error.show { opacity: 1; visibility: visible; }
-        .otp-help-text { text-align: left; font-size: 13px; color: #000000; font-weight: 500; line-height: 1.5; margin-bottom: 42px; word-break: break-word; }
+        .otp-help-text { text-align: left; font-size: 13px; color: #000000; font-weight: 500; line-height: 1.5; margin-top: 6px; margin-bottom: 42px; word-break: break-word; }
         .otp-back-btn { width: 100%; height: 50px; background-color: #000000; color: #ffffff; border: 1.5px solid #000000; border-radius: 25px; font-size: 16px; font-weight: 700; cursor: pointer; transition: transform 0.1s; margin-bottom: 12px; }
         .otp-back-btn:active { transform: scale(0.97); }
+        .otp-terms-line { text-align: center; font-size: 11.5px; color: #666666; font-weight: 500; line-height: 1.5; margin-top: 14px; }
+        .otp-terms-line .sky { color: #1da1f2; font-weight: 600; }
         .otp-timer-row { display: flex; align-items: center; justify-content: flex-start; gap: 8px; font-size: 13px; font-weight: 600; color: #000000; margin-bottom: 15px; }
         #otp-resend-link { cursor: pointer; font-weight: 800; }
         #otp-resend-link.disabled { opacity: 0.4; pointer-events: none; }
@@ -747,9 +749,10 @@
                         <span style="margin: 0 4px;">|</span>
                         <span id="otp-resend-link" class="disabled" onclick="window.resendOtp()">Resend OTP</span>
                     </div>
-                    <div class="otp-help-text">Enter the 6-digit verification code sent to your email address<br><b id="otp-email-text">example@gmail.com</b></div>
+                    <div class="otp-help-text">Enter the 6-digit verification code sent to your email address - <b id="otp-email-text">example@gmail.com</b></div>
                     <button type="button" class="otp-back-btn" onclick="window.backToLogin()">Back</button>
                     <button type="button" class="auth-confirm-btn" id="otp-confirm-btn" onclick="window.confirmOtp()">Confirm</button>
+                    <div class="otp-terms-line">By clicking Confirm, you agree to our <span class="sky">Terms of Service</span> and <span class="sky">Privacy Policy</span>.</div>
                 </div>
 
                 <button type="button" class="auth-confirm-btn" id="auth-confirm-btn" onclick="window.handleEmailAuth()">Log In</button>
