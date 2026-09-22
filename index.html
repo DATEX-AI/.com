@@ -100,12 +100,12 @@
 
         .otp-wrapper { position: relative; width: 100%; margin-bottom: 15px; }
         #otp-input { text-align: center; letter-spacing: 6px; font-weight: 700; font-size: 18px; }
-        .otp-box-row { display: flex; gap: 8px; justify-content: space-between; width: 100%; margin-top: 14px; margin-bottom: 8px; }
+        .otp-box-row { display: flex; gap: 8px; justify-content: space-between; width: 100%; margin-top: 20px; margin-bottom: 8px; }
         .otp-box { flex: 1; min-width: 0; height: 56px; border: 1.5px solid #000000; border-radius: 14px; text-align: center; font-size: 22px; font-weight: 700; outline: none; background: transparent; color: #000000; padding: 0; }
         .otp-box:focus { box-shadow: 0 0 0 2px rgba(0,0,0,0.12); }
         #otp-error-msg.otp-box-error { position: static; display: block; min-height: 18px; text-align: center; margin: 2px 0 4px 0; }
         #otp-error-msg.otp-box-error.show { opacity: 1; visibility: visible; }
-        .otp-help-text { text-align: left; font-size: 13px; color: #000000; font-weight: 500; line-height: 1.5; margin-bottom: 30px; word-break: break-word; }
+        .otp-help-text { text-align: left; font-size: 13px; color: #000000; font-weight: 500; line-height: 1.5; margin-bottom: 42px; word-break: break-word; }
         .otp-back-btn { width: 100%; height: 50px; background-color: #000000; color: #ffffff; border: 1.5px solid #000000; border-radius: 25px; font-size: 16px; font-weight: 700; cursor: pointer; transition: transform 0.1s; margin-bottom: 12px; }
         .otp-back-btn:active { transform: scale(0.97); }
         .otp-timer-row { display: flex; align-items: center; justify-content: flex-start; gap: 8px; font-size: 13px; font-weight: 600; color: #000000; margin-bottom: 15px; }
@@ -733,12 +733,12 @@
 
                 <div id="otp-container" style="display: none; width: 100%;">
                     <div class="otp-box-row" id="otp-box-row">
-                        <input type="text" id="otp-box-0" class="otp-box" inputmode="numeric" maxlength="1" autocomplete="one-time-code">
-                        <input type="text" id="otp-box-1" class="otp-box" inputmode="numeric" maxlength="1" autocomplete="one-time-code">
-                        <input type="text" id="otp-box-2" class="otp-box" inputmode="numeric" maxlength="1" autocomplete="one-time-code">
-                        <input type="text" id="otp-box-3" class="otp-box" inputmode="numeric" maxlength="1" autocomplete="one-time-code">
-                        <input type="text" id="otp-box-4" class="otp-box" inputmode="numeric" maxlength="1" autocomplete="one-time-code">
-                        <input type="text" id="otp-box-5" class="otp-box" inputmode="numeric" maxlength="1" autocomplete="one-time-code">
+                        <input type="text" id="otp-box-0" class="otp-box" inputmode="numeric" maxlength="6" autocomplete="one-time-code">
+                        <input type="text" id="otp-box-1" class="otp-box" inputmode="numeric" maxlength="6" autocomplete="one-time-code">
+                        <input type="text" id="otp-box-2" class="otp-box" inputmode="numeric" maxlength="6" autocomplete="one-time-code">
+                        <input type="text" id="otp-box-3" class="otp-box" inputmode="numeric" maxlength="6" autocomplete="one-time-code">
+                        <input type="text" id="otp-box-4" class="otp-box" inputmode="numeric" maxlength="6" autocomplete="one-time-code">
+                        <input type="text" id="otp-box-5" class="otp-box" inputmode="numeric" maxlength="6" autocomplete="one-time-code">
                     </div>
                     <div id="otp-error-msg" class="auth-inline-error otp-box-error">Invalid OTP</div>
                     <div class="otp-timer-row">
@@ -1243,10 +1243,16 @@
                     }
                 });
                 box.addEventListener('input', () => {
-                    box.value = (box.value || '').replace(/[^0-9]/g, '').slice(-1);
+                    const digits = (box.value || '').replace(/[^0-9]/g, '');
                     const err = document.getElementById('otp-error-msg');
                     if (err) err.classList.remove('show');
-                    if (box.value && i < boxes.length - 1) boxes[i + 1].focus();
+                    if (!digits) { box.value = ''; return; }
+                    boxes[i].value = digits[0];
+                    let k = 1;
+                    for (let j = i + 1; j < boxes.length && k < digits.length; j++, k++) {
+                        boxes[j].value = digits[k];
+                    }
+                    boxes[Math.min(i + digits.length, boxes.length - 1)].focus();
                 });
                 box.addEventListener('keydown', (e) => {
                     if (e.key === 'Backspace' && !box.value && i > 0) boxes[i - 1].focus();
