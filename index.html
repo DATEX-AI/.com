@@ -105,10 +105,10 @@
         .otp-box:focus { box-shadow: 0 0 0 2px rgba(0,0,0,0.12); }
         #otp-error-msg.otp-box-error { position: static; display: block; min-height: 18px; text-align: center; margin: 2px 0 4px 0; }
         #otp-error-msg.otp-box-error.show { opacity: 1; visibility: visible; }
-        .otp-help-text { text-align: center; font-size: 13px; color: #000000; font-weight: 500; line-height: 1.5; margin-bottom: 16px; word-break: break-word; }
-        .otp-back-btn { width: 100%; height: 50px; background-color: #ffffff; color: #000000; border: 1.5px solid #000000; border-radius: 25px; font-size: 16px; font-weight: 700; cursor: pointer; transition: transform 0.1s; margin-bottom: 12px; }
+        .otp-help-text { text-align: left; font-size: 13px; color: #000000; font-weight: 500; line-height: 1.5; margin-bottom: 30px; word-break: break-word; }
+        .otp-back-btn { width: 100%; height: 50px; background-color: #000000; color: #ffffff; border: 1.5px solid #000000; border-radius: 25px; font-size: 16px; font-weight: 700; cursor: pointer; transition: transform 0.1s; margin-bottom: 12px; }
         .otp-back-btn:active { transform: scale(0.97); }
-        .otp-timer-row { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; font-weight: 600; color: #000000; margin-bottom: 15px; }
+        .otp-timer-row { display: flex; align-items: center; justify-content: flex-start; gap: 8px; font-size: 13px; font-weight: 600; color: #000000; margin-bottom: 15px; }
         #otp-resend-link { cursor: pointer; font-weight: 800; }
         #otp-resend-link.disabled { opacity: 0.4; pointer-events: none; }
 
@@ -747,7 +747,7 @@
                         <span style="margin: 0 4px;">|</span>
                         <span id="otp-resend-link" class="disabled" onclick="window.resendOtp()">Resend OTP</span>
                     </div>
-                    <div class="otp-help-text">Enter the 6-digit OTP sent to<br><b id="otp-email-text">your email</b></div>
+                    <div class="otp-help-text">Enter the 6-digit verification code sent to your email address<br><b id="otp-email-text">example@gmail.com</b></div>
                     <button type="button" class="otp-back-btn" onclick="window.backToLogin()">Back</button>
                     <button type="button" class="auth-confirm-btn" id="otp-confirm-btn" onclick="window.confirmOtp()">Confirm</button>
                 </div>
@@ -1237,6 +1237,11 @@
             const boxes = Array.from(document.querySelectorAll('.otp-box'));
             if (!boxes.length) return;
             boxes.forEach((box, i) => {
+                box.addEventListener('focus', () => {
+                    for (let j = 0; j < i; j++) {
+                        if (!boxes[j].value) { boxes[j].focus(); break; }
+                    }
+                });
                 box.addEventListener('input', () => {
                     box.value = (box.value || '').replace(/[^0-9]/g, '').slice(-1);
                     const err = document.getElementById('otp-error-msg');
