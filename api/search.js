@@ -13,7 +13,15 @@ export default async function handler(req, res) {
     }
 
     try {
-        const { query } = req.body;
+        const { query } = req.body || {};
+
+        if (typeof query !== 'string') {
+            return res.status(400).json({ error: 'Query required' });
+        }
+        const cleanQuery = query.trim().slice(0, 300);
+        if (cleanQuery.length < 2) {
+            return res.status(400).json({ error: 'Query too short' });
+        }
 
         // Ye tumhari safely chupi hui Tavily API Key use karega
         const response = await fetch("https://api.tavily.com/search", {
@@ -23,7 +31,7 @@ export default async function handler(req, res) {
             },
             body: JSON.stringify({
                 "api_key": process.env.TAVILY_API_KEY,
-                "query": query,
+                "query": cleanQuery,
                 "search_depth": "basic",
                 "max_results": 3
             })
