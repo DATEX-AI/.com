@@ -719,6 +719,10 @@
                     <div id="password-error-msg" class="auth-inline-error">Invalid password</div>
                 </div>
 
+                <div class="forgot-pwd-container" id="forgot-pwd-container">
+                    <span onclick="window.forgotPassword()">Forgot password?</span>
+                </div>
+
                 <div id="otp-container" style="display: none; width: 100%;">
                     <div class="otp-wrapper">
                         <input type="text" id="otp-input" class="auth-input" placeholder="6-digit OTP" inputmode="numeric" maxlength="6" autocomplete="one-time-code" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
@@ -1036,7 +1040,7 @@
     </div>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, OAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, updateProfile, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, OAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, updateProfile, sendEmailVerification, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
       
         const firebaseConfig = {
@@ -1063,11 +1067,16 @@
         let otpLock = false;
         let pendingOtp = null;
         let otpTimerInterval = null;
+        let otpAttempts = 0;
+        let otpBlocked = false;
 
         window.showOtpUI = function() {
+            otpAttempts = 0;
+            otpBlocked = false;
             document.getElementById('name-input-container').style.display = 'none';
             document.getElementById('email-input-container').style.display = 'none';
             document.getElementById('password-input-container').style.display = 'none';
+            document.getElementById('forgot-pwd-container').style.display = 'none';
             document.getElementById('auth-confirm-btn').style.display = 'none';
             document.getElementById('auth-switch-wrapper').style.display = 'none';
             const providers = document.querySelectorAll('.auth-provider-btn');
@@ -1086,6 +1095,7 @@
             document.getElementById('otp-container').style.display = 'none';
             document.getElementById('email-input-container').style.display = 'block';
             document.getElementById('password-input-container').style.display = 'block';
+            document.getElementById('forgot-pwd-container').style.display = 'flex';
             document.getElementById('auth-confirm-btn').style.display = 'block';
             document.getElementById('auth-switch-wrapper').style.display = 'block';
             const providers = document.querySelectorAll('.auth-provider-btn');
@@ -1176,6 +1186,8 @@
                 }
                 const d = await r.json();
                 pendingOtp.token = d.token;
+                otpAttempts = 0;
+                otpBlocked = false;
                 window.startOtpTimer();
             } catch (e) {
                 otpErr.innerText = 'Resend failed. Check connection.';
@@ -1191,6 +1203,11 @@
             const confirmBtn = document.getElementById('otp-confirm-btn');
             const code = (otpInput.value || '').trim();
             otpErr.classList.remove('show');
+            if (otpBlocked) {
+                otpErr.innerText = 'Too many wrong attempts. Tap Resend OTP for a new code.';
+                otpErr.classList.add('show');
+                return;
+            }
             if (!/^[0-9]{6}$/.test(code)) {
                 otpErr.innerText = 'Enter 6-digit OTP';
                 otpErr.classList.add('show');
@@ -1198,6 +1215,12 @@
             }
             confirmBtn.disabled = true;
             confirmBtn.innerText = 'Verifying...';
+            const registerOtpFail = () => {
+                otpAttempts++;
+                if (otpAttempts >= 5) {
+                    otpBlocked = true;
+                }
+            };
             try {
                 const r = await fetch('/api/verify-otp', {
                     method: 'POST',
@@ -1206,7 +1229,8 @@
                 });
                 const d = await r.json().catch(() => ({}));
                 if (!r.ok || !d.ok) {
-                    otpErr.innerText = (d && d.error) ? d.error : 'Invalid OTP';
+                    registerOtpFail();
+                    otpErr.innerText = otpBlocked ? 'Too many wrong attempts. Tap Resend OTP for a new code.' : ((d && d.error) ? d.error : 'Invalid OTP');
                     otpErr.classList.add('show');
                     confirmBtn.disabled = false;
                     confirmBtn.innerText = 'Confirm';
@@ -1215,6 +1239,8 @@
                 const { email, password } = pendingOtp;
                 const cred = await signInWithEmailAndPassword(auth, email, password);
                 pendingOtp = null;
+                otpAttempts = 0;
+                otpBlocked = false;
                 otpLock = false;
                 window.hideOtpUI();
                 confirmBtn.disabled = false;
@@ -1225,7 +1251,8 @@
                 updateUserUI(auth.currentUser);
                 checkAndShowUI();
             } catch (e) {
-                otpErr.innerText = 'Invalid OTP';
+                registerOtpFail();
+                otpErr.innerText = otpBlocked ? 'Too many wrong attempts. Tap Resend OTP for a new code.' : 'Invalid OTP';
                 otpErr.classList.add('show');
                 confirmBtn.disabled = false;
                 confirmBtn.innerText = 'Confirm';
@@ -1414,6 +1441,7 @@
                 nameContainer.style.display = 'none';
                 emailContainer.style.display = 'block';
                 pwdContainer.style.display = 'block';
+                document.getElementById('forgot-pwd-container').style.display = 'flex';
                 btn.innerText = "Log In"; 
                 btn.style.marginTop = "5px";
                 document.getElementById('auth-switch-text').innerHTML = `Don't have any account?<b onclick="window.toggleAuthMode()">SIGN UP</b>`;
@@ -1421,6 +1449,7 @@
                 nameContainer.style.display = 'none';
                 emailContainer.style.display = 'block';
                 pwdContainer.style.display = 'block';
+                document.getElementById('forgot-pwd-container').style.display = 'none';
                 btn.innerText = "Sign Up";
                 btn.style.marginTop = "5px";
                 document.getElementById('auth-switch-text').innerHTML = `Already have an account?<b onclick="window.toggleAuthMode()">LOG IN</b>`;
@@ -1447,6 +1476,7 @@
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
             const handleError = (err) => {
+                console.error("Auth error:", err);
                 if(err.code === 'auth/invalid-email' || err.code === 'auth/user-not-found') {
                     emailErr.innerText = "Invalid email";
                     emailErr.classList.add('show');
@@ -1457,6 +1487,7 @@
                     document.getElementById('name-input-container').style.display = 'none';
                     document.getElementById('email-input-container').style.display = 'block';
                     document.getElementById('password-input-container').style.display = 'block';
+                    document.getElementById('forgot-pwd-container').style.display = 'flex';
                     btn.innerText = "Log In";
                     btn.style.marginTop = "5px";
                     document.getElementById('auth-switch-text').innerHTML = `Don't have any account?<b onclick="window.toggleAuthMode()">SIGN UP</b>`;
@@ -1470,8 +1501,20 @@
                     emailErr.classList.add('show');
                     pwdErr.innerText = "Invalid password";
                     pwdErr.classList.add('show');
+                } else if(err.code === 'auth/too-many-requests') {
+                    pwdErr.innerText = "Too many attempts. Try again later.";
+                    pwdErr.classList.add('show');
+                } else if(err.code === 'auth/network-request-failed') {
+                    pwdErr.innerText = "Network error. Check connection and retry.";
+                    pwdErr.classList.add('show');
+                } else if(err.code === 'auth/user-disabled') {
+                    emailErr.innerText = "Account disabled. Contact support.";
+                    emailErr.classList.add('show');
+                } else if(err.code === 'auth/operation-not-allowed') {
+                    pwdErr.innerText = "Email login disabled. Use Google login.";
+                    pwdErr.classList.add('show');
                 } else {
-                    pwdErr.innerText = "Invalid password";
+                    pwdErr.innerText = (err.message || "Login failed. Try again.");
                     pwdErr.classList.add('show');
                 }
             };
@@ -1544,6 +1587,33 @@
                 icon.classList.add('fa-eye');
             }
             pwdInput.focus();
+        };
+
+        window.forgotPassword = async () => {
+            const emailEl = document.getElementById('auth-email');
+            const emailErr = document.getElementById('email-error-msg');
+            const pwdErr = document.getElementById('password-error-msg');
+            emailErr.classList.remove('show');
+            if (pwdErr) pwdErr.classList.remove('show');
+            const email = (emailEl.value || '').trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!email || !emailRegex.test(email)) {
+                emailErr.innerText = "Enter your email first";
+                emailErr.classList.add('show');
+                emailEl.focus();
+                return;
+            }
+            emailErr.innerText = "Sending reset link...";
+            emailErr.classList.add('show');
+            try {
+                await sendPasswordResetEmail(auth, email);
+                emailErr.innerText = "Reset link sent. Check inbox/spam.";
+                emailErr.classList.add('show');
+            } catch (err) {
+                console.error("Reset error:", err);
+                emailErr.innerText = (err.code === 'auth/user-not-found') ? "No account found for this email" : "Could not send reset link. Try again.";
+                emailErr.classList.add('show');
+            }
         };
 
         window.loginWithGoogle = () => { 
@@ -1665,7 +1735,8 @@
 
             const welcomeContainer = document.getElementById('welcome-screen');
             if (welcomeContainer) {
-                welcomeContainer.innerHTML = `<div style="display:flex; flex-direction:row; gap:0px; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${displayFirstNameWelcome}</span></div>`;
+                const esc = (typeof window !== 'undefined' && window.escapeHTML) ? window.escapeHTML(displayFirstNameWelcome) : String(displayFirstNameWelcome).replace(/[&<>"']/g, function(m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; });
+                welcomeContainer.innerHTML = `<div style="display:flex; flex-direction:row; gap:0px; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc}</span></div>`;
             }
 
             let currentAppLang = localStorage.getItem('datex_app_lang') || 'english';
@@ -2181,7 +2252,8 @@
 
         let textToSpeak = ttsState.chunks[ttsState.currentIndex];
         let utterance = new SpeechSynthesisUtterance(textToSpeak);
-        window.speechUtterances.push(utterance); 
+        window.speechUtterances.push(utterance);
+        if (window.speechUtterances.length > 20) window.speechUtterances.splice(0, window.speechUtterances.length - 20);
 
         let voices = window.speechSynthesis.getVoices();
         if(voices.length > 0) {
@@ -2307,8 +2379,12 @@
             if (att.type === 'image') {
                 div.innerHTML = `<img src="${att.data}" onclick="openImageModal(this.src)"><div class="remove-btn" onclick="window.removeAttachment(event, ${index})"><i class="fas fa-times"></i></div>`;
             } else if (att.type === 'file') {
-                let shortName = att.name.length > 10 ? att.name.substring(0, 6) + ".." + att.name.substring(att.name.lastIndexOf('.')) : att.name;
-                div.innerHTML = `<i class="fas fa-file-alt" style="font-size: 24px; color: #333; margin-bottom: 4px;"></i><span style="font-size: 9px; color: #555; font-weight: 500; max-width: 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${shortName}</span><div class="remove-btn" onclick="window.removeAttachment(event, ${index})"><i class="fas fa-times"></i></div>`;
+                let rawPrevName = String(att.name || "file");
+                let shortName = rawPrevName.length > 10 ? rawPrevName.substring(0, 6) + ".." + rawPrevName.substring(rawPrevName.lastIndexOf('.')) : rawPrevName;
+                div.innerHTML = `<i class="fas fa-file-alt" style="font-size: 24px; color: #333; margin-bottom: 4px;"></i><span style="font-size: 9px; color: #555; font-weight: 500; max-width: 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHTML(shortName)}</span><div class="remove-btn" onclick="window.removeAttachment(event, ${index})"><i class="fas fa-times"></i></div>`;
+            } else if (att.type === 'audio') {
+                let dur = escapeHTML(att.duration || "0:00");
+                div.innerHTML = `<i class="fas fa-microphone" style="font-size: 24px; color: #333; margin-bottom: 4px;"></i><span style="font-size: 9px; color: #555; font-weight: 500; max-width: 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${dur}</span><div class="remove-btn" onclick="window.removeAttachment(event, ${index})"><i class="fas fa-times"></i></div>`;
             }
             container.appendChild(div);
         });
@@ -2594,9 +2670,11 @@
             recTimerInterval = setInterval(() => { recSeconds++; let m = Math.floor(recSeconds / 60); let s = recSeconds % 60; recTimerDisplay.innerText = `${m}:${s < 10 ? '0' : ''}${s}`; }, 1000);
 
             vnMediaRecorder.onstop = () => {
-                if (isCancelingAudio) { isVoiceNoteActive = false; clearInterval(recTimerInterval); recWave.classList.remove('playing'); document.getElementById('rec-action-btn').style.display = 'none'; window.currentAttachments = []; setPlusDisabled(false); return; }
+                if (isCancelingAudio) { isVoiceNoteActive = false; clearInterval(recTimerInterval); recWave.classList.remove('playing'); document.getElementById('rec-action-btn').style.display = 'none'; window.currentAttachments = window.currentAttachments.filter(a => a.type !== 'audio'); window.renderAttachmentPreviews(); setPlusDisabled(false); resetVoiceNoteUI(); return; }
                 const audioBlob = new Blob(vnAudioChunks, { type: 'audio/webm' }); const audioUrl = URL.createObjectURL(audioBlob);
-                window.currentAttachments = [{ type: 'audio', name: 'Voice Note', data: audioBlob, url: audioUrl, duration: recTimerDisplay.innerText }];
+                const prevAtts = window.currentAttachments.filter(a => a.type !== 'audio');
+                window.currentAttachments = [...prevAtts, { type: 'audio', name: 'Voice Note', data: audioBlob, url: audioUrl, duration: recTimerDisplay.innerText }];
+                window.renderAttachmentPreviews();
                 if (isSendingAudio) { callDatexAPI(); resetVoiceNoteUI(); } 
                 else { 
                     isVoiceNoteActive = false; clearInterval(recTimerInterval); recWave.classList.remove('playing'); 
@@ -2609,7 +2687,7 @@
     }
 
     function stopVoiceNoteMidway() { if(vnMediaRecorder && vnMediaRecorder.state !== 'inactive') { vnMediaRecorder.stop(); } }
-    function cancelVoiceNoteRecord() { isCancelingAudio = true; if(vnMediaRecorder && vnMediaRecorder.state !== 'inactive') { vnMediaRecorder.stop(); } window.currentAttachments = []; resetVoiceNoteUI(); }
+    function cancelVoiceNoteRecord() { isCancelingAudio = true; if(vnMediaRecorder && vnMediaRecorder.state !== 'inactive') { vnMediaRecorder.stop(); } else { isVoiceNoteActive = false; try { clearInterval(recTimerInterval); } catch(e) {} try { recWave.classList.remove('playing'); } catch(e) {} try { document.getElementById('rec-action-btn').style.display = 'none'; } catch(e) {} } window.currentAttachments = window.currentAttachments.filter(a => a.type !== 'audio'); window.renderAttachmentPreviews(); resetVoiceNoteUI(); }
     
     function handleVoiceNoteAction() {
         if (isVoiceNoteActive) { stopVoiceNoteMidway(); }
@@ -2635,7 +2713,7 @@
             wrap.className = "chat-item-wrapper";
             const activeHighlightClass = (actualIndex === activeChatIndex) ? "selected-active" : "";
             
-            wrap.innerHTML = `<div class="chat-item ${activeHighlightClass}" onclick="loadSelectedChat(${actualIndex}, true)">${chatObj.title}</div><i class="fas fa-trash delete-chat-btn" onclick="deleteHistoryItem(event, ${actualIndex})"></i>`;
+            wrap.innerHTML = `<div class="chat-item ${activeHighlightClass}" onclick="loadSelectedChat(${actualIndex}, true)">${escapeHTML(chatObj.title)}</div><i class="fas fa-trash delete-chat-btn" onclick="deleteHistoryItem(event, ${actualIndex})"></i>`;
             listElement.appendChild(wrap);
         });
 
@@ -2683,7 +2761,8 @@
         chatHistory[index].messages.forEach((msg, msgIdx) => {
             if(msg.role === "user") { addUserMessageToUI(msg.content, false, msgIdx, msg.attachments || (msg.attachment ? [msg.attachment] : null), true); } 
             else { 
-                let isMsgStopped = (msg.content === "You stopped this response" || msg.content.startsWith("Server Error") || msg.content.startsWith("Error:") || msg.content.includes("offline")); 
+                let msgText = (msg && typeof msg.content === 'string') ? msg.content : "";
+                let isMsgStopped = (msgText === "You stopped this response" || msgText.startsWith("Server Error") || msgText.startsWith("Error:") || msgText.includes("offline")); 
                 addAiMessageToUI(msg.content, false, msgIdx, isMsgStopped, true); 
             }
         });
@@ -2716,7 +2795,7 @@
         if (window.currentUser) {
             let name = window.currentUser.displayName || window.currentUser.email.split('@')[0];
             let firstName = window.truncateText(name.split(' ')[0], 12);
-            welcomeHtml = `<div style="display:flex; flex-direction:row; gap:0px; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${firstName}</span></div>`;
+            welcomeHtml = `<div style="display:flex; flex-direction:row; gap:0px; align-items:center; justify-content:center; width: 100%;"><span data-i18n="Hello," style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2;">Hello,</span><span style="font-size:36px; font-weight:700; letter-spacing:1px; margin:0; line-height:1.2; text-align:center; max-width: 100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHTML(firstName)}</span></div>`;
         }
         
         document.getElementById('chat-container').innerHTML = `<div class="welcome-screen" id="welcome-screen">${welcomeHtml}</div>`;
@@ -2764,16 +2843,18 @@
                 hasImageOrFile = true;
                 attachmentHTML += `<div style="display: flex; gap: 8px; flex-wrap: nowrap; overflow-x: auto; max-width: 250px; justify-content: flex-start; scrollbar-width: none; margin-bottom: ${text ? '8px' : '0'};">`;
                 files.forEach(file => {
-                    let shortName = file.name.length > 15 ? file.name.substring(0, 10) + ".." + file.name.substring(file.name.lastIndexOf('.')) : file.name;
-                    attachmentHTML += `<div class="chat-attachment-pdf"><i class="fas fa-file-alt"></i><span>${shortName}</span></div>`;
+                    let rawName = String(file.name || "file");
+                    let shortName = rawName.length > 15 ? rawName.substring(0, 10) + ".." + rawName.substring(rawName.lastIndexOf('.')) : rawName;
+                    attachmentHTML += `<div class="chat-attachment-pdf"><i class="fas fa-file-alt"></i><span>${escapeHTML(shortName)}</span></div>`;
                 });
                 attachmentHTML += `</div>`;
             }
 
             if (audios.length > 0) {
                 isAudio = true;
-                let dur = audios[0].duration || "0:02";
-                attachmentHTML += `<div class="audio-bubble-wrap" style="padding: 6px 12px; border-radius: 22px; display: flex; align-items: center; gap: 10px; width: 200px; margin-bottom: 6px; border: 1.5px solid #000;"><div onclick="playAudioBubble(this, '${audios[0].url}')" class="audio-play-btn" style="width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0;"><i class="fas fa-play play-btn-icon" style="margin-left: 2px; font-size: 13px;"></i></div><div class="audio-progress-line" style="flex: 1; height: 2px; position: relative;"><div class="audio-progress-dot" style="position: absolute; left: 0; top: -3px; width: 8px; height: 8px; border-radius: 50%;"></div></div><span class="audio-timer" data-duration="${dur}" style="font-size: 12px; font-weight: 500; min-width: 30px; text-align: right;">${dur}</span></div>`;
+                let dur = escapeHTML(audios[0].duration || "0:02");
+                let audioUrl = (audios[0].url && typeof audios[0].url === 'string') ? audios[0].url : "";
+                attachmentHTML += `<div class="audio-bubble-wrap" style="padding: 6px 12px; border-radius: 22px; display: flex; align-items: center; gap: 10px; width: 200px; margin-bottom: 6px; border: 1.5px solid #000;">${audioUrl ? `<div onclick="playAudioBubble(this, '${escapeAttr(audioUrl)}')" class="audio-play-btn" style="width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0;"><i class="fas fa-play play-btn-icon" style="margin-left: 2px; font-size: 13px;"></i></div>` : ''}<div class="audio-progress-line" style="flex: 1; height: 2px; position: relative;"><div class="audio-progress-dot" style="position: absolute; left: 0; top: -3px; width: 8px; height: 8px; border-radius: 50%;"></div></div><span class="audio-timer" data-duration="${dur}" style="font-size: 12px; font-weight: 500; min-width: 30px; text-align: right;">${dur}</span></div>`;
             }
         }
         
@@ -2783,7 +2864,7 @@
             ${hasImageOrFile ? attachmentHTML : ''}
             <div class="bubble user-bubble" style="${bubbleStyle}">
                 ${!hasImageOrFile ? attachmentHTML : ''}
-                <div class="user-msg-text" style="${isAudio ? 'display:none !important;' : ''}">${text ? text : ''}</div>
+                <div class="user-msg-text" style="${isAudio ? 'display:none !important;' : ''}">${text ? escapeHTML(text) : ''}</div>
             </div>
             <div class="action-bar user-action-bar"><button class="action-btn btn-black-icon" onclick="openMenu(event, this)"><i class="fas fa-ellipsis-v"></i></button></div>
         </div>`;
@@ -2987,27 +3068,51 @@
 
     function fixedEncodeURIComponent(str) { return encodeURIComponent(str).replace(/[!'()*]/g, function(c) { return '%' + c.charCodeAt(0).toString(16); }); }
 
-    function escapeHTML(str) { return str.replace(/[&<>"']/g, function(m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; }); }
+    function escapeHTML(str) { return String(str == null ? "" : str).replace(/[&<>"']/g, function(m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; }); }
+
+    function escapeAttr(str) { return escapeHTML(str).replace(/\n/g, ' '); }
+
+    function isSafeWebUrl(url) {
+        try {
+            const u = String(url || "").trim();
+            if (/^(javascript|data|vbscript|file|blob):/i.test(u)) return false;
+            if (/^www\./i.test(u)) return true;
+            if (/^https?:\/\//i.test(u)) return true;
+            return false;
+        } catch(e) { return false; }
+    }
+
+    function isSafeImageUrl(url) {
+        try {
+            const u = String(url || "").trim();
+            if (/^(javascript|vbscript|file):/i.test(u)) return false;
+            if (/^data:image\//i.test(u)) return true;
+            return isSafeWebUrl(u);
+        } catch(e) { return false; }
+    }
 
     function formatLinksAndStyles(text) {
-        let formatted = text;
+        let formatted = escapeHTML(text);
         formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
         
         let tempImages = [];
         formatted = formatted.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, function(match, alt, url) {
-            tempImages.push(`<img src="${url}" alt="${alt}" onclick="openImageModal(this.src)" class="ai-gen-img" onload="this.style.background='transparent'">`);
+            if (!isSafeImageUrl(url)) return escapeHTML(alt || "image");
+            tempImages.push(`<img src="${escapeAttr(url)}" alt="${escapeAttr(alt)}" onclick="openImageModal(this.src)" class="ai-gen-img" onload="this.style.background='transparent'">`);
             return `___IMG_TAG_${tempImages.length - 1}___`;
         });
 
         let tempLinks = [];
-        formatted = formatted.replace(/\[([^\]]+)\]\(([^)]+)\)/g, function(match, text, url) {
-            tempLinks.push(`<a href="${url}" target="_blank" class="ai-link">${text}</a>`);
+        formatted = formatted.replace(/\[([^\]]+)\]\(([^)]+)\)/g, function(match, label, url) {
+            if (!isSafeWebUrl(url)) return escapeHTML(label || url);
+            tempLinks.push(`<a href="${escapeAttr(url)}" target="_blank" rel="noopener noreferrer" class="ai-link">${escapeHTML(label)}</a>`);
             return `___A_TAG_${tempLinks.length - 1}___`;
         });
         
         formatted = formatted.replace(/(^|\s)(https?:\/\/[^\s<()]+|www\.[^\s<()]+)/g, function(match, space, url) {
             let cleanUrl = url.replace(/[.,;!?)]$/, ''); let diff = url.substring(cleanUrl.length); let fullUrl = cleanUrl.startsWith('www.') ? 'https://' + cleanUrl : cleanUrl;
-            return space + '<a href="' + fullUrl + '" target="_blank" class="ai-link">' + cleanUrl + '</a>' + diff;
+            if (!isSafeWebUrl(fullUrl)) return space + escapeHTML(url);
+            return space + '<a href="' + escapeAttr(fullUrl) + '" target="_blank" rel="noopener noreferrer" class="ai-link">' + escapeHTML(cleanUrl) + '</a>' + escapeHTML(diff);
         });
         
         formatted = formatted.replace(/___A_TAG_(\d+)___/g, function(match, index) { return tempLinks[index]; });
@@ -3144,12 +3249,16 @@
         
         if (!isRegenerate) {
             const input = document.getElementById('user-input'); message = input.value.trim();
-            if (window.currentAttachments.length > 0) { attachmentsToSave = [...window.currentAttachments]; window.currentAttachments = []; window.renderAttachmentPreviews(); if (attachmentsToSave.length > 0 && attachmentsToSave[0].type === 'audio') { resetVoiceNoteUI(); } }
+            const hasAudioToSend = window.currentAttachments.some(a => a.type === 'audio');
+            let draftToRestore = "";
+            if (hasAudioToSend && message) { draftToRestore = input.value; message = ""; }
+            if (window.currentAttachments.length > 0) { attachmentsToSave = [...window.currentAttachments]; window.currentAttachments = []; window.renderAttachmentPreviews(); if (attachmentsToSave.some(a => a.type === 'audio')) { resetVoiceNoteUI(); } }
             if (!message && attachmentsToSave.length === 0) return;
             input.value = ""; input.style.height = "44px"; 
+            if (draftToRestore) { input.value = draftToRestore; try { autoGrow(input); } catch(e) {} }
 
             if (isNewSession) { 
-                let titleText = message ? message.substring(0, 30) : (attachmentsToSave[0]?.type==='audio' ? "Voice Note" : "Attachment Upload"); 
+                let titleText = message ? message.substring(0, 30) : (attachmentsToSave.some(a => a.type === 'audio') ? "Voice Note" : "Attachment Upload"); 
                 const newChat = { title: titleText, messages: [] }; chatHistory.push(newChat); activeChatIndex = chatHistory.length - 1; isNewSession = false; 
             } 
             else if (editingMsgIdx !== -1) { chatHistory[activeChatIndex].messages.splice(editingMsgIdx); editingMsgIdx = -1; loadSelectedChat(activeChatIndex, false); }
@@ -3177,11 +3286,12 @@
         container.scrollTop = container.scrollHeight;
         updateThreeDotMenus();
 
-        if (attachmentsToSave.length > 0 && attachmentsToSave[0].type === 'audio' && !isRegenerate) {
+        const audioToTranscribe = attachmentsToSave.find(a => a.type === 'audio');
+        if (audioToTranscribe && !isRegenerate) {
             bubble.innerText = "Transcribing voice note...";
             try {
                 const reader = new FileReader();
-                reader.readAsDataURL(attachmentsToSave[0].data);
+                reader.readAsDataURL(audioToTranscribe.data);
                 
                 await new Promise((resolve, reject) => {
                     reader.onloadend = async () => {
@@ -3362,7 +3472,8 @@ CRITICAL INSTRUCTIONS:
                 return;
             }
             let errText = "";
-            if (!navigator.onLine || e.message.includes("Failed to fetch") || e.message.includes("NetworkError")) {
+            const eMsg = (e && typeof e.message === 'string') ? e.message : "";
+            if (!navigator.onLine || eMsg.includes("Failed to fetch") || eMsg.includes("NetworkError")) {
                 errText = "Oops! It seems you are offline. Please check your internet connection and try again.";
             } else {
                 errText = (e.name === 'AbortError') ? "You stopped this response" : "Server Error: " + e.message; 
