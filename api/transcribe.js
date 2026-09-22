@@ -13,10 +13,14 @@ export default async function handler(req, res) {
     }
 
     try {
-        const { audioBase64 } = req.body;
+        const { audioBase64 } = req.body || {};
 
         if (!audioBase64) {
             throw new Error("No audio data provided");
+        }
+
+        if (typeof audioBase64 !== 'string' || audioBase64.length > 4500000) {
+            return res.status(413).json({ error: "Audio too large. Keep voice notes short." });
         }
 
         const buffer = Buffer.from(audioBase64, 'base64');
