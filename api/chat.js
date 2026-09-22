@@ -4,10 +4,31 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { messages, model, max_tokens } = req.body;
+    const { messages, model, max_tokens } = req.body || {};
+
+    if (!Array.isArray(messages) || messages.length === 0) {
+      return res.status(400).json({ error: 'Messages array required' });
+    }
 
     const allowedModels = ["llama-3.3-70b-versatile", "meta-llama/llama-4-scout-17b-16e-instruct"];
     const selectedModel = allowedModels.includes(model) ? model : "llama-3.3-70b-versatile";
+
+    // Hardening: cap tokens + truncate oversized history (abuse/DoS protection)
+    const safeMaxTokens = Math.min(Math.max(parseInt(max_tokens) || 8192, 1), 8192);
+    const trimmed = messages.slice(-20).map((m) => {
+      if (!m || typeof m !== 'object') return null;
+      const role = m.role === 'assistant' ? 'assistant' : 'user';
+      let content = m.content;
+      if (typeof content === 'string') {
+        if (content.length > 12000) content = content.slice(0, 12000);
+        return { role, content };
+      }
+      return null;
+    }).filter(Boolean);
+
+    if (trimmed.length === 0) {
+      return res.status(400).json({ error: 'Messages array required' });
+    }
 
     const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
@@ -17,13 +38,13 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: selectedModel,
-        max_tokens: max_tokens || 8192,
+        max_tokens: safeMaxTokens,
         messages: [
           { 
             role: "system", 
             content: "You are DATEX AI. Strictly follow these language rules: 1. Always auto-detect the user's language. 2. If the user says 'Hii', 'Hello' or types in English, reply ONLY in pure English. 3. If the user speaks/types in Hinglish or Hindi, reply in Hinglish/Hindi. 4. NEVER use Urdu language or Urdu script under any circumstances." 
           },
-          ...messages
+          ...trimmed
         ]
       })
     });
