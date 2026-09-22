@@ -16,6 +16,18 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Invalid email' });
     }
     const cleanEmail = String(email).trim().toLowerCase();
+    if (cleanEmail.length > 254) {
+      return res.status(400).json({ error: 'Invalid email' });
+    }
+
+    // Basic abuse protection: max 1 OTP per email per 30 seconds.
+    // NOTE: serverless memory is per-instance, so also set Brevo/Tavily
+    // quotas + Firebase App Check for strong protection.
+    globalThis.__datexOtpCooldown = globalThis.__datexOtpCooldown || new Map();
+    const lastSent = globalThis.__datexOtpCooldown.get(cleanEmail) || 0;
+    if (Date.now() - lastSent < 30 * 1000) {
+      return res.status(429).json({ error: 'OTP already sent. Please wait 30 seconds.' });
+    }
 
     const secret = process.env.OTP_SECRET;
     const brevoKey = process.env.BREVO_API_KEY;
@@ -61,6 +73,8 @@ export default async function handler(req, res) {
       }
       return res.status(502).json({ error: 'Email failed: ' + detail });
     }
+
+    globalThis.__datexOtpCooldown.set(cleanEmail, Date.now());
 
     return res.status(200).json({ token, expiresIn: 600 });
   } catch (error) {
