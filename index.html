@@ -93,7 +93,7 @@
         .forgot-pwd-container span:hover { opacity: 0.7; }
 
         .auth-confirm-btn { width: 100%; height: 50px; background-color: #000000; color: #ffffff; border-radius: 25px; border: none; font-size: 16px; font-weight: 700; cursor: pointer; transition: transform 0.1s; margin-top: 5px; margin-bottom: 18px; } 
-        .auth-confirm-btn:active { transform: scale(0.97); }
+        .auth-confirm-btn:active { transform: none; }
 
         .auth-switch { font-size: 13px; color: #000000; font-weight: 500; text-align: center; width: 100%; }
         .auth-switch b { color: #000000; cursor: pointer; margin-left: 5px; font-weight: 800; }
@@ -105,10 +105,10 @@
         .otp-box:focus { box-shadow: 0 0 0 2px rgba(0,0,0,0.12); }
         #otp-error-msg.otp-box-error { position: static; display: block; min-height: 18px; text-align: center; margin: 2px 0 4px 0; }
         #otp-error-msg.otp-box-error.show { opacity: 1; visibility: visible; }
-        .otp-help-text { text-align: left; font-size: 13px; color: #000000; font-weight: 500; line-height: 1.5; margin-top: 6px; margin-bottom: 42px; word-break: break-word; }
+        .otp-help-text { text-align: left; font-size: 13px; color: #000000; font-weight: 500; line-height: 1.5; margin-top: 14px; margin-bottom: 50px; word-break: break-word; }
         .otp-back-btn { width: 100%; height: 50px; background-color: #000000; color: #ffffff; border: 1.5px solid #000000; border-radius: 25px; font-size: 16px; font-weight: 700; cursor: pointer; transition: transform 0.1s; margin-bottom: 12px; }
-        .otp-back-btn:active { transform: scale(0.97); }
-        .otp-terms-line { text-align: center; font-size: 11.5px; color: #666666; font-weight: 500; line-height: 1.5; margin-top: 14px; }
+        .otp-back-btn:active { transform: none; }
+        .otp-terms-line { text-align: center; font-size: 11.5px; color: #666666; font-weight: 500; line-height: 1.5; margin-top: 20px; }
         .otp-terms-line .sky { color: #1da1f2; font-weight: 600; }
         .otp-timer-row { display: flex; align-items: center; justify-content: flex-start; gap: 8px; font-size: 13px; font-weight: 600; color: #000000; margin-bottom: 15px; }
         #otp-resend-link { cursor: pointer; font-weight: 800; }
@@ -1555,8 +1555,24 @@
             const handleError = (err) => {
                 console.error("Auth error:", err);
                 if(err.code === 'auth/invalid-email' || err.code === 'auth/user-not-found') {
-                    emailErr.innerText = "Invalid email";
-                    emailErr.classList.add('show');
+                    if (err.code === 'auth/user-not-found' && isLoginMode) {
+                        isLoginMode = false;
+                        signUpPhase = 1;
+                        awaitingVerification = false;
+                        document.getElementById('name-input-container').style.display = 'none';
+                        document.getElementById('email-input-container').style.display = 'block';
+                        document.getElementById('password-input-container').style.display = 'block';
+                        document.getElementById('forgot-pwd-container').style.display = 'none';
+                        btn.disabled = false;
+                        btn.innerText = "Sign Up";
+                        btn.style.marginTop = "5px";
+                        document.getElementById('auth-switch-text').innerHTML = `Already have an account?<b onclick="window.toggleAuthMode()">LOG IN</b>`;
+                        emailErr.innerText = "No account found. Please Sign Up.";
+                        emailErr.classList.add('show');
+                    } else {
+                        emailErr.innerText = "Invalid email";
+                        emailErr.classList.add('show');
+                    }
                 } else if (err.code === 'auth/email-already-in-use') {
                     isLoginMode = true;
                     signUpPhase = 1;
@@ -1661,14 +1677,14 @@
                         const loginScreen = document.getElementById('login-screen');
                         const target = document.getElementById(id === 'auth-name' ? 'name-input-container' : (id === 'auth-email' ? 'email-input-container' : (id === 'auth-password' ? 'password-input-container' : 'otp-container')));
                         if (loginScreen && target) {
-                            const screenRect = loginScreen.getBoundingClientRect();
                             const targetRect = target.getBoundingClientRect();
-                            const offset = (targetRect.top - screenRect.top) - (loginScreen.clientHeight * 0.35);
-                            if (offset > 0) loginScreen.scrollTo({ top: loginScreen.scrollTop + offset, behavior: 'smooth' });
+                            const visibleH = (window.visualViewport && window.visualViewport.height) ? window.visualViewport.height : window.innerHeight;
+                            const hiddenBy = targetRect.bottom - visibleH + 16;
+                            if (hiddenBy > 0) loginScreen.scrollTo({ top: loginScreen.scrollTop + hiddenBy, behavior: 'auto' });
                         } else {
-                            field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            field.scrollIntoView({ behavior: 'auto', block: 'nearest' });
                         }
-                    } catch(e) { try { field.scrollIntoView({ block: 'center' }); } catch(_){} }
+                    } catch(e) { try { field.scrollIntoView({ block: 'nearest' }); } catch(_){} }
                 }, 350);
             });
         });
