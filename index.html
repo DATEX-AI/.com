@@ -328,6 +328,7 @@
 
         .scroll-bottom-btn { position: absolute; top: -55px; left: 50%; width: 38px; height: 38px; background: #ffffff; color: #000000; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.2); cursor: pointer; border: 1px solid #eee; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; transform: translate(-50%, 10px); font-size: 16px; }
         .scroll-bottom-btn.active { opacity: 1; pointer-events: auto; transform: translate(-50%, 0); }
+        .scroll-bottom-btn.hiding { opacity: 0 !important; pointer-events: none !important; transform: translate(-50%, 0) !important; transition: opacity 0.25s ease; }
         
         .drag-lock-ui { position: absolute; bottom: 60px; right: 90px; display: none; flex-direction: column; align-items: center; gap: 6px; z-index: 150; }
         .drag-lock-ui.active { display: flex; }
@@ -659,6 +660,7 @@
         body.dark-mode #modal-user-email { color: #fff; }
         body.dark-mode .profile-logout-btn { border-color: #fff; color: #fff; background: transparent; }
         body.dark-mode .profile-logout-btn:active { background: #333; }
+        body.dark-mode #edit-name-btn { border-color: #fff !important; color: #fff !important; }
         
         body.dark-mode .typing-dot { background-color: #fff; }
         body.dark-mode .chat-attachment-img { border-color: transparent !important; }
@@ -871,7 +873,10 @@
         <div class="profile-modal-top">
             <img id="modal-user-pfp" src="light.logo.jpg" alt="User">
             <div class="profile-modal-details">
-                <span id="modal-user-name">User Name</span>
+                <div style="display: flex; align-items: center; justify-content: center; gap: 8px; max-width: 100%;">
+                    <span id="modal-user-name">User Name</span>
+                    <span id="edit-name-btn" onclick="window.editProfileName()" title="Edit name" style="width: 26px; height: 26px; min-width: 26px; border-radius: 50%; border: 1.5px solid #000; display: flex; justify-content: center; align-items: center; cursor: pointer; color: #000;"><i class="fas fa-pencil-alt" style="font-size: 11px;"></i></span>
+                </div>
                 <div class="profile-email-pill" id="modal-email-pill">
                     <svg viewBox="0 0 48 48" width="12" height="12" style="flex-shrink: 0;">
                         <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
@@ -1496,6 +1501,25 @@
         window.toggleProfileModal = () => {
             document.getElementById('profile-modal').classList.toggle('active');
             document.getElementById('profile-overlay').classList.toggle('active');
+        };
+
+        window.editProfileName = async () => {
+            const user = auth.currentUser;
+            if (!user) return;
+            let current = "User";
+            try { current = (user.displayName || "").split(' ')[0] || "User"; } catch(e) {}
+            const n = prompt("Enter your first name", current);
+            if (n === null) return;
+            let clean = n.trim().split(' ')[0].replace(/[^A-Za-z]/g, '').slice(0, 12);
+            if (!clean) { alert("Please enter a valid name (letters only)."); return; }
+            clean = clean.charAt(0).toUpperCase() + clean.slice(1);
+            try {
+                await updateProfile(user, { displayName: clean });
+                window.currentUser = auth.currentUser;
+                updateUserUI(auth.currentUser);
+            } catch(e) {
+                alert("Could not update name. Check connection and try again.");
+            }
         };
 
         window.toggleAuthMode = () => {
@@ -2281,6 +2305,8 @@
             resizeTimeout = requestAnimationFrame(() => {
                 document.documentElement.style.height = window.visualViewport.height + 'px';
                 document.body.style.height = window.visualViewport.height + 'px';
+                const ls = document.getElementById('login-screen');
+                if (ls) ls.style.height = window.visualViewport.height + 'px';
                 window.scrollTo(0, 0);
             });
         };
@@ -2568,6 +2594,14 @@
 
     const chatContainerEl = document.getElementById('chat-container');
     let scrollBtnHideTimer = null;
+    function hideScrollBtnFade() {
+        const b = document.getElementById('scroll-bottom-btn');
+        if (!b) return;
+        if (scrollBtnHideTimer) { clearTimeout(scrollBtnHideTimer); scrollBtnHideTimer = null; }
+        if (!b.classList.contains('active')) { b.classList.remove('hiding'); return; }
+        b.classList.add('hiding');
+        setTimeout(() => { b.classList.remove('active'); b.classList.remove('hiding'); }, 260);
+    }
     chatContainerEl.addEventListener('scroll', () => {
         if(document.getElementById('msg-menu').style.display === 'flex') hideMsgMenu();
         const scrollBtn = document.getElementById('scroll-bottom-btn');
@@ -2575,12 +2609,12 @@
         
         if (distanceToBottom > 150) {
             scrollBtn.classList.add('active');
+            scrollBtn.classList.remove('hiding');
             if (scrollBtnHideTimer) clearTimeout(scrollBtnHideTimer);
-            scrollBtnHideTimer = setTimeout(() => { scrollBtn.classList.remove('active'); scrollBtnHideTimer = null; }, 2000);
+            scrollBtnHideTimer = setTimeout(() => { hideScrollBtnFade(); }, 1500);
         } 
         else {
-            scrollBtn.classList.remove('active');
-            if (scrollBtnHideTimer) { clearTimeout(scrollBtnHideTimer); scrollBtnHideTimer = null; }
+            hideScrollBtnFade();
         }
         
         if (distanceToBottom <= 10) { userScrolledUp = false; }
@@ -3018,7 +3052,7 @@
                 addAiMessageToUI(msg.content, false, msgIdx, isMsgStopped, true); 
             }
         });
-        renderChatList(); if(shouldToggleSidebar) toggleSidebar(); document.getElementById('scroll-bottom-btn').classList.remove('active');
+        renderChatList(); if(shouldToggleSidebar) toggleSidebar(); document.getElementById('scroll-bottom-btn').classList.remove('active'); document.getElementById('scroll-bottom-btn').classList.remove('hiding');
         updateThreeDotMenus();
         
         let appLang = localStorage.getItem('datex_app_lang') || 'english'; 
@@ -3058,6 +3092,7 @@
 
         if(!keepSidebarOpen && document.getElementById('sidebar').classList.contains('active')) toggleSidebar();
         document.getElementById('scroll-bottom-btn').classList.remove('active');
+        document.getElementById('scroll-bottom-btn').classList.remove('hiding');
     }
 
     function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
@@ -3219,10 +3254,10 @@
         }
         
         const rect = btn.getBoundingClientRect();
-        let x = isUser ? (rect.right - 140) : (rect.left - 12);
+        let x = isUser ? (rect.right - 140) : rect.left;
         let menuH = 160; let y = rect.bottom + 8;
-        if (y + menuH > window.innerHeight) y = rect.top - menuH - 8;
-        if (x < 10) x = 10; if (x + 140 > window.innerWidth) x = window.innerWidth - 150; if (y < 10) y = 10;
+        if (x < 10) x = 10; if (x + 140 > window.innerWidth) x = window.innerWidth - 150;
+        const maxY = window.innerHeight - menuH - 8; if (y > maxY) y = Math.max(8, maxY);
         menu.style.left = x + 'px'; menu.style.top = y + 'px'; menu.style.display = 'flex';
         
         setTimeout(() => { menu.classList.add('active'); }, 10);
