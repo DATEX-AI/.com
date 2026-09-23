@@ -110,6 +110,8 @@
         .otp-back-btn:active { transform: none; }
         .otp-terms-line { text-align: center; font-size: 11.5px; color: #000000; font-weight: 500; line-height: 1.5; margin-top: 20px; }
         .otp-terms-line .sky { color: #1da1f2; font-weight: 600; }
+        .name-help-text { text-align: left; font-size: 13px; color: #000000; font-weight: 500; line-height: 1.5; margin-bottom: 16px; }
+        #name-step-extra .otp-back-btn { margin-bottom: 12px; }
         .otp-timer-row { display: flex; align-items: center; justify-content: flex-start; gap: 8px; font-size: 13px; font-weight: 600; color: #000000; margin-bottom: 15px; }
         #otp-resend-link { cursor: pointer; font-weight: 800; }
         #otp-resend-link.disabled { opacity: 0.4; pointer-events: none; }
@@ -723,6 +725,11 @@
                     <div id="name-error-msg" class="auth-inline-error">Please enter your name</div>
                 </div>
 
+                <div id="name-step-extra" style="display: none; width: 100%;">
+                    <div class="name-help-text">Enter your name with a maximum of 8 characters.</div>
+                    <button type="button" class="otp-back-btn" id="name-back-btn" onclick="window.nameStepBack()">Back</button>
+                </div>
+
                 <div class="email-wrapper" id="email-input-container">
                     <input type="email" id="auth-email" class="auth-input" placeholder="Enter your email" autocomplete="email">
                     <div id="email-error-msg" class="auth-inline-error">Invalid email</div>
@@ -757,10 +764,12 @@
                     <div class="otp-help-text">Enter the 6-digit verification code sent to your email address - <b id="otp-email-text">example@gmail.com</b></div>
                     <button type="button" class="otp-back-btn" onclick="window.backToLogin()">Back</button>
                     <button type="button" class="auth-confirm-btn" id="otp-confirm-btn" onclick="window.confirmOtp()">Confirm</button>
-                    <div class="otp-terms-line">By clicking Confirm, you agree to our <span class="sky">Terms of Service</span> and <span class="sky">Privacy Policy</span>.</div>
+                    <div class="otp-terms-line">By clicking Confirm, you agree to our <span class="sky">Terms of Service</span><br>and <span class="sky">Privacy Policy</span>.</div>
                 </div>
 
                 <button type="button" class="auth-confirm-btn" id="auth-confirm-btn" onclick="window.handleEmailAuth()">Log In</button>
+
+                <div class="otp-terms-line" id="name-terms-line" style="display: none;">By clicking Confirm, you agree to our <span class="sky">Terms of Service</span><br>and <span class="sky">Privacy Policy</span>.</div>
 
                 <div class="auth-switch" id="auth-switch-wrapper">
                     <span id="auth-switch-text">Don't have any account?<b onclick="window.toggleAuthMode()">SIGN UP</b></span>
@@ -1129,6 +1138,8 @@
             const divider = document.querySelector('.auth-divider');
             if (divider) divider.style.display = 'none';
             document.getElementById('otp-container').style.display = 'block';
+            document.getElementById('name-step-extra').style.display = 'none';
+            document.getElementById('name-terms-line').style.display = 'none';
             document.querySelectorAll('.otp-box').forEach(b => { b.value = ''; });
             try {
                 const em = document.getElementById('otp-email-text');
@@ -1146,6 +1157,8 @@
             otpBlocked = false;
             try { document.querySelectorAll('.otp-box').forEach(b => { b.value = ''; }); } catch(e) {}
             document.getElementById('otp-container').style.display = 'none';
+            document.getElementById('name-step-extra').style.display = 'none';
+            document.getElementById('name-terms-line').style.display = 'none';
             const providers = document.querySelectorAll('.auth-provider-btn');
             const divider = document.querySelector('.auth-divider');
             const btn = document.getElementById('auth-confirm-btn');
@@ -1161,23 +1174,36 @@
                 if (divider) divider.style.display = 'flex';
             } else {
                 signUpPhase = 2;
+                window.nameBackTarget = 'email';
                 providers.forEach(b => b.style.display = 'none');
                 if (divider) divider.style.display = 'none';
                 document.getElementById('name-input-container').style.display = 'block';
                 document.getElementById('email-input-container').style.display = 'none';
                 document.getElementById('password-input-container').style.display = 'none';
                 document.getElementById('forgot-pwd-container').style.display = 'none';
+                document.getElementById('name-step-extra').style.display = 'block';
+                document.getElementById('name-terms-line').style.display = 'block';
                 btn.style.display = 'block';
                 btn.disabled = false;
-                btn.innerText = "Continue";
+                btn.innerText = "Next";
                 btn.style.marginTop = "5px";
-                document.getElementById('auth-switch-wrapper').style.display = 'block';
-                document.getElementById('auth-switch-text').innerHTML = `<span><b onclick="window.backToEmailStep()">← BACK</b></span>`;
+                document.getElementById('auth-switch-wrapper').style.display = 'none';
+            }
+        };
+
+        window.nameBackTarget = 'email';
+
+        window.nameStepBack = () => {
+            if (window.nameBackTarget === 'login') {
+                try { window.backToLoginForm(); } catch(e) {}
+            } else {
+                try { window.backToEmailStep(); } catch(e) {}
             }
         };
 
         window.goSignUpNameStep = () => {
             signUpPhase = 2;
+            window.nameBackTarget = 'email';
             document.getElementById('email-error-msg').classList.remove('show');
             document.getElementById('password-error-msg').classList.remove('show');
             const nameErr = document.getElementById('name-error-msg');
@@ -1190,18 +1216,21 @@
             document.getElementById('email-input-container').style.display = 'none';
             document.getElementById('password-input-container').style.display = 'none';
             document.getElementById('forgot-pwd-container').style.display = 'none';
+            document.getElementById('name-step-extra').style.display = 'block';
+            document.getElementById('name-terms-line').style.display = 'block';
             const btn = document.getElementById('auth-confirm-btn');
             btn.disabled = false;
             btn.style.display = 'block';
-            btn.innerText = "Continue";
+            btn.innerText = "Next";
             btn.style.marginTop = "5px";
-            document.getElementById('auth-switch-wrapper').style.display = 'block';
-            document.getElementById('auth-switch-text').innerHTML = `<span><b onclick="window.backToEmailStep()">← BACK</b></span>`;
+            document.getElementById('auth-switch-wrapper').style.display = 'none';
             setTimeout(() => { try { document.getElementById('auth-name').focus({ preventScroll: true }); } catch(e) {} }, 100);
         };
 
         window.backToEmailStep = () => {
             signUpPhase = 1;
+            document.getElementById('name-step-extra').style.display = 'none';
+            document.getElementById('name-terms-line').style.display = 'none';
             const nameErr = document.getElementById('name-error-msg');
             if (nameErr) nameErr.classList.remove('show');
             const providers = document.querySelectorAll('.auth-provider-btn');
@@ -1222,6 +1251,7 @@
         };
 
         window.goLoginNameStep = (prefill) => {
+            window.nameBackTarget = 'login';
             const nameErr = document.getElementById('name-error-msg');
             if (nameErr) nameErr.classList.remove('show');
             const providers = document.querySelectorAll('.auth-provider-btn');
@@ -1232,14 +1262,15 @@
             document.getElementById('email-input-container').style.display = 'none';
             document.getElementById('password-input-container').style.display = 'none';
             document.getElementById('forgot-pwd-container').style.display = 'none';
+            document.getElementById('name-step-extra').style.display = 'block';
+            document.getElementById('name-terms-line').style.display = 'block';
             try { document.getElementById('auth-name').value = prefill || ""; } catch(e) {}
             const btn = document.getElementById('auth-confirm-btn');
             btn.disabled = false;
             btn.style.display = 'block';
-            btn.innerText = "Continue";
+            btn.innerText = "Next";
             btn.style.marginTop = "5px";
-            document.getElementById('auth-switch-wrapper').style.display = 'block';
-            document.getElementById('auth-switch-text').innerHTML = `<span><b onclick="window.backToLoginForm()">← BACK</b></span>`;
+            document.getElementById('auth-switch-wrapper').style.display = 'none';
             setTimeout(() => { try { document.getElementById('auth-name').focus({ preventScroll: true }); } catch(e) {} }, 100);
         };
 
@@ -1448,7 +1479,7 @@
                 document.getElementById('auth-email').value = '';
                 document.getElementById('auth-password').value = '';
                 window.currentUser = auth.currentUser;
-                updateUserUI(auth.currentUser);
+                try { updateUserUI(auth.currentUser); } catch(e) { console.error("updateUserUI error:", e); }
                 checkAndShowUI();
             } catch (e) {
                 registerOtpFail();
@@ -1472,7 +1503,7 @@
                     awaitingVerification = false;
                     btn.disabled = false;
                     window.currentUser = auth.currentUser;
-                    updateUserUI(auth.currentUser);
+                    try { updateUserUI(auth.currentUser); } catch(e) { console.error("updateUserUI error:", e); }
                     checkAndShowUI();
                 } else {
                     try { await sendEmailVerification(auth.currentUser); } catch(e) {}
@@ -1750,6 +1781,8 @@
                     providers.forEach(b => b.style.display = 'flex');
                     const divider = document.querySelector('.auth-divider');
                     if (divider) divider.style.display = 'flex';
+                    document.getElementById('name-step-extra').style.display = 'none';
+                    document.getElementById('name-terms-line').style.display = 'none';
                     document.getElementById('name-input-container').style.display = 'none';
                     document.getElementById('email-input-container').style.display = 'block';
                     document.getElementById('password-input-container').style.display = 'block';
@@ -1863,7 +1896,7 @@
                     .catch((err) => {
                         otpLock = false;
                         btn.disabled = false;
-                        btn.innerText = "Continue";
+                        btn.innerText = "Next";
                         handleError(err);
                     });
             }
@@ -2149,7 +2182,7 @@
             isAuthResolved = true;
             window.currentUser = user;
             if (awaitingVerification && !user) awaitingVerification = false;
-            updateUserUI(user);
+            try { updateUserUI(user); } catch(e) { console.error("updateUserUI error:", e); }
             checkAndShowUI();
         });
 
