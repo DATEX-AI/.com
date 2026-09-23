@@ -48,9 +48,9 @@
         #splash-screen img, #post-login-splash img { width: 200px; height: 200px; border-radius: 50%; object-fit: cover; animation: splashPop 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
         @keyframes splashPop { 0% { opacity: 0; } 100% { opacity: 1; } }
 
-        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000000; color: #ffffff; z-index: 99998; display: none; flex-direction: column; align-items: center; padding: 15px 0 0 0; opacity: 0; transform: translateY(100vh); transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease-out; overflow-x: hidden; overflow-y: hidden; -webkit-overflow-scrolling: touch; scroll-behavior: smooth; scrollbar-width: none; }
+        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000000; color: #ffffff; z-index: 99998; display: none; flex-direction: column; align-items: center; padding: 15px 0 0 0; opacity: 0; transition: opacity 0.4s ease-out; overflow-x: hidden; overflow-y: hidden; -webkit-overflow-scrolling: touch; scroll-behavior: smooth; scrollbar-width: none; }
         #login-screen::-webkit-scrollbar { display: none; }
-        #login-screen.active { opacity: 1; transform: translateY(0); }
+        #login-screen.active { opacity: 1; }
         
         .login-logo { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; }
         .login-title { font-size: 24px; font-weight: 700; letter-spacing: 2px; margin-bottom: 25px; color: #ffffff; } 
@@ -326,8 +326,8 @@
         .bottom-container { width: 100%; background: #ffffff; padding: 10px 20px 15px 20px; display: flex; justify-content: center; z-index: 100; flex-shrink: 0; touch-action: none; position: relative; transition: background-color 0.15s; }
         .bottom-container::before { content: ''; position: absolute; top: -10px; left: 0; width: 100%; height: 10px; background: linear-gradient(to top, var(--fade-color-bottom), transparent); pointer-events: none; z-index: 10; transition: background 0.15s; }
 
-        .scroll-bottom-btn { position: absolute; top: -55px; right: 20px; width: 38px; height: 38px; background: #ffffff; color: #000000; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.2); cursor: pointer; border: 1px solid #eee; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; transform: translateY(10px); font-size: 16px; }
-        .scroll-bottom-btn.active { opacity: 1; pointer-events: auto; transform: translateY(0); }
+        .scroll-bottom-btn { position: absolute; top: -55px; left: 50%; width: 38px; height: 38px; background: #ffffff; color: #000000; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.2); cursor: pointer; border: 1px solid #eee; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; transform: translate(-50%, 10px); font-size: 16px; }
+        .scroll-bottom-btn.active { opacity: 1; pointer-events: auto; transform: translate(-50%, 0); }
         
         .drag-lock-ui { position: absolute; bottom: 60px; right: 90px; display: none; flex-direction: column; align-items: center; gap: 6px; z-index: 150; }
         .drag-lock-ui.active { display: flex; }
@@ -1117,9 +1117,10 @@
             otpBlocked = false;
             try { document.querySelectorAll('.otp-box').forEach(b => { b.value = ''; }); } catch(e) {}
             document.getElementById('otp-container').style.display = 'none';
+            document.getElementById('name-input-container').style.display = isLoginMode ? 'none' : 'block';
             document.getElementById('email-input-container').style.display = 'block';
             document.getElementById('password-input-container').style.display = 'block';
-            document.getElementById('forgot-pwd-container').style.display = 'flex';
+            document.getElementById('forgot-pwd-container').style.display = isLoginMode ? 'flex' : 'none';
             document.getElementById('auth-confirm-btn').style.display = 'block';
             document.getElementById('auth-switch-wrapper').style.display = 'block';
             const providers = document.querySelectorAll('.auth-provider-btn');
@@ -1339,9 +1340,8 @@
         window.guessNameFromEmail = function(email) {
             try {
                 let prefix = (email || "").split('@')[0] || "";
-                let first = prefix.split(/[._\-+]+/)[0] || prefix;
-                first = first.replace(/[0-9]+/g, '');
-                first = first.trim();
+                let first = prefix.split(/[._\-+]+/).filter(s => /[A-Za-z]/.test(s))[0] || "";
+                first = first.replace(/[^A-Za-z]/g, '').slice(0, 8);
                 if (!first) return "User";
                 return first.charAt(0).toUpperCase() + first.slice(1);
             } catch(e) { return "User"; }
@@ -1523,7 +1523,7 @@
                 btn.style.marginTop = "5px";
                 document.getElementById('auth-switch-text').innerHTML = `Don't have any account?<b onclick="window.toggleAuthMode()">SIGN UP</b>`;
             } else {
-                nameContainer.style.display = 'none';
+                nameContainer.style.display = 'block';
                 emailContainer.style.display = 'block';
                 pwdContainer.style.display = 'block';
                 document.getElementById('forgot-pwd-container').style.display = 'none';
@@ -1641,8 +1641,11 @@
                 createUserWithEmailAndPassword(auth, email, password)
                     .then(async (userCredential) => {
                         const u = userCredential.user;
-                        const autoName = window.guessNameFromEmail(email);
-                        try { await updateProfile(u, { displayName: autoName }); } catch(e) {}
+                        let typedName = "";
+                        try { typedName = (document.getElementById('auth-name').value || '').trim().split(' ')[0]; } catch(e) {}
+                        typedName = typedName.replace(/[^A-Za-z]/g, '').slice(0, 8);
+                        const finalName = typedName ? (typedName.charAt(0).toUpperCase() + typedName.slice(1)) : window.guessNameFromEmail(email);
+                        try { await updateProfile(u, { displayName: finalName }); } catch(e) {}
                         await window.requestOtpAndLock(email, password, btn, "Sign Up");
                     })
                     .catch((err) => {
@@ -1667,17 +1670,22 @@
             if(el.classList.contains('show')) el.classList.remove('show');
         });
 
-        // Keyboard open hone pe focused field keyboard ke upar adjust ho jaye
-        ['auth-name', 'auth-email', 'auth-password', 'otp-box-0', 'otp-box-1', 'otp-box-2', 'otp-box-3', 'otp-box-4', 'otp-box-5'].forEach(function(id) {
-            const field = document.getElementById(id);
-            if (!field) return;
-            field.addEventListener('focus', function() {
-                try { document.getElementById('login-screen').style.overflowY = 'auto'; } catch(e) {}
+        // Keyboard open hone pe focused field keyboard ke upar adjust ho jaye (delegated: login ke sabhi current/future inputs pe chalega)
+        (function() {
+            const loginScreen = document.getElementById('login-screen');
+            if (!loginScreen) return;
+            const containerFor = (field) => {
+                if (!field || !field.closest) return null;
+                return field.closest('#name-input-container, #email-input-container, #password-input-container, #otp-container') || field;
+            };
+            loginScreen.addEventListener('focusin', (e) => {
+                const field = e.target;
+                if (!field || (field.tagName !== 'INPUT' && field.tagName !== 'TEXTAREA')) return;
+                try { loginScreen.style.overflowY = 'auto'; } catch(err) {}
                 setTimeout(function() {
                     try {
-                        const loginScreen = document.getElementById('login-screen');
-                        const target = document.getElementById(id === 'auth-name' ? 'name-input-container' : (id === 'auth-email' ? 'email-input-container' : (id === 'auth-password' ? 'password-input-container' : 'otp-container')));
-                        if (loginScreen && target) {
+                        const target = containerFor(field);
+                        if (target && target !== field) {
                             const targetRect = target.getBoundingClientRect();
                             const visibleH = (window.visualViewport && window.visualViewport.height) ? window.visualViewport.height : window.innerHeight;
                             const hiddenBy = targetRect.bottom - visibleH + 16;
@@ -1685,22 +1693,21 @@
                         } else {
                             field.scrollIntoView({ behavior: 'auto', block: 'nearest' });
                         }
-                    } catch(e) { try { field.scrollIntoView({ block: 'nearest' }); } catch(_){} }
+                    } catch(err) { try { field.scrollIntoView({ block: 'nearest' }); } catch(_) {} }
                 }, 350);
             });
-            field.addEventListener('blur', function() {
+            loginScreen.addEventListener('focusout', () => {
                 setTimeout(function() {
                     try {
-                        const loginScreen = document.getElementById('login-screen');
                         const active = document.activeElement;
-                        if (loginScreen && (!active || !loginScreen.contains(active))) {
+                        if (!active || !loginScreen.contains(active)) {
                             loginScreen.scrollTo({ top: 0 });
                             loginScreen.style.overflowY = 'hidden';
                         }
-                    } catch(e) {}
+                    } catch(err) {}
                 }, 300);
             });
-        });
+        })();
 
         window.togglePasswordVisibility = () => {
             const pwdInput = document.getElementById('auth-password');
@@ -2560,13 +2567,21 @@
     }
 
     const chatContainerEl = document.getElementById('chat-container');
+    let scrollBtnHideTimer = null;
     chatContainerEl.addEventListener('scroll', () => {
         if(document.getElementById('msg-menu').style.display === 'flex') hideMsgMenu();
         const scrollBtn = document.getElementById('scroll-bottom-btn');
         const distanceToBottom = chatContainerEl.scrollHeight - chatContainerEl.scrollTop - chatContainerEl.clientHeight;
         
-        if (distanceToBottom > 150) { scrollBtn.classList.add('active'); } 
-        else { scrollBtn.classList.remove('active'); }
+        if (distanceToBottom > 150) {
+            scrollBtn.classList.add('active');
+            if (scrollBtnHideTimer) clearTimeout(scrollBtnHideTimer);
+            scrollBtnHideTimer = setTimeout(() => { scrollBtn.classList.remove('active'); scrollBtnHideTimer = null; }, 2000);
+        } 
+        else {
+            scrollBtn.classList.remove('active');
+            if (scrollBtnHideTimer) { clearTimeout(scrollBtnHideTimer); scrollBtnHideTimer = null; }
+        }
         
         if (distanceToBottom <= 10) { userScrolledUp = false; }
         else if (distanceToBottom > 50) { userScrolledUp = true; }
@@ -3203,7 +3218,8 @@
             if(retryBtn) retryBtn.style.display = isLastUserMsg ? 'flex' : 'none';
         }
         
-        const rect = btn.getBoundingClientRect(); let x = isUser ? (rect.left - 140) : (rect.right + 5); 
+        const rect = btn.getBoundingClientRect();
+        let x = isUser ? (rect.right - 140) : (rect.left - 12);
         let menuH = 160; let y = rect.bottom + 8;
         if (y + menuH > window.innerHeight) y = rect.top - menuH - 8;
         if (x < 10) x = 10; if (x + 140 > window.innerWidth) x = window.innerWidth - 150; if (y < 10) y = 10;
@@ -3657,6 +3673,24 @@ CRITICAL INSTRUCTIONS:
             } else { apiMessages.push({ role: 'assistant', content: msg.content }); }
         });
 
+        let seenImgs = 0;
+        for (let k = apiMessages.length - 1; k >= 0; k--) {
+            const m = apiMessages[k];
+            if (m && m.role === 'user' && Array.isArray(m.content)) {
+                const kept = [];
+                for (const part of m.content) {
+                    if (part && part.type === 'image_url') {
+                        seenImgs++;
+                        if (seenImgs <= 3) kept.push(part);
+                    } else kept.push(part);
+                }
+                m.content = kept;
+                if (kept.length === 1 && kept[0].type === 'text' && kept[0].text === "Please analyze the attached image(s).") {
+                    kept[0].text = "Please answer based on our conversation so far.";
+                }
+            }
+        }
+
         const selectedModel = useVision ? "qwen/qwen3.6-27b" : "openai/gpt-oss-120b";
         
         const isDeepResearchOn = localStorage.getItem('datex_deep_research') === 'true';
@@ -3699,7 +3733,9 @@ CRITICAL INSTRUCTIONS:
             }
             window.incrementUserLimit(tokensUsed);
 
-            const aiResponse = data.choices[0].message.content; const aiMsgIdx = chatHistory[requestChatIndex].messages.length;
+            let aiResponse = data.choices[0].message.content || data.choices[0].message.reasoning_content || "";
+            if (!aiResponse || !aiResponse.trim()) { throw new Error("Empty response from model"); }
+            const aiMsgIdx = chatHistory[requestChatIndex].messages.length;
             
             chatHistory[requestChatIndex].messages.push({ role: "assistant", content: aiResponse }); 
             try { localStorage.setItem('datex_full_history', JSON.stringify(chatHistory)); } catch(e) {}
