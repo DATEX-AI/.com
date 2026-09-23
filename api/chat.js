@@ -10,8 +10,8 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Messages array required' });
     }
 
-    const allowedModels = ["llama-3.3-70b-versatile", "meta-llama/llama-4-scout-17b-16e-instruct"];
-    const selectedModel = allowedModels.includes(model) ? model : "llama-3.3-70b-versatile";
+    const allowedModels = ["openai/gpt-oss-120b", "qwen/qwen3.6-27b"];
+    const selectedModel = allowedModels.includes(model) ? model : "openai/gpt-oss-120b";
 
     // Hardening: cap tokens + truncate oversized history (abuse/DoS protection)
     const safeMaxTokens = Math.min(Math.max(parseInt(max_tokens) || 8192, 1), 8192);
