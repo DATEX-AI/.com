@@ -110,8 +110,10 @@
         .otp-back-btn:active { transform: none; }
         .otp-terms-line { text-align: center; font-size: 11.5px; color: #000000; font-weight: 500; line-height: 1.5; margin-top: 20px; }
         .otp-terms-line .sky { color: #1da1f2; font-weight: 600; }
-        .name-help-text { text-align: left; font-size: 13px; color: #000000; font-weight: 500; line-height: 1.5; margin-bottom: 16px; }
-        #name-step-extra .otp-back-btn { margin-bottom: 12px; }
+        .name-help-text { text-align: left; font-size: 13px; color: #000000; font-weight: 500; line-height: 1.5; margin-top: 36px; margin-bottom: 64px; }
+        #name-back-wrap { width: 100%; }
+        #name-back-wrap .otp-back-btn { margin-bottom: 12px; }
+        #name-terms-line { margin-top: 30px; }
         .otp-timer-row { display: flex; align-items: center; justify-content: flex-start; gap: 8px; font-size: 13px; font-weight: 600; color: #000000; margin-bottom: 15px; }
         #otp-resend-link { cursor: pointer; font-weight: 800; }
         #otp-resend-link.disabled { opacity: 0.4; pointer-events: none; }
@@ -727,7 +729,6 @@
 
                 <div id="name-step-extra" style="display: none; width: 100%;">
                     <div class="name-help-text">Enter your name with a maximum of 8 characters.</div>
-                    <button type="button" class="otp-back-btn" id="name-back-btn" onclick="window.nameStepBack()">Back</button>
                 </div>
 
                 <div class="email-wrapper" id="email-input-container">
@@ -762,12 +763,16 @@
                         <span id="otp-resend-link" class="disabled" onclick="window.resendOtp()">Resend OTP</span>
                     </div>
                     <div class="otp-help-text">Enter the 6-digit verification code sent to your email address - <b id="otp-email-text">example@gmail.com</b></div>
-                    <button type="button" class="otp-back-btn" onclick="window.backToLogin()">Back</button>
                     <button type="button" class="auth-confirm-btn" id="otp-confirm-btn" onclick="window.confirmOtp()">Confirm</button>
+                    <button type="button" class="otp-back-btn" onclick="window.backToLogin()">Back</button>
                     <div class="otp-terms-line">By clicking Confirm, you agree to our <span class="sky">Terms of Service</span><br>and <span class="sky">Privacy Policy</span>.</div>
                 </div>
 
                 <button type="button" class="auth-confirm-btn" id="auth-confirm-btn" onclick="window.handleEmailAuth()">Log In</button>
+
+                <div id="name-back-wrap" style="display: none; width: 100%;">
+                    <button type="button" class="otp-back-btn" id="name-back-btn" onclick="window.nameStepBack()">Back</button>
+                </div>
 
                 <div class="otp-terms-line" id="name-terms-line" style="display: none;">By clicking Confirm, you agree to our <span class="sky">Terms of Service</span><br>and <span class="sky">Privacy Policy</span>.</div>
 
@@ -1096,13 +1101,13 @@
         import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
       
         const firebaseConfig = {
-          apiKey: "AIzaSyA_MGhFODUj1LCaaZm1TJ6jBIhB_d5bYxw",
-          authDomain: "datex-ai-sujal.firebaseapp.com",
-          projectId: "datex-ai-sujal",
-          storageBucket: "datex-ai-sujal.firebasestorage.app",
-          messagingSenderId: "700853866793",
-          appId: "1:700853866793:web:acf4d2774de02c8d40a738",
-          measurementId: "G-F4P3VQVLH3"
+          apiKey: "AIzaSyC4SN7vFMUW5PHyyhNkaTH6VUSgs4b5pl4",
+          authDomain: "datex-ai-app.firebaseapp.com",
+          projectId: "datex-ai-app",
+          storageBucket: "datex-ai-app.firebasestorage.app",
+          messagingSenderId: "461690246807",
+          appId: "1:461690246807:web:5ab30ea9ba019b90fc3bd2",
+          measurementId: "G-G80JCZ9PMW"
         };
       
         const app = initializeApp(firebaseConfig);
@@ -1139,6 +1144,7 @@
             if (divider) divider.style.display = 'none';
             document.getElementById('otp-container').style.display = 'block';
             document.getElementById('name-step-extra').style.display = 'none';
+            document.getElementById('name-back-wrap').style.display = 'none';
             document.getElementById('name-terms-line').style.display = 'none';
             document.querySelectorAll('.otp-box').forEach(b => { b.value = ''; });
             try {
@@ -1158,6 +1164,7 @@
             try { document.querySelectorAll('.otp-box').forEach(b => { b.value = ''; }); } catch(e) {}
             document.getElementById('otp-container').style.display = 'none';
             document.getElementById('name-step-extra').style.display = 'none';
+            document.getElementById('name-back-wrap').style.display = 'none';
             document.getElementById('name-terms-line').style.display = 'none';
             const providers = document.querySelectorAll('.auth-provider-btn');
             const divider = document.querySelector('.auth-divider');
@@ -1182,6 +1189,7 @@
                 document.getElementById('password-input-container').style.display = 'none';
                 document.getElementById('forgot-pwd-container').style.display = 'none';
                 document.getElementById('name-step-extra').style.display = 'block';
+                document.getElementById('name-back-wrap').style.display = 'block';
                 document.getElementById('name-terms-line').style.display = 'block';
                 btn.style.display = 'block';
                 btn.disabled = false;
@@ -1217,6 +1225,7 @@
             document.getElementById('password-input-container').style.display = 'none';
             document.getElementById('forgot-pwd-container').style.display = 'none';
             document.getElementById('name-step-extra').style.display = 'block';
+            document.getElementById('name-back-wrap').style.display = 'block';
             document.getElementById('name-terms-line').style.display = 'block';
             const btn = document.getElementById('auth-confirm-btn');
             btn.disabled = false;
@@ -1230,6 +1239,7 @@
         window.backToEmailStep = () => {
             signUpPhase = 1;
             document.getElementById('name-step-extra').style.display = 'none';
+            document.getElementById('name-back-wrap').style.display = 'none';
             document.getElementById('name-terms-line').style.display = 'none';
             const nameErr = document.getElementById('name-error-msg');
             if (nameErr) nameErr.classList.remove('show');
@@ -1263,6 +1273,7 @@
             document.getElementById('password-input-container').style.display = 'none';
             document.getElementById('forgot-pwd-container').style.display = 'none';
             document.getElementById('name-step-extra').style.display = 'block';
+            document.getElementById('name-back-wrap').style.display = 'block';
             document.getElementById('name-terms-line').style.display = 'block';
             try { document.getElementById('auth-name').value = prefill || ""; } catch(e) {}
             const btn = document.getElementById('auth-confirm-btn');
@@ -1782,6 +1793,7 @@
                     const divider = document.querySelector('.auth-divider');
                     if (divider) divider.style.display = 'flex';
                     document.getElementById('name-step-extra').style.display = 'none';
+                    document.getElementById('name-back-wrap').style.display = 'none';
                     document.getElementById('name-terms-line').style.display = 'none';
                     document.getElementById('name-input-container').style.display = 'none';
                     document.getElementById('email-input-container').style.display = 'block';
