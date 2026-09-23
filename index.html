@@ -48,7 +48,7 @@
         #splash-screen img, #post-login-splash img { width: 200px; height: 200px; border-radius: 50%; object-fit: cover; animation: splashPop 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
         @keyframes splashPop { 0% { opacity: 0; } 100% { opacity: 1; } }
 
-        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000000; color: #ffffff; z-index: 99998; display: none; flex-direction: column; align-items: center; padding: 15px 0 0 0; opacity: 0; transform: translateY(100vh); transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease-out; overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch; scroll-behavior: smooth; scrollbar-width: none; }
+        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000000; color: #ffffff; z-index: 99998; display: none; flex-direction: column; align-items: center; padding: 15px 0 0 0; opacity: 0; transform: translateY(100vh); transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease-out; overflow-x: hidden; overflow-y: hidden; -webkit-overflow-scrolling: touch; scroll-behavior: smooth; scrollbar-width: none; }
         #login-screen::-webkit-scrollbar { display: none; }
         #login-screen.active { opacity: 1; transform: translateY(0); }
         
@@ -105,10 +105,10 @@
         .otp-box:focus { box-shadow: 0 0 0 2px rgba(0,0,0,0.12); }
         #otp-error-msg.otp-box-error { position: static; display: block; min-height: 18px; text-align: center; margin: 2px 0 4px 0; }
         #otp-error-msg.otp-box-error.show { opacity: 1; visibility: visible; }
-        .otp-help-text { text-align: left; font-size: 13px; color: #000000; font-weight: 500; line-height: 1.5; margin-top: 14px; margin-bottom: 50px; word-break: break-word; }
+        .otp-help-text { text-align: left; font-size: 13px; color: #000000; font-weight: 500; line-height: 1.5; margin-top: 20px; margin-bottom: 50px; word-break: break-word; }
         .otp-back-btn { width: 100%; height: 50px; background-color: #000000; color: #ffffff; border: 1.5px solid #000000; border-radius: 25px; font-size: 16px; font-weight: 700; cursor: pointer; transition: transform 0.1s; margin-bottom: 12px; }
         .otp-back-btn:active { transform: none; }
-        .otp-terms-line { text-align: center; font-size: 11.5px; color: #666666; font-weight: 500; line-height: 1.5; margin-top: 20px; }
+        .otp-terms-line { text-align: center; font-size: 11.5px; color: #000000; font-weight: 500; line-height: 1.5; margin-top: 20px; }
         .otp-terms-line .sky { color: #1da1f2; font-weight: 600; }
         .otp-timer-row { display: flex; align-items: center; justify-content: flex-start; gap: 8px; font-size: 13px; font-weight: 600; color: #000000; margin-bottom: 15px; }
         #otp-resend-link { cursor: pointer; font-weight: 800; }
@@ -1672,6 +1672,7 @@
             const field = document.getElementById(id);
             if (!field) return;
             field.addEventListener('focus', function() {
+                try { document.getElementById('login-screen').style.overflowY = 'auto'; } catch(e) {}
                 setTimeout(function() {
                     try {
                         const loginScreen = document.getElementById('login-screen');
@@ -1686,6 +1687,18 @@
                         }
                     } catch(e) { try { field.scrollIntoView({ block: 'nearest' }); } catch(_){} }
                 }, 350);
+            });
+            field.addEventListener('blur', function() {
+                setTimeout(function() {
+                    try {
+                        const loginScreen = document.getElementById('login-screen');
+                        const active = document.activeElement;
+                        if (loginScreen && (!active || !loginScreen.contains(active))) {
+                            loginScreen.scrollTo({ top: 0 });
+                            loginScreen.style.overflowY = 'hidden';
+                        }
+                    } catch(e) {}
+                }, 300);
             });
         });
 
@@ -3190,8 +3203,10 @@
             if(retryBtn) retryBtn.style.display = isLastUserMsg ? 'flex' : 'none';
         }
         
-        const rect = btn.getBoundingClientRect(); let x = isUser ? (rect.left - 140) : (rect.right + 5); let y = rect.top; 
-        if (x < 10) x = 10; if (x + 140 > window.innerWidth) x = window.innerWidth - 150; if (y + 120 > window.innerHeight) y = window.innerHeight - 130; 
+        const rect = btn.getBoundingClientRect(); let x = isUser ? (rect.left - 140) : (rect.right + 5); 
+        let menuH = 160; let y = rect.bottom + 8;
+        if (y + menuH > window.innerHeight) y = rect.top - menuH - 8;
+        if (x < 10) x = 10; if (x + 140 > window.innerWidth) x = window.innerWidth - 150; if (y < 10) y = 10;
         menu.style.left = x + 'px'; menu.style.top = y + 'px'; menu.style.display = 'flex';
         
         setTimeout(() => { menu.classList.add('active'); }, 10);
@@ -3612,10 +3627,14 @@ CRITICAL INSTRUCTIONS:
 
                 if (localAtts.length > 0) {
                     let textNotes = [];
+                    let imgCount = 0;
                     localAtts.forEach(att => {
                         if (att.type === 'image') {
                             useVision = true;
-                            contentArr.push({ type: "image_url", image_url: { url: att.data } });
+                            if (imgCount < 3) {
+                                contentArr.push({ type: "image_url", image_url: { url: att.data } });
+                                imgCount++;
+                            }
                         } else if (att.type === 'file') {
                             if (att.dataText) {
                                 textNotes.push(`[System Note: User attached document "${att.name}" with content:\n${att.dataText}]`);
@@ -3638,7 +3657,7 @@ CRITICAL INSTRUCTIONS:
             } else { apiMessages.push({ role: 'assistant', content: msg.content }); }
         });
 
-        const selectedModel = useVision ? "meta-llama/llama-4-scout-17b-16e-instruct" : "llama-3.3-70b-versatile";
+        const selectedModel = useVision ? "qwen/qwen3.6-27b" : "openai/gpt-oss-120b";
         
         const isDeepResearchOn = localStorage.getItem('datex_deep_research') === 'true';
         const searchKeywords = ['aaj', 'ajj', 'today', 'news', 'khabar', 'price', 'match', 'ipl', 'score', 'latest', 'update', 'weather', 'mausam', 'kal', 'yesterday', 'current', 'stock', 'who won', 'kaun jeeta', 'batao', 'search', 'link', 'youtube', 'video', 'channel', 'instagram', 'linkedin', 'facebook', 'twitter', 'website', 'profile', 'account', 'url', 'site', 'browser', 'google'];
