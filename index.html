@@ -1125,6 +1125,7 @@
         let pendingOtp = null;
         window.pendingLoginCreds = null;
         window.pendingLinkCred = null;
+        window.fromLoginName = false;
         let otpTimerInterval = null;
         let otpAttempts = 0;
         let otpBlocked = false;
@@ -1169,6 +1170,13 @@
             const providers = document.querySelectorAll('.auth-provider-btn');
             const divider = document.querySelector('.auth-divider');
             const btn = document.getElementById('auth-confirm-btn');
+            if (isLoginMode && window.fromLoginName) {
+                window.fromLoginName = false;
+                let keep = "";
+                try { keep = document.getElementById('auth-name').value || ""; } catch(e) {}
+                window.goLoginNameStep(keep);
+                return;
+            }
             if (isLoginMode) {
                 document.getElementById('name-input-container').style.display = 'none';
                 document.getElementById('email-input-container').style.display = 'block';
@@ -1288,6 +1296,7 @@
         window.backToLoginForm = async () => {
             try { await signOut(auth); } catch(e) {}
             window.pendingLoginCreds = null;
+            window.fromLoginName = false;
             window.currentUser = null;
             otpLock = false;
             try { window.hideOtpUI(); } catch(e) { otpLock = false; }
@@ -1484,6 +1493,7 @@
                 otpAttempts = 0;
                 otpBlocked = false;
                 otpLock = false;
+                window.fromLoginName = false;
                 window.hideOtpUI();
                 confirmBtn.disabled = false;
                 confirmBtn.innerText = 'Confirm';
@@ -1719,6 +1729,7 @@
             signUpPhase = 1; 
             awaitingVerification = false;
             window.pendingLoginCreds = null;
+            window.fromLoginName = false;
             try { window.hideOtpUI(); } catch(e) { otpLock = false; pendingOtp = null; }
             
             document.getElementById('email-error-msg').classList.remove('show');
@@ -1844,6 +1855,7 @@
                     const finalName = typedName.charAt(0).toUpperCase() + typedName.slice(1);
                     const creds = window.pendingLoginCreds;
                     window.pendingLoginCreds = null;
+                    window.fromLoginName = true;
                     btn.disabled = true;
                     btn.innerText = "Please wait...";
                     try { await updateProfile(auth.currentUser, { displayName: finalName }); } catch(e) {}
@@ -2014,11 +2026,6 @@
             try { window.hideOtpUI(); } catch(e) { otpLock = false; pendingOtp = null; }
             document.getElementById('email-error-msg').classList.remove('show');
             document.getElementById('password-error-msg').classList.remove('show');
-            const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent || "");
-            if (isMobile) {
-                try { signInWithRedirect(auth, googleProvider); } catch(err) { window.showProviderError(err); }
-                return;
-            }
             signInWithPopup(auth, googleProvider).catch(err => {
                 console.error("Google login error:", err);
                 if (err.code === 'auth/popup-blocked' || err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request' || err.code === 'auth/operation-not-supported-in-this-environment') {
@@ -2083,6 +2090,7 @@
             awaitingVerification = false;
             window.pendingLoginCreds = null;
             window.pendingLinkCred = null;
+            window.fromLoginName = false;
             try { window.hideOtpUI(); } catch(e) { otpLock = false; pendingOtp = null; }
             document.getElementById('auth-email').value = "";
             document.getElementById('auth-password').value = "";
