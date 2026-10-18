@@ -1,0 +1,9 @@
+{
+  "name": "datex-ai",
+  "private": true,
+  "version": "1.0.0",
+  "dependencies": {
+    "edge-tts-universal": "1.4.0",
+    "ws": "^8.18.3"
+  }
+}
